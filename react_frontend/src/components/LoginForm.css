@@ -1,0 +1,113 @@
+/* Full-screen container with a cool solid background */
+.login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #2c3e50; /* Dark background for contrast */
+}
+
+/* Styling for the login form container with a modern gradient */
+.login-form {
+  background: linear-gradient(
+    135deg,
+    #00b4d8,
+    #6a11cb
+  ); 
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* Title styling */
+.login-form h2 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* Styling for input fields */
+.input-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus {
+  border-color: #00b4d8;
+  box-shadow: 0 0 8px rgba(0, 180, 216, 0.5); 
+  outline: none;
+}
+
+/* Error styling for inputs */
+.input-error {
+  border-color: #e74c3c;
+}
+
+.error-message {
+  position: absolute;
+  bottom: -18px;
+  left: 0;
+  color: #e74c3c;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Submit button styling */
+.submit-button {
+  width: 50%;
+  padding: 12px;
+  background-color: #00b4d8;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #007b8c;
+  transform: translateY(-2px);
+}
+
+.submit-button:active {
+  background-color: #005f6a;
+  transform: translateY(1px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .login-form {
+    padding: 30px;
+  }
+
+  .login-form h2 {
+    font-size: 24px;
+  }
+
+  .input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .submit-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
