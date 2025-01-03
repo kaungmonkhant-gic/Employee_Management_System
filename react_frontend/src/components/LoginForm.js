@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
@@ -32,7 +32,14 @@ function LoginForm() {
       console.log("Username:", username);
       console.log("Password:", password);
 
-      navigate("/admin-dashboard");
+      // Simulate role-based navigation
+      if (username === "admin@gmail.com" && password === "admin123") {
+        navigate("/admin-dashboard"); // Redirect to admin dashboard
+      } else if (username === "user@gmail.com" && password === "user123") {
+        navigate("/employee-dashboard"); // Redirect to employee dashboard
+      } else {
+        setErrors({ general: "Invalid username or password." });
+      }
     }
   };
 
@@ -66,6 +73,10 @@ function LoginForm() {
               <div className="error-message">{errors.password}</div>
             )}
           </div>
+
+          {errors.general && (
+            <div className="error-message">{errors.general}</div>
+          )}
 
           <button type="submit" className="submit-button">
             Login
