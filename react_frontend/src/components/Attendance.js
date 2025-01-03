@@ -3,7 +3,7 @@ import "./Attendance.css";
 
 // Sample data for employees (you may fetch this from an API)
 const employeesData = [
-  { id: 1, name: "山田", email: "yamada@gmail.com" },
+  { id: 1, name: "山田", email: "amada@gmail.com" },
   { id: 2, name: "小林", email: "kobayashi@gmail.com" },
   { id: 3, name: "岩永", email: "iwanaga@gmail.com" },
 ];
