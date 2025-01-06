@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./LoginForm.css";
 
 function LoginForm() {
@@ -10,14 +10,12 @@ function LoginForm() {
 
   const validate = () => {
     const newErrors = {};
-
-    // Username validation for gmail.com format
     const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
     if (!username) newErrors.username = "Username is required.";
     else if (!emailPattern.test(username))
-      newErrors.username = "Please enter a valid Gmail address.";
+      newErrors.username = "Enter a valid Gmail address.";
 
-    // Password validation
     if (!password) newErrors.password = "Password is required.";
 
     return newErrors;
@@ -29,14 +27,10 @@ function LoginForm() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      console.log("Username:", username);
-      console.log("Password:", password);
-
-      // Simulate role-based navigation
       if (username === "admin@gmail.com" && password === "admin123") {
-        navigate("/admin-dashboard"); // Redirect to admin dashboard
+        navigate("/admin-dashboard");
       } else if (username === "user@gmail.com" && password === "user123") {
-        navigate("/employee-dashboard"); // Redirect to employee dashboard
+        navigate("/employee-dashboard");
       } else {
         setErrors({ general: "Invalid username or password." });
       }
@@ -45,43 +39,51 @@ function LoginForm() {
 
   return (
     <div className="login-form-container">
-      <div className="login-form">
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
+      <div className="login-form-card">
+        <h2>Welcome Back</h2>
+        <p>Please login to your account</p>
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
+            <label>Email</label>
             <input
               type="text"
-              placeholder="Username (Gmail)"
+              placeholder="Enter your Gmail"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className={`input ${errors.username ? "input-error" : ""}`}
             />
             {errors.username && (
-              <div className="error-message">{errors.username}</div>
+              <small className="error-message">{errors.username}</small>
             )}
           </div>
 
           <div className="input-group">
+            <label>Password</label>
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={`input ${errors.password ? "input-error" : ""}`}
             />
             {errors.password && (
-              <div className="error-message">{errors.password}</div>
+              <small className="error-message">{errors.password}</small>
             )}
           </div>
 
           {errors.general && (
-            <div className="error-message">{errors.general}</div>
+            <div className="error-message general-error">
+              {errors.general}
+            </div>
           )}
 
           <button type="submit" className="submit-button">
             Login
           </button>
         </form>
+        <Link to="/forgot-password" className="forgot-password-link">
+          Forgot Password?
+        </Link>
       </div>
     </div>
   );
