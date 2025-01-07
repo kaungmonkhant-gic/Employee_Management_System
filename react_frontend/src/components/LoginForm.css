@@ -4,13 +4,15 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: url('') no-repeat center center fixed;
+  /* LoginForm.css */
+  background: no-repeat center center fixed;
+
   background-size: cover;
 }
 
 .login-form-card {
-   background-color: rgba(255, 255, 255, 0.8); 
-  
+  background-color: rgba(255, 255, 255, 0.8);
+
   padding: 40px;
   border-radius: 10px;
   width: 100%;
@@ -29,7 +31,7 @@ h2 {
   font-size: 24px;
   margin-bottom: 10px;
   color: #333;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 p {
@@ -88,7 +90,7 @@ label {
 
 .submit-button {
   padding: 15px;
-   background-color: #1c7fc2; 
+  background-color: #1c7fc2;
   color: white;
   font-size: 18px;
   border: none;
@@ -120,4 +122,3 @@ label {
 .login-form-card {
   animation: fadeIn 0.5s ease-in-out;
 }
-

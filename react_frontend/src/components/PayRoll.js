@@ -1,10 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+
 import "./Payroll.css";
 
 const Payroll = () => {
   const [payrolls, setPayrolls] = useState([
-    { id: 1, employeeName: "John Doe", role: "Manager", date: "2023-12-01", salary: 5000, otFee: 500, bonus: 1000, status: "Completed" },
-    { id: 2, employeeName: "Jane Smith", role: "Designer", date: "2023-12-02", salary: 4500, otFee: 300, bonus: 700, status: "Pending" },
+    {
+      id: 1,
+      employeeName: "John Doe",
+      role: "Manager",
+      date: "2023-12-01",
+      salary: 5000,
+      otFee: 500,
+      bonus: 1000,
+      status: "Completed",
+    },
+    {
+      id: 2,
+      employeeName: "Jane Smith",
+      role: "Designer",
+      date: "2023-12-02",
+      salary: 4500,
+      otFee: 300,
+      bonus: 700,
+      status: "Pending",
+    },
   ]);
 
   const [payrollCosts, setPayrollCosts] = useState(0);
@@ -16,25 +35,33 @@ const Payroll = () => {
   const [currentPayroll, setCurrentPayroll] = useState(null);
 
   // Function to calculate metrics
-  const calculateMetrics = () => {
-    const costs = payrolls.reduce((sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus, 0);
+  const calculateMetrics = useCallback(() => {
+    const costs = payrolls.reduce(
+      (sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus,
+      0
+    );
     const expenses = payrolls
       .filter((payroll) => payroll.status === "Completed")
-      .reduce((sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus, 0);
+      .reduce(
+        (sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus,
+        0
+      );
     const pending = payrolls
       .filter((payroll) => payroll.status === "Pending")
-      .reduce((sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus, 0);
+      .reduce(
+        (sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus,
+        0
+      );
 
     setPayrollCosts(costs);
     setTotalExpense(expenses);
     setPendingPayments(pending);
     setTotalPayrolls(payrolls.length);
-  };
+  }, [payrolls]); // Dependencies of the function
 
-  // Recalculate metrics when payrolls change
   useEffect(() => {
     calculateMetrics();
-  }, [payrolls]);
+  }, [calculateMetrics]);
 
   // Handle Edit
   const handleEdit = (payroll) => {
@@ -47,7 +74,9 @@ const Payroll = () => {
     setPayrolls((prev) => {
       const isExistingPayroll = prev.some((p) => p.id === currentPayroll.id);
       if (isExistingPayroll) {
-        return prev.map((p) => (p.id === currentPayroll.id ? currentPayroll : p));
+        return prev.map((p) =>
+          p.id === currentPayroll.id ? currentPayroll : p
+        );
       } else {
         return [...prev, currentPayroll];
       }
@@ -61,7 +90,10 @@ const Payroll = () => {
     const { name, value } = e.target;
     setCurrentPayroll((prev) => ({
       ...prev,
-      [name]: name === "salary" || name === "otFee" || name === "bonus" ? parseFloat(value) : value,
+      [name]:
+        name === "salary" || name === "otFee" || name === "bonus"
+          ? parseFloat(value)
+          : value,
     }));
   };
 
@@ -143,7 +175,14 @@ const Payroll = () => {
                 <td>${payroll.salary}</td>
                 <td>${payroll.otFee}</td>
                 <td>${payroll.bonus}</td>
-                <td>${(payroll.salary + payroll.otFee + payroll.bonus).toLocaleString()}</td>
+                <td>
+                  $
+                  {(
+                    payroll.salary +
+                    payroll.otFee +
+                    payroll.bonus
+                  ).toLocaleString()}
+                </td>
                 <td
                   className={
                     payroll.status === "Completed"
@@ -179,7 +218,11 @@ const Payroll = () => {
       {isEditMode && (
         <div className="modal">
           <div className="modal-content">
-            <h2>{currentPayroll.id > payrolls.length ? "Add Payroll" : "Edit Payroll"}</h2>
+            <h2>
+              {currentPayroll.id > payrolls.length
+                ? "Add Payroll"
+                : "Edit Payroll"}
+            </h2>
             <label>Employee Name</label>
             <input
               type="text"
