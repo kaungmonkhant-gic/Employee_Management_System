@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import "./Payroll.css";
-
 const Payroll = () => {
   const [payrolls, setPayrolls] = useState([
     {
@@ -30,11 +28,9 @@ const Payroll = () => {
   const [totalExpense, setTotalExpense] = useState(0);
   const [pendingPayments, setPendingPayments] = useState(0);
   const [totalPayrolls, setTotalPayrolls] = useState(0);
-
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentPayroll, setCurrentPayroll] = useState(null);
 
-  // Function to calculate metrics
   const calculateMetrics = useCallback(() => {
     const costs = payrolls.reduce(
       (sum, payroll) => sum + payroll.salary + payroll.otFee + payroll.bonus,
@@ -57,19 +53,17 @@ const Payroll = () => {
     setTotalExpense(expenses);
     setPendingPayments(pending);
     setTotalPayrolls(payrolls.length);
-  }, [payrolls]); // Dependencies of the function
+  }, [payrolls]);
 
   useEffect(() => {
     calculateMetrics();
   }, [calculateMetrics]);
 
-  // Handle Edit
   const handleEdit = (payroll) => {
     setIsEditMode(true);
     setCurrentPayroll({ ...payroll });
   };
 
-  // Handle Save after Editing or Adding
   const handleSave = () => {
     setPayrolls((prev) => {
       const isExistingPayroll = prev.some((p) => p.id === currentPayroll.id);
@@ -85,7 +79,6 @@ const Payroll = () => {
     setCurrentPayroll(null);
   };
 
-  // Handle Input Change during Editing
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCurrentPayroll((prev) => ({
@@ -97,12 +90,10 @@ const Payroll = () => {
     }));
   };
 
-  // Handle Delete
   const handleDelete = (id) => {
     setPayrolls((prev) => prev.filter((payroll) => payroll.id !== id));
   };
 
-  // Handle Add New Payroll
   const handleAddPayroll = () => {
     const newPayroll = {
       id: payrolls.length + 1,
@@ -119,170 +110,209 @@ const Payroll = () => {
   };
 
   return (
-    <div className="payroll-container">
-      <div className="payroll-header">
+    <div className="container my-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Payroll Management</h1>
-        <button className="new-payroll-btn" onClick={handleAddPayroll}>
+        <button className="btn btn-primary" onClick={handleAddPayroll}>
           New Payroll
         </button>
       </div>
 
       {/* Metrics Section */}
-      <div className="payroll-metrics">
-        <div className="metric">
-          <h3>Payroll Costs</h3>
-          <p>${payrollCosts.toLocaleString()}</p>
+      <div className="row mb-4">
+        <div className="col-md-3">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Payroll Costs</h5>
+              <p className="card-text">${payrollCosts.toLocaleString()}</p>
+            </div>
+          </div>
         </div>
-        <div className="metric">
-          <h3>Total Expense</h3>
-          <p>${totalExpense.toLocaleString()}</p>
+        <div className="col-md-3">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Total Expense</h5>
+              <p className="card-text">${totalExpense.toLocaleString()}</p>
+            </div>
+          </div>
         </div>
-        <div className="metric">
-          <h3>Pending Payments</h3>
-          <p>${pendingPayments.toLocaleString()}</p>
+        <div className="col-md-3">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Pending Payments</h5>
+              <p className="card-text">${pendingPayments.toLocaleString()}</p>
+            </div>
+          </div>
         </div>
-        <div className="metric">
-          <h3>Total Payrolls</h3>
-          <p>{totalPayrolls}</p>
+        <div className="col-md-3">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Total Payrolls</h5>
+              <p className="card-text">{totalPayrolls}</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Payroll List */}
-      <div className="payroll-list">
-        <h2>Payroll List</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Employee Name</th>
-              <th>Role</th>
-              <th>Date</th>
-              <th>Salary</th>
-              <th>OT Fee</th>
-              <th>Bonus</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payrolls.map((payroll) => (
-              <tr key={payroll.id}>
-                <td>{payroll.id}</td>
-                <td>{payroll.employeeName}</td>
-                <td>{payroll.role}</td>
-                <td>{payroll.date}</td>
-                <td>${payroll.salary}</td>
-                <td>${payroll.otFee}</td>
-                <td>${payroll.bonus}</td>
-                <td>
-                  $
-                  {(
-                    payroll.salary +
-                    payroll.otFee +
-                    payroll.bonus
-                  ).toLocaleString()}
-                </td>
-                <td
-                  className={
-                    payroll.status === "Completed"
-                      ? "status-completed"
-                      : "status-pending"
-                  }
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Employee Name</th>
+            <th>Role</th>
+            <th>Date</th>
+            <th>Salary</th>
+            <th>OT Fee</th>
+            <th>Bonus</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {payrolls.map((payroll) => (
+            <tr key={payroll.id}>
+              <td>{payroll.id}</td>
+              <td>{payroll.employeeName}</td>
+              <td>{payroll.role}</td>
+              <td>{payroll.date}</td>
+              <td>${payroll.salary}</td>
+              <td>${payroll.otFee}</td>
+              <td>${payroll.bonus}</td>
+              <td>
+                $
+                {(
+                  payroll.salary +
+                  payroll.otFee +
+                  payroll.bonus
+                ).toLocaleString()}
+              </td>
+              <td
+                className={`text-${
+                  payroll.status === "Completed" ? "success" : "danger"
+                }`}
+              >
+                {payroll.status}
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm btn-warning me-2"
+                  onClick={() => handleEdit(payroll)}
                 >
-                  {payroll.status}
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button
-                      className="action-btn edit-btn"
-                      onClick={() => handleEdit(payroll)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="action-btn delete-btn"
-                      onClick={() => handleDelete(payroll.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  Edit
+                </button>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleDelete(payroll.id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      {/* Modal for Edit or New Payroll */}
+      {/* Modal */}
       {isEditMode && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>
-              {currentPayroll.id > payrolls.length
-                ? "Add Payroll"
-                : "Edit Payroll"}
-            </h2>
-            <label>Employee Name</label>
-            <input
-              type="text"
-              name="employeeName"
-              value={currentPayroll.employeeName}
-              onChange={handleInputChange}
-            />
-            <label>Role</label>
-            <select
-              name="role"
-              value={currentPayroll.role}
-              onChange={handleInputChange}
-            >
-              <option value="">Select a role</option>
-              <option value="Manager">Manager</option>
-              <option value="Designer">Designer</option>
-              <option value="Intern">Intern</option>
-              <option value="Senior Developer">Senior Developer</option>
-              <option value="Junior Developer">Junior Developer</option>
-            </select>
-            <label>Date</label>
-            <input
-              type="date"
-              name="date"
-              value={currentPayroll.date}
-              onChange={handleInputChange}
-            />
-            <label>Salary</label>
-            <input
-              type="number"
-              name="salary"
-              value={currentPayroll.salary}
-              onChange={handleInputChange}
-            />
-            <label>OT Fee</label>
-            <input
-              type="number"
-              name="otFee"
-              value={currentPayroll.otFee}
-              onChange={handleInputChange}
-            />
-            <label>Bonus</label>
-            <input
-              type="number"
-              name="bonus"
-              value={currentPayroll.bonus}
-              onChange={handleInputChange}
-            />
-            <label>Status</label>
-            <select
-              name="status"
-              value={currentPayroll.status}
-              onChange={handleInputChange}
-            >
-              <option value="Completed">Completed</option>
-              <option value="Pending">Pending</option>
-            </select>
-            <div className="modal-actions">
-              <button onClick={() => setIsEditMode(false)}>Cancel</button>
-              <button onClick={handleSave}>Save</button>
+        <div className="modal d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {currentPayroll.id > payrolls.length
+                    ? "Add Payroll"
+                    : "Edit Payroll"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setIsEditMode(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <label>Employee Name</label>
+                <input
+                  type="text"
+                  name="employeeName"
+                  className="form-control mb-2"
+                  value={currentPayroll.employeeName}
+                  onChange={handleInputChange}
+                />
+                <label>Role</label>
+                <select
+                  name="role"
+                  className="form-select mb-2"
+                  value={currentPayroll.role}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select a role</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Designer">Designer</option>
+                  <option value="Intern">Intern</option>
+                  <option value="Senior Developer">Senior Developer</option>
+                  <option value="Junior Developer">Junior Developer</option>
+                </select>
+                <label>Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  className="form-control mb-2"
+                  value={currentPayroll.date}
+                  onChange={handleInputChange}
+                />
+                <label>Salary</label>
+                <input
+                  type="number"
+                  name="salary"
+                  className="form-control mb-2"
+                  value={currentPayroll.salary}
+                  onChange={handleInputChange}
+                />
+                <label>OT Fee</label>
+                <input
+                  type="number"
+                  name="otFee"
+                  className="form-control mb-2"
+                  value={currentPayroll.otFee}
+                  onChange={handleInputChange}
+                />
+                <label>Bonus</label>
+                <input
+                  type="number"
+                  name="bonus"
+                  className="form-control mb-2"
+                  value={currentPayroll.bonus}
+                  onChange={handleInputChange}
+                />
+                <label>Status</label>
+                <select
+                  name="status"
+                  className="form-select"
+                  value={currentPayroll.status}
+                  onChange={handleInputChange}
+                >
+                  <option value="Completed">Completed</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setIsEditMode(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
