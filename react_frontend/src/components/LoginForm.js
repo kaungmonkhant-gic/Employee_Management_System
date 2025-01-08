@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./LoginForm.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
@@ -38,52 +38,70 @@ function LoginForm() {
   };
 
   return (
-    <div className="login-form-container">
-      <div className="login-form-card">
-        <h2>Welcome Back</h2>
-        <p>Please login to your account</p>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="input-group">
-            <label>Email</label>
-            <input
-              type="text"
-              placeholder="Enter your Gmail"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className={`input ${errors.username ? "input-error" : ""}`}
-            />
-            {errors.username && (
-              <small className="error-message">{errors.username}</small>
-            )}
-          </div>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <div className="card shadow p-4">
+            <h2 className="text-center">Welcome Back</h2>
+            <p className="text-center text-muted">
+              Please login to your account
+            </p>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">
+                  Email
+                </label>
+                <input
+                  type="text"
+                  id="email"
+                  placeholder="Enter your Gmail"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className={`form-control ${
+                    errors.username ? "is-invalid" : ""
+                  }`}
+                />
+                {errors.username && (
+                  <div className="invalid-feedback">{errors.username}</div>
+                )}
+              </div>
 
-          <div className="input-group">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`input ${errors.password ? "input-error" : ""}`}
-            />
-            {errors.password && (
-              <small className="error-message">{errors.password}</small>
-            )}
-          </div>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`form-control ${
+                    errors.password ? "is-invalid" : ""
+                  }`}
+                />
+                {errors.password && (
+                  <div className="invalid-feedback">{errors.password}</div>
+                )}
+              </div>
 
-          {errors.general && (
-            <div className="error-message general-error">
-              {errors.general}
+              {errors.general && (
+                <div className="alert alert-danger text-center">
+                  {errors.general}
+                </div>
+              )}
+
+              <button type="submit" className="btn btn-primary w-100">
+                Login
+              </button>
+            </form>
+            <div className="text-center mt-3">
+              <Link to="/forgot-password" className="text-decoration-none">
+                Forgot Password?
+              </Link>
             </div>
-          )}
-
-          <button type="submit" className="submit-button">
-            Login
-          </button>
-        </form>
-        <Link to="/forgot-password" className="forgot-password-link">
-          Forgot Password?
-        </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

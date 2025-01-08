@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import './OT.css';
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const OT = () => {
   const [otRecords, setOtRecords] = useState([]);
-  const [employeeName, setEmployeeName] = useState('');
-  const [employeeId, setEmployeeId] = useState('');
-  const [position, setPosition] = useState('');
-  const [department, setDepartment] = useState('');
-  const [date, setDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [error, setError] = useState('');
+  const [employeeName, setEmployeeName] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [position, setPosition] = useState("");
+  const [department, setDepartment] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [error, setError] = useState("");
 
   const calculateOTHours = (start, end) => {
     const startDate = new Date(`1970-01-01T${start}`);
@@ -20,35 +20,41 @@ const OT = () => {
   };
 
   const calculateOTPay = (position, hours, date) => {
-    const dayOfWeek = new Date(date).getDay(); // 0 (Sunday) to 6 (Saturday)
-    const isWeekendOrHoliday = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
-    const oneDaySalary = 1000; // Assume a base daily salary
+    const dayOfWeek = new Date(date).getDay();
+    const isWeekendOrHoliday = dayOfWeek === 0 || dayOfWeek === 6;
+    const oneDaySalary = 1000;
     let otRate = 0;
 
-    // Determine OT rate based on position and day
-    if (position === 'Officer') {
+    if (position === "Officer") {
       otRate = isWeekendOrHoliday ? 0.2 : 0.1;
-    } else if (position === 'Senior Officer') {
+    } else if (position === "Senior Officer") {
       otRate = isWeekendOrHoliday ? 0.3 : 0.2;
-    } else if (position === 'Manager') {
+    } else if (position === "Manager") {
       otRate = isWeekendOrHoliday ? 0.4 : 0.3;
     }
 
-    return hours * otRate * oneDaySalary; // OT Pay = Hours * OT Rate * One Day Salary
+    return hours * otRate * oneDaySalary;
   };
 
   const handleAddRecord = (e) => {
     e.preventDefault();
 
-    // Validate timestamps
     const otHours = calculateOTHours(startTime, endTime);
     if (otHours < 1) {
-      setError('OT hours must be at least 1 hour.');
+      setError("OT hours must be at least 1 hour.");
       return;
     }
 
-    if (employeeName && employeeId && position && department && date && startTime && endTime) {
-      const otPay = calculateOTPay(position,employeeId, otHours, date);
+    if (
+      employeeName &&
+      employeeId &&
+      position &&
+      department &&
+      date &&
+      startTime &&
+      endTime
+    ) {
+      const otPay = calculateOTPay(position, otHours, date);
       const newRecord = {
         employeeName,
         employeeId,
@@ -62,52 +68,61 @@ const OT = () => {
       };
 
       setOtRecords([...otRecords, newRecord]);
-      setEmployeeName('');
-      setEmployeeId('');
-      setPosition('');
-      setDepartment('');
-      setDate('');
-      setStartTime('');
-      setEndTime('');
-      setError('');
+      setEmployeeName("");
+      setEmployeeId("");
+      setPosition("");
+      setDepartment("");
+      setDate("");
+      setStartTime("");
+      setEndTime("");
+      setError("");
     }
   };
 
   return (
-    <div className="ot-dashboard">
-      <header className="dashboard-header">
-        <h1>Overtime Dashboard</h1>
+    <div className="container my-5">
+      <header className="mb-4">
+        <h1 className="text-center">Overtime Dashboard</h1>
       </header>
 
-      <main className="dashboard-main">
-        <section className="form-section">
+      <main>
+        <section className="mb-5">
           <h2>Log Overtime</h2>
-          {error && <p className="error-message">{error}</p>}
+          {error && <div className="alert alert-danger">{error}</div>}
           <form onSubmit={handleAddRecord}>
-            <div className="form-group">
-              <label htmlFor="employeeName">Employee Name</label>
+            <div className="mb-3">
+              <label htmlFor="employeeName" className="form-label">
+                Employee Name
+              </label>
               <input
                 type="text"
+                className="form-control"
                 id="employeeName"
                 value={employeeName}
                 onChange={(e) => setEmployeeName(e.target.value)}
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="employeeId">Employee ID</label>
+            <div className="mb-3">
+              <label htmlFor="employeeId" className="form-label">
+                Employee ID
+              </label>
               <input
                 type="text"
+                className="form-control"
                 id="employeeId"
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="position">Position</label>
+            <div className="mb-3">
+              <label htmlFor="position" className="form-label">
+                Position
+              </label>
               <select
                 id="position"
+                className="form-select"
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
                 required
@@ -118,55 +133,67 @@ const OT = () => {
                 <option value="Manager">Manager</option>
               </select>
             </div>
-            <div className="form-group">
-              <label htmlFor="department">Department</label>
+            <div className="mb-3">
+              <label htmlFor="department" className="form-label">
+                Department
+              </label>
               <input
                 type="text"
+                className="form-control"
                 id="department"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="date">Date</label>
+            <div className="mb-3">
+              <label htmlFor="date" className="form-label">
+                Date
+              </label>
               <input
                 type="date"
+                className="form-control"
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="startTime">Start Time</label>
+            <div className="mb-3">
+              <label htmlFor="startTime" className="form-label">
+                Start Time
+              </label>
               <input
                 type="time"
+                className="form-control"
                 id="startTime"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="endTime">End Time</label>
+            <div className="mb-3">
+              <label htmlFor="endTime" className="form-label">
+                End Time
+              </label>
               <input
                 type="time"
+                className="form-control"
                 id="endTime"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 required
               />
             </div>
-            <button type="submit" className="btn">
+            <button type="submit" className="btn btn-primary">
               Add Record
             </button>
           </form>
         </section>
 
-        <section className="table-section">
+        <section>
           <h2>Overtime Records</h2>
-          <table className="dashboard-table">
+          <table className="table table-bordered">
             <thead>
               <tr>
                 <th>Employee Name</th>
@@ -184,6 +211,7 @@ const OT = () => {
               {otRecords.map((record, index) => (
                 <tr key={index}>
                   <td>{record.employeeName}</td>
+                  <td>{record.employeeId}</td>
                   <td>{record.position}</td>
                   <td>{record.department}</td>
                   <td>{record.date}</td>
@@ -195,7 +223,7 @@ const OT = () => {
               ))}
               {otRecords.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="no-records">
+                  <td colSpan="9" className="text-center">
                     No overtime records found.
                   </td>
                 </tr>

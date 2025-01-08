@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Attendance.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Sample data for employees (consider fetching from an API in a real scenario)
 const employeesData = [
@@ -22,7 +22,8 @@ function Attendance() {
     }
 
     const existingRecordIndex = attendanceRecords.findIndex(
-      (record) => record.date === selectedDate && record.employeeId === employeeId
+      (record) =>
+        record.date === selectedDate && record.employeeId === employeeId
     );
 
     if (existingRecordIndex >= 0) {
@@ -49,7 +50,8 @@ function Attendance() {
   // Save the updated attendance record
   const handleSaveEdit = () => {
     const updatedRecords = attendanceRecords.map((record) =>
-      record.date === editingRecord.date && record.employeeId === editingRecord.employeeId
+      record.date === editingRecord.date &&
+      record.employeeId === editingRecord.employeeId
         ? { ...record, status: isMarked ? "Present" : "Absent" }
         : record
     );
@@ -58,25 +60,31 @@ function Attendance() {
   };
 
   return (
-    <div className="attendance-container">
-      <h2>Attendance Management</h2>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Attendance Management</h2>
 
       {/* Date Selection */}
-      <div className="date-selector">
-        <label htmlFor="date-picker">Select Date:</label>
+      <div className="mb-3">
+        <label htmlFor="date-picker" className="form-label">
+          Select Date:
+        </label>
         <input
           id="date-picker"
           type="date"
+          className="form-control"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
         />
       </div>
 
       {/* Attendance Status Selection */}
-      <div className="mark-toggle">
-        <label htmlFor="attendance-status">Mark Attendance as:</label>
+      <div className="mb-4">
+        <label htmlFor="attendance-status" className="form-label">
+          Mark Attendance as:
+        </label>
         <select
           id="attendance-status"
+          className="form-select"
           onChange={(e) => setIsMarked(e.target.value === "Present")}
         >
           <option value="Present">Present</option>
@@ -85,9 +93,9 @@ function Attendance() {
       </div>
 
       {/* Employee List */}
-      <div className="employee-list">
+      <div className="mb-5">
         <h3>Employees</h3>
-        <table>
+        <table className="table table-bordered">
           <thead>
             <tr>
               <th>ID</th>
@@ -105,7 +113,7 @@ function Attendance() {
                 <td>
                   <button
                     onClick={() => markAttendance(employee.id)}
-                    className="mark-button"
+                    className="btn btn-primary"
                   >
                     Mark Attendance
                   </button>
@@ -117,9 +125,9 @@ function Attendance() {
       </div>
 
       {/* Attendance Records */}
-      <div className="attendance-records">
+      <div>
         <h3>Attendance Records</h3>
-        <table>
+        <table className="table table-striped">
           <thead>
             <tr>
               <th>Date</th>
@@ -130,7 +138,9 @@ function Attendance() {
           </thead>
           <tbody>
             {attendanceRecords.map((record, index) => {
-              const employee = employeesData.find((emp) => emp.id === record.employeeId);
+              const employee = employeesData.find(
+                (emp) => emp.id === record.employeeId
+              );
               return (
                 <tr key={index}>
                   <td>{record.date}</td>
@@ -139,7 +149,7 @@ function Attendance() {
                   <td>
                     <button
                       onClick={() => handleEdit(record)}
-                      className="edit-button"
+                      className="btn btn-warning me-2"
                     >
                       Edit
                     </button>
@@ -153,29 +163,49 @@ function Attendance() {
 
       {/* Edit Attendance Modal */}
       {editingRecord && (
-        <div className="edit-modal">
-          <div className="modal-content">
-            <h3>Edit Attendance for {editingRecord.date}</h3>
-            <div>
-              <label htmlFor="status-select">Change Status to:</label>
-              <select
-                id="status-select"
-                value={isMarked ? "Present" : "Absent"}
-                onChange={(e) => setIsMarked(e.target.value === "Present")}
-              >
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-              </select>
+        <div
+          className="modal show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  Edit Attendance for {editingRecord.date}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditingRecord(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <label htmlFor="status-select" className="form-label">
+                  Change Status to:
+                </label>
+                <select
+                  id="status-select"
+                  className="form-select"
+                  value={isMarked ? "Present" : "Absent"}
+                  onChange={(e) => setIsMarked(e.target.value === "Present")}
+                >
+                  <option value="Present">Present</option>
+                  <option value="Absent">Absent</option>
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-success" onClick={handleSaveEdit}>
+                  Save Changes
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditingRecord(null)}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-            <button onClick={handleSaveEdit} className="save-button">
-              Save Changes
-            </button>
-            <button
-              onClick={() => setEditingRecord(null)}
-              className="cancel-button"
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}

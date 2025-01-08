@@ -1,12 +1,12 @@
 import React from "react";
-import "./EmpAttendance.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function Attendance() {
+function EmpAttendance() {
   return (
-    <div className="attendance-container">
-      <h2>Attendance</h2>
-      <table className="attendance-table">
-        <thead>
+    <div className="container mt-4">
+      <h2 className="mb-4">Attendance</h2>
+      <table className="table table-bordered">
+        <thead className="thead-dark">
           <tr>
             <th>Date</th>
             <th>Status</th>
@@ -15,11 +15,15 @@ function Attendance() {
         <tbody>
           <tr>
             <td>2025-01-01</td>
-            <td className="status present">Present</td>
+            <td>
+              <span className="badge bg-success">Present</span>
+            </td>
           </tr>
           <tr>
             <td>2025-01-02</td>
-            <td className="status absent">Absent</td>
+            <td>
+              <span className="badge bg-danger">Absent</span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -27,4 +31,4 @@ function Attendance() {
   );
 }
 
-export default Attendance;
+export default EmpAttendance;
