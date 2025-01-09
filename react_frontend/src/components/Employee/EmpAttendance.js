@@ -1,34 +1,79 @@
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function EmpAttendance() {
+const Attendance = () => {
+  const [date, setDate] = useState('');
+  const [error, setError] = useState('');
+
+  const handleCheckIn = () => {
+    if (!date) {
+      setError('Please select a date before checking in.');
+      return;
+    }
+    setError('');
+    alert('Check-in recorded at ' + new Date().toLocaleTimeString());
+  };
+
+  const handleCheckOut = () => {
+    if (!date) {
+      setError('Please select a date before checking out.');
+      return;
+    }
+    setError('');
+    alert('Check-out recorded at ' + new Date().toLocaleTimeString());
+  };
+
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Attendance</h2>
-      <table className="table table-bordered">
-        <thead className="thead-dark">
-          <tr>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>2025-01-01</td>
-            <td>
-              <span className="badge bg-success">Present</span>
-            </td>
-          </tr>
-          <tr>
-            <td>2025-01-02</td>
-            <td>
-              <span className="badge bg-danger">Absent</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div
+      className="d-flex justify-content-center align-items-center vh-100 bg-light"
+    >
+      <div
+        className="card shadow p-4"
+        style={{ maxWidth: '600px', width: '100%', backgroundColor: '#fff' }}
+      >
+        <h2 className="text-primary text-center mb-4">Attendance</h2>
+
+        {/* Date Selector */}
+        <div className="form-group mb-4">
+          <label
+            htmlFor="date"
+            className="form-label fw-bold d-block mb-2"
+            style={{ fontSize: '16px' }}
+          >
+            Select Date:
+          </label>
+          <input
+            type="date"
+            id="date"
+            className="form-control"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+
+        {/* Error Message */}
+        {error && <div className="alert alert-danger">{error}</div>}
+
+        {/* Check-In and Check-Out Buttons */}
+        <div className="d-flex justify-content-center gap-3 mt-4">
+          <button
+            className="btn btn-primary px-4 py-2"
+            style={{ minWidth: '120px' }}
+            onClick={handleCheckIn}
+          >
+            Check In
+          </button>
+          <button
+            className="btn btn-secondary px-4 py-2"
+            style={{ minWidth: '120px' }}
+            onClick={handleCheckOut}
+          >
+            Check Out
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
-export default EmpAttendance;
+export default Attendance;
