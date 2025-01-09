@@ -12,7 +12,7 @@ function EmployeeDashboard() {
 
   return (
     <div className="container-fluid">
-      <div className="row">
+      <div className="row d-flex vh-100">
         {/* Sidebar */}
         <nav className="col-md-3 col-lg-2 d-md-block bg-light sidebar">
           <div className="sidebar-sticky pt-3">
