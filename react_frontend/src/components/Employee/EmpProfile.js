@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const EmpProfile = () => {
   const initialDetails = {
@@ -21,6 +21,33 @@ const EmpProfile = () => {
     "https://via.placeholder.com/150" // Default profile picture
   );
 
+  // Fetch user profile when the component mounts
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("/api/user/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, 
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setDetails(data.profile); 
+          setProfilePic(data.profilePic || profilePic); 
+        } else {
+          console.error("Failed to fetch profile:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []); // Empty dependency array ensures this runs only once
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setDetails((prevDetails) => ({
@@ -29,7 +56,27 @@ const EmpProfile = () => {
     }));
   };
 
-  const toggleEditing = () => {
+  const toggleEditing = async () => {
+    if (isEditing) {
+      // Save updated details to the backend
+      try {
+        const response = await fetch("/api/user/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(details),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to update profile:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
+    }
+
     setIsEditing(!isEditing);
   };
 
@@ -45,7 +92,7 @@ const EmpProfile = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container md">
       <div className="card shadow">
         {/* Header Section */}
         <div className="card-header d-flex align-items-center">
@@ -79,188 +126,24 @@ const EmpProfile = () => {
           <h4 className="card-title mb-4">Profile Details</h4>
           <table className="table table-striped">
             <tbody>
-              <tr>
-                <th>Employee ID:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="employeeId"
-                      value={details.employeeId}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.employeeId || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Name:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="name"
-                      value={details.name}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.name || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Date of Birth:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      name="dob"
-                      value={details.dob}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.dob || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Email:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="email"
-                      name="email"
-                      value={details.email}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.email || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Facebook:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="facebook"
-                      value={details.facebook}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.facebook || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Phone:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="phone"
-                      value={details.phone}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.phone || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Gender:</th>
-                <td>
-                  {isEditing ? (
-                    <select
-                      name="gender"
-                      value={details.gender}
-                      onChange={handleInputChange}
-                      className="form-select"
-                    >
-                      <option value="" disabled>
-                        Select Gender
-                      </option>
-                      <option value="Female">Female</option>
-                      <option value="Male">Male</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  ) : (
-                    details.gender || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>City:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="city"
-                      value={details.city}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.city || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Country:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="country"
-                      value={details.country}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.country || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Department:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="department"
-                      value={details.department}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.department || "Not Provided"
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Position:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="position"
-                      value={details.position}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.position || "Not Provided"
-                  )}
-                </td>
-              </tr>
+              {Object.keys(initialDetails).map((key) => (
+                <tr key={key}>
+                  <th>{key.charAt(0).toUpperCase() + key.slice(1)}:</th>
+                  <td>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        name={key}
+                        value={details[key]}
+                        onChange={handleInputChange}
+                        className="form-control"
+                      />
+                    ) : (
+                      details[key] || "Not Provided"
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
