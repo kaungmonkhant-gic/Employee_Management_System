@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
-const Attendance = () => {
+const EmpAttendance = () => {
   const [date, setDate] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleCheckIn = () => {
     if (!date) {
@@ -11,7 +13,7 @@ const Attendance = () => {
       return;
     }
     setError('');
-    alert('Check-in recorded at ' + new Date().toLocaleTimeString());
+    navigate('/employee-dashboard/attendance-list', { state: { action: 'Check In', date } });
   };
 
   const handleCheckOut = () => {
@@ -20,7 +22,7 @@ const Attendance = () => {
       return;
     }
     setError('');
-    alert('Check-out recorded at ' + new Date().toLocaleTimeString());
+    navigate('/employee-dashboard/attendance-list', { state: { action: 'Check Out', date } });
   };
 
   return (
@@ -76,4 +78,4 @@ const Attendance = () => {
   );
 };
 
-export default Attendance;
+export default EmpAttendance;

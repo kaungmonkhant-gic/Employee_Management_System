@@ -14,6 +14,7 @@ import Tasks from "./components/Employee/Tasks";
 import Salary from "./components/Employee/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
+import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -31,6 +32,7 @@ root.render(
       <Route path="/employee-dashboard/*" element={<EmployeeDashboard />}>
         <Route path="profile" element={<EmpProfile />} />
         <Route path="attendance" element={<EmpAttendance />} />
+        <Route path="attendance-list" element={<EmpAttendanceList />} />
         <Route path="salary" element={<Salary />} />
         <Route path="tasks" element={<Tasks />} />
       </Route>
