@@ -31,15 +31,29 @@ function LoginForm() {
     // Validate form fields
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      if (username === "admin@gmail.com" && password === "admin123") {
-        navigate("/admin-dashboard");
-      } else if (username === "user@gmail.com" && password === "user123") {
-        navigate("/employee-dashboard");
+      setErrors(validationErrors); // Update errors state
+      return; // Prevent form submission
+    }
+
+    setErrors({}); // Clear errors if validation passes
+
+    try {
+      const userData = await UserService.login(username, password);
+      console.log(userData);
+
+      if (userData.token) {
+        localStorage.setItem("token", userData.token);
+        localStorage.setItem("role", userData.role);
+        navigate("/profile");
       } else {
-        setErrors({ general: "Invalid username or password." });
+        setError(userData.message);
       }
+    } catch (error) {
+      console.log(error);
+      setError("Login failed. Please check your credentials.");
+      setTimeout(() => {
+        setError("");
+      }, 5000);
     }
   };
 
@@ -61,7 +75,9 @@ function LoginForm() {
                   placeholder="Enter your Gmail"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    errors.username ? "is-invalid" : ""
+                  }`}
                 />
                 {errors.username && (
                   <div className="invalid-feedback">{errors.username}</div>
@@ -78,7 +94,9 @@ function LoginForm() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    errors.password ? "is-invalid" : ""
+                  }`}
                 />
                 {errors.password && (
                   <div className="invalid-feedback">{errors.password}</div>
