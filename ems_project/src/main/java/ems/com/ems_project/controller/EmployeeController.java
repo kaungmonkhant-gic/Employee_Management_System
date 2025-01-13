@@ -8,6 +8,7 @@ import lombok.val;
 
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -40,17 +41,20 @@ public class EmployeeController {
     }
 
 
-    // Add an employee
-    @PostMapping("/add")
-    public ResponseEntity<?> addEmployee(@val @RequestBody Employee employee) {
-        try {
-            Employee savedEmployee = employeeService.addEmployee(employee);
-            return ResponseEntity.ok(savedEmployee);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error adding employee: " + e.getMessage());
+    // Endpoint to register a new employee
+    @PostMapping("/register")
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody Employee employee) {
+        ReqRes reqRes = employeeService.registerEmployee(employee);
+
+        // Return appropriate response based on status code
+        if (reqRes.getStatusCode() == 201) {
+            return new ResponseEntity<>(reqRes, HttpStatus.CREATED);
+        } else if (reqRes.getStatusCode() == 409) {
+            return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {
         try {
@@ -70,4 +74,4 @@ public class EmployeeController {
     }
 }
 
-   
+
