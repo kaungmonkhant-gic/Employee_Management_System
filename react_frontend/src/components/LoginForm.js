@@ -31,39 +31,15 @@ function LoginForm() {
     // Validate form fields
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors); // Update errors state
-      return; // Prevent form submission
-    }
-
-    setErrors({}); // Clear errors if validation passes
-
-    try {
-      // Call the UserService login method
-      const userData = await UserService.login(username, password);
-
-      if (userData.token) {
-        // Save token and role in localStorage
-        localStorage.setItem("token", userData.token);
-        localStorage.setItem("role", userData.role);
-
-        // Navigate to the profile page
-        navigate("/profile");
+      setErrors(validationErrors);
+    } else {
+      if (username === "admin@gmail.com" && password === "admin123") {
+        navigate("/admin-dashboard");
+      } else if (username === "user@gmail.com" && password === "user123") {
+        navigate("/employee-dashboard");
       } else {
-        // Handle error response from the server
-        setError(userData.message || "Login failed. Please try again.");
+        setErrors({ general: "Invalid username or password." });
       }
-    } catch (err) {
-      console.error("Login error:", err);
-
-      // Show appropriate error message
-      setError(
-        err.response?.data?.message || "An unexpected error occurred. Please try again."
-      );
-
-      // Clear error after 5 seconds
-      setTimeout(() => {
-        setError("");
-      }, 5000);
     }
   };
 
