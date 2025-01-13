@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import UserService from "../services/UserService";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({}); // State to store validation errors
+  const [error, setError] = useState(""); // State for general server errors
+
   const navigate = useNavigate();
 
+  // Validate form fields
   const validate = () => {
     const newErrors = {};
     const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
@@ -21,19 +25,35 @@ function LoginForm() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form fields
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      if (username === "admin@gmail.com" && password === "admin123") {
-        navigate("/admin-dashboard");
-      } else if (username === "user@gmail.com" && password === "user123") {
-        navigate("/employee-dashboard");
+      setErrors(validationErrors); // Update errors state
+      return; // Prevent form submission
+    }
+
+    setErrors({}); // Clear errors if validation passes
+
+    try {
+      const userData = await UserService.login(username, password);
+      console.log(userData);
+
+      if (userData.token) {
+        localStorage.setItem("token", userData.token);
+        localStorage.setItem("role", userData.role);
+        navigate("/profile");
       } else {
-        setErrors({ general: "Invalid username or password." });
+        setError(userData.message);
       }
+    } catch (error) {
+      console.log(error);
+      setError("Login failed. Please check your credentials.");
+      setTimeout(() => {
+        setError("");
+      }, 5000);
     }
   };
 
@@ -43,9 +63,7 @@ function LoginForm() {
         <div className="col-md-6">
           <div className="card shadow p-4">
             <h2 className="text-center">Welcome Back</h2>
-            <p className="text-center text-muted">
-              Please login to your account
-            </p>
+            <p className="text-center text-muted">Please login to your account</p>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
@@ -85,10 +103,8 @@ function LoginForm() {
                 )}
               </div>
 
-              {errors.general && (
-                <div className="alert alert-danger text-center">
-                  {errors.general}
-                </div>
+              {error && (
+                <div className="alert alert-danger text-center">{error}</div>
               )}
 
               <button type="submit" className="btn btn-primary w-100">
