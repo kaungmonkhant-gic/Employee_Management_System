@@ -7,23 +7,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "leaves")
+@Table(name = "employee_leaves")
 @Data
 public class EmployeeLeave {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_leave_id")
-    private Integer employeeLeaveId;
+    private Integer id;
 
     @Column(name = "annual_leave", nullable = false)
-    private String annualLeave;
+    private Double annualLeave;
 
     @Column(name = "casual_leave")
-    private Boolean casualLeave;
+    private Double casualLeave;
     
     @Column(name = "medical_leave", nullable = false)
-    private String medicalLeave;
+    private Double medicalLeave;
 
     
     @Column(name = "total", nullable = false)

@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Getter
 @Setter
 @Entity
@@ -17,21 +19,21 @@ public class Leaves {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "leave_id")
-    private Integer leaveId;
-
-    @Column(name = "employee_id", nullable = false)
-    private Integer employeeId;
+    private Integer id;
 
     @Column(name = "leave_type", nullable = false)
     private String leaveType;
 
     @Column(name = "half_leave")
     private Boolean halfLeave;
-
-    @Column(name = "start_date", nullable = false)
+ 
+    
+    @Column(name = "start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @Column(name = "end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
     @Column(name = "reason")
@@ -42,6 +44,10 @@ public class Leaves {
 
     @Column(name = "is_approved")
     private Boolean isApproved;
+    
+    @ManyToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
+    private Employee employee;
     
 }
 

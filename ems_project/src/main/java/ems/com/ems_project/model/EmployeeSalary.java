@@ -15,9 +15,9 @@ public class EmployeeSalary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_salary_id")
-    private Integer employeeSalaryId;
+    private Integer id;
 
-    @Column(name = "employee_id", nullable = false)
+    @Column(name = "employee_id")
     private Integer employeeId;
 
     @Column(name = "basic_salary", nullable = false)

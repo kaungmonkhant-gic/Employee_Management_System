@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Setter
@@ -18,19 +21,21 @@ public class Ots {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     
     @Column(name = "ot_id", nullable = false)
-    private Integer otId;
+    private Integer id;
     
     @Column(name = "employee_id")
     private Integer employeeId;
 
-    @Column(name = "date", nullable = false)
-    private Date date;
+    @Column(name = "date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date Date;
 
     @Column(name = "start_time")
-    private String startTime;
+    private LocalTime checkInTime;
 
     @Column(name = "end_time")
-    private String endTime;
+    private LocalTime checkOutTime;
+
 
     @Column(name = "ot_time")
     private String otTime;

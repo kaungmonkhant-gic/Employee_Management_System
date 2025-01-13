@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter
 @Setter
 @Entity
@@ -16,19 +19,21 @@ public class EmpDailyAtts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "emp_daily_att_id")
-    private Integer empDailyAttId;
-
-    @Column(name = "employee_id", nullable = false, insertable = false, updatable = false)
+    private Integer id;
+    
+    @Column(name = "employee_id")
     private Integer employeeId;
-
-    @Column(name = "date", nullable = false)
-    private Date date;
+    
+    
+    @Column(name = "date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date Date;
 
     @Column(name = "check_in_time")
-    private String checkInTime;
+    private LocalTime checkInTime;
 
     @Column(name = "check_out_time")
-    private String checkOutTime;
+    private LocalTime checkOutTime;
 
     @Column(name = "lunch_break")
     private String lunchBreak;
@@ -38,16 +43,11 @@ public class EmpDailyAtts {
 
     @Column(name = "is_leave")
     private Boolean isLeave;
-
-    @Column(name = "leave_id", insertable = false, updatable = false)  // Prevent direct modification
-    private Integer leaveId; 
+ 
 
     @Column(name = "leave_early")
     private Boolean leaveEarly;
-    
-    @Column(name = "ot_id", insertable = false, updatable = false)
-    private Integer otId;
-    
+
     @OneToOne
     @JoinColumn(name = "leave_id", referencedColumnName = "leave_id")
     private Leaves leave;
