@@ -13,9 +13,14 @@ public interface EmployeeService extends UserDetailsService {
 
     Optional<Employee> getEmployeeById(Integer employeeId);
 
-    //Employee addEmployee(Employee employee);
-
     ReqRes getProfile(String email);
 
     ReqRes registerEmployee(Employee employee);
+
+    // Update an existing employee
+    ReqRes updateEmployee(Integer employeeId, Employee employee);
+
+    // Delete an employee by ID
+    ReqRes deleteEmployee(Integer employeeId);
 }
+

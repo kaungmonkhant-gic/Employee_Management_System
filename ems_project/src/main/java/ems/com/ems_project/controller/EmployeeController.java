@@ -72,6 +72,34 @@ public class EmployeeController {
             return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
         }
     }
+    // Update an existing employee
+    @PutMapping("/update/{employeeId}")
+    public ResponseEntity<ReqRes> updateEmployee(@PathVariable Integer employeeId, @RequestBody Employee employee) {
+        ReqRes reqRes = employeeService.updateEmployee(employeeId, employee);
+
+        if (reqRes.getStatusCode() == 200) {
+            return new ResponseEntity<>(reqRes, HttpStatus.OK);
+        } else if (reqRes.getStatusCode() == 404) {
+            return new ResponseEntity<>(reqRes, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Delete an employee by ID
+    @DeleteMapping("/delete/{employeeId}")
+    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable Integer employeeId) {
+        ReqRes reqRes = employeeService.deleteEmployee(employeeId);
+
+        if (reqRes.getStatusCode() == 200) {
+            return new ResponseEntity<>(reqRes, HttpStatus.OK);
+        } else if (reqRes.getStatusCode() == 404) {
+            return new ResponseEntity<>(reqRes, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
+
 
 

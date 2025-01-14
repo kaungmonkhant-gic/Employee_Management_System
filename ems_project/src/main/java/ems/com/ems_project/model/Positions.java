@@ -19,4 +19,13 @@ public class Positions {
 
     @Column(name = "position_name", nullable = false)
     private String positionName;
+
+    // Getter and setter for positionId
+    public Integer getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Integer positionId) {
+        this.positionId = positionId;
+    }
 }

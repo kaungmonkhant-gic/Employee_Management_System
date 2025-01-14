@@ -19,5 +19,14 @@ public class Roles {
 
     @Column(name = "role_name", nullable = false)
     private String roleName;
+
+    // Getter and setter for roleId
+    public Integer getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
+    }
 }
 
