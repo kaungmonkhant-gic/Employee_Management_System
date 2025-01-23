@@ -2,6 +2,7 @@ package ems.com.ems_project.model;
 
 import java.util.Collection;
 import java.util.Date;
+//import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,14 @@ import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ems.com.ems_project.validation.ValidDOB;
+import ems.com.ems_project.validation.ValidEmail;
+import ems.com.ems_project.validation.ValidGender;
+import ems.com.ems_project.validation.ValidMaritalStatus;
+import ems.com.ems_project.validation.ValidNRC;
+import ems.com.ems_project.validation.ValidPassword;
+import ems.com.ems_project.validation.ValidPhoneNumber;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Getter
 @Setter
 @Entity
@@ -20,34 +29,43 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 public class Employee implements UserDetails {
 
-    @Id
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_id")
     private Integer employeeId;
 
     @Column(name = "name", nullable = false)
     private String name;
-
+    
     @Column(name = "dob")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @ValidDOB
     private Date dob;
 
     @Column(name = "nrc", unique = true)
+    @ValidNRC
     private String nrc;
 
-    @Column(name = "gender")
+    @Column(name = "gender",nullable = false)
+    @ValidGender
     private String gender;
 
-    @Column(name = "marital_status")
+    @Column(name = "marital_status",nullable = false)
+    @ValidMaritalStatus
     private String maritalStatus;
 
     @Column(name = "phone", unique = true)
+    @ValidPhoneNumber
     private String phone;
 
     @Column(name = "email", unique = true, nullable = false)
+    @ValidEmail
     private String email;
-
+    
     @Column(name = "password", nullable = false)
+    @ValidPassword
     private String password;
 
     @Column(name = "address")
@@ -59,85 +77,48 @@ public class Employee implements UserDetails {
     @Column(name = "work_exp")
     private String workExp;
 
+   
     @Column(name = "join_date")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date joinDate;
-
+    
     @Column(name = "resign_date")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date resignDate;
-
-    // Relationships
+    
+ // Relationships
 
     @ManyToOne
+    //@JsonIgnore
     @JoinColumn(name = "department_id", referencedColumnName = "department_id")
     private Departments department;
 
     @ManyToOne
     @JoinColumn(name = "position_id", referencedColumnName = "position_id")
+    //@JsonIgnore
     private Positions position;
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+    //@JsonIgnore
     private Roles role;
 
     @OneToOne
     @JoinColumn(name = "employee_salary_id", referencedColumnName = "employee_salary_id")
+    //@JsonIgnore
     private EmployeeSalary employeeSalary;
 
-    public Integer getEmployeeId() {
-        return employeeId;
-    }
-    public String getName() {
-        return name;
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // You can implement your authorities logic here if needed
-        return null;
-    }
-
-    @Override
+	
+	@Override
     @JsonIgnore
     public String getUsername() {
         return this.email;
-    }
-
-    @Override
-    @JsonIgnore
-    public String getPassword() {
-        return this.password;
     }
 
     @Override
@@ -177,7 +158,6 @@ public class Employee implements UserDetails {
         return employeeId != null ? employeeId.hashCode() : 0;
     }
 
-    // Getter and Setter methods for departmentId, positionId, and roleId
 
     public Integer getDepartmentId() {
         return department != null ? department.getDepartmentId() : null;
@@ -189,7 +169,7 @@ public class Employee implements UserDetails {
         }
         department.setDepartmentId(departmentId);
     }
-
+    
     public Integer getPositionId() {
         return position != null ? position.getPositionId() : null;
     }
@@ -211,4 +191,17 @@ public class Employee implements UserDetails {
         }
         role.setRoleId(roleId);
     }
+
+    public String getRoleName() {
+        return role != null ? role.getRoleName() : null;
+   }
+    
+    public String getDepartmentName() {
+        return department != null ? department.getDepartmentName() : null;
+    }
+
+    public String getPositionName() {
+        return position != null ? position.getPositionName() : null;
+    }
 }
+

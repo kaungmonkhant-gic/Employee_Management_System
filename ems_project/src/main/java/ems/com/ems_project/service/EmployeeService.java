@@ -3,9 +3,7 @@ package ems.com.ems_project.service;
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.Employee;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
@@ -15,9 +13,14 @@ public interface EmployeeService extends UserDetailsService {
     
     EmployeeProfile getEmployeeById(Integer employeeId);
 
-    Employee addEmployee(Employee employee);
+    ReqRes getProfile(String email);
 
-    //Employee getProfile(String email);
+    ReqRes registerEmployee(Employee employee);
 
-	ReqRes getProfile(String email);
+    // Update an existing employee
+    ReqRes updateEmployee(Integer employeeId, Employee employee);
+
+    // Delete an employee by ID
+    ReqRes deleteEmployee(Integer employeeId);
 }
+
