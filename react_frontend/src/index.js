@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import App from "./App";
 import AdminDashboard from "./components/AdminDashboard";
 import Employee from "./components/Employee"; // Employee component
@@ -17,12 +17,33 @@ import EmpAttendance from "./components/Employee/EmpAttendance";
 import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+function PrivateRoute({ children }) {
+  const isAuthenticated = localStorage.getItem("authToken"); // Example: Replace with your auth logic
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
+
 root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
-      <Route path="admin-dashboard" element={<AdminDashboard />}>
+
+      <Route path="/"
+             element={
+               <PrivateRoute>
+                 <App />
+               </PrivateRoute>
+             }
+      />
+      <Route
+          path="admin-dashboard"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+      >
         <Route path="employee" element={<Employee />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="ot" element={<OT />} />
