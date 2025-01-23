@@ -29,14 +29,14 @@ const EmpProfile = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`, 
           },
         });
-  
+
         if (response.ok) {
           const data = await response.json();
-          setDetails(data.profile);
-          setProfilePic((prevProfilePic) => data.profilePic || prevProfilePic);
+          setDetails(data.profile); 
+          setProfilePic(data.profilePic || profilePic); 
         } else {
           console.error("Failed to fetch profile:", response.statusText);
         }
@@ -44,10 +44,9 @@ const EmpProfile = () => {
         console.error("Error fetching profile:", error);
       }
     };
-  
+
     fetchProfile();
-  }, []); // Keep the dependency array empty
-  
+  }, []); // Empty dependency array ensures this runs only once
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
