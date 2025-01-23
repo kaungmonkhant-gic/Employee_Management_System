@@ -1,21 +1,14 @@
-# Use a Maven base image for building the Java app
-FROM maven:3.8-openjdk-17 AS build
- 
-# Set the working directory in the container
+# Dockerfile for Backend
+FROM openjdk:21-jdk-slim
+
+# Set the working directory inside the container
 WORKDIR /app
- 
-# Copy the pom.xml and install dependencies
-COPY pom.xml ./
- 
-# Download dependencies
-RUN mvn dependency:go-offline
- 
-# Copy the source code
-COPY src ./src
- 
- 
-# Expose the application port
+
+# Copy the built JAR file into the container
+COPY target/ems_project-0.0.1-SNAPSHOT.jar /app/ems_project-0.0.1-SNAPSHOT.jar
+
+# Expose the backend port
 EXPOSE 8081
- 
-# Run the application
-CMD ["java", "-jar", "target/Java-backend-0.0.1-SNAPSHOT.jar"]
+
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "ems_project-0.0.1-SNAPSHOT.jar"]

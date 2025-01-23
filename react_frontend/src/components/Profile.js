@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const Profile = () => {
+const EmpProfile = () => {
   const initialDetails = {
-    employeeId: "EMP001",
-    name: "Hsu Thet Paing Tun",
-    dob: "2001-01-14",
-    email: "hsuthet@gmail.com",
-    facebook: "fb.com/hsu_thet8",
-    phone: "0700 870 9700",
-    gender: "Female",
-    city: "Mandalay",
-    country: "Myanmar",
-    department: "IT",
-    position: "Software Engineer",
+    employeeId: "",
+    name: "",
+    dob: "",
+    email: "",
+    facebook: "",
+    phone: "",
+    gender: "",
+    city: "",
+    country: "",
+    department: "",
+    position: "",
   };
 
   const [details, setDetails] = useState(initialDetails);
@@ -20,6 +21,42 @@ const Profile = () => {
   const [profilePic, setProfilePic] = useState(
     "https://via.placeholder.com/150" // Default profile picture
   );
+
+  // Dropdown options
+  const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
+  const positions = [
+    "Intern",
+    "Junior Developer",
+    "Senior Developer",
+    "Manager",
+    "Director",
+  ];
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("/api/user/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setDetails(data.profile);
+          setProfilePic(data.profilePic || profilePic);
+        } else {
+          console.error("Failed to fetch profile:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +66,26 @@ const Profile = () => {
     }));
   };
 
-  const toggleEditing = () => {
+  const toggleEditing = async () => {
+    if (isEditing) {
+      try {
+        const response = await fetch("/api/user/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(details),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to update profile:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
+    }
+
     setIsEditing(!isEditing);
   };
 
@@ -45,17 +101,31 @@ const Profile = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow">
+    <div className="container mt-5" style={{ maxWidth: "600px" }}>
+
+      <div
+        className="card shadow border-0"
+        style={{
+          borderRadius: "15px",
+          background: "linear-gradient(to bottom,#E2EAF4,#E2EAF4)",
+        }}
+      >
         {/* Header Section */}
-        <div className="card-header d-flex align-items-center">
-          {/* Profile Picture */}
-          <div className="me-3">
+        <div
+          className="card-header d-flex align-items-center"
+          style={{
+            backgroundColor: "#FFFFFF",
+            color: "#004080",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        >
+          <div className="me-4">
             <img
               src={profilePic}
               alt="Profile"
-              className="rounded-circle"
-              style={{ width: "150px", height: "150px" }}
+              className="rounded-circle border border-white"
+              style={{ width: "120px", height: "120px" }}
             />
             {isEditing && (
               <div className="mt-2">
@@ -63,214 +133,121 @@ const Profile = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleProfilePicChange}
-                  className="form-control"
+                  className="form-control form-control-sm"
                 />
               </div>
             )}
           </div>
-
-          {/* Name and Edit Button */}
           <div>
-            <h2>{details.name}</h2>
-            <button
-              className={`btn ${isEditing ? "btn-success" : "btn-primary"} mt-2`}
-              onClick={toggleEditing}
-            >
-              {isEditing ? "Save" : "Edit"}
-            </button>
+            <h3 className="mb-1">{details.name || "Your Name"}</h3>
+            <p className="mb-0">{details.position || "Position"}</p>
+            <p className="mb-0">{details.department || "Department"}</p>
           </div>
         </div>
 
         {/* Body Section */}
         <div className="card-body">
-          <h4 className="card-title mb-4">Profile Details</h4>
-          <table className="table table-striped">
+          <h5
+            className="text-center mb-4"
+            style={{ color: "#004080", fontWeight: "bold" }}
+          >
+            Profile Details
+          </h5>
+          <table className="table table-hover">
             <tbody>
-              <tr>
-                <th>Employee ID:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="employeeId"
-                      value={details.employeeId}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.employeeId
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Name:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="name"
-                      value={details.name}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.name
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Date of Birth:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      name="dob"
-                      value={details.dob}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.dob
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Email:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="email"
-                      name="email"
-                      value={details.email}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.email
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Facebook:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="facebook"
-                      value={details.facebook}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.facebook
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Phone:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="phone"
-                      value={details.phone}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.phone
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Gender:</th>
-                <td>
-                  {isEditing ? (
-                    <select
-                      name="gender"
-                      value={details.gender}
-                      onChange={handleInputChange}
-                      className="form-select"
-                    >
-                      <option value="Female">Female</option>
-                      <option value="Male">Male</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  ) : (
-                    details.gender
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>City:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="city"
-                      value={details.city}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.city
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Country:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="country"
-                      value={details.country}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.country
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Department:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="department"
-                      value={details.department}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.department
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <th>Position:</th>
-                <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="position"
-                      value={details.position}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    />
-                  ) : (
-                    details.position
-                  )}
-                </td>
-              </tr>
+              {Object.keys(initialDetails).map((key) => (
+                <tr key={key}>
+                  <th
+                    style={{
+                      backgroundColor: "#e6f4ff",
+                      color: "#004080",
+                      width: "30%",
+                    }}
+                  >
+                    {key.charAt(0).toUpperCase() + key.slice(1)}:
+                  </th>
+                  <td>
+                    {isEditing ? (
+                      key === "dob" ? (
+                        <input
+                          type="date"
+                          name={key}
+                          value={details[key]}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm"
+                        />
+                      ) : key === "department" ? (
+                        <select
+                          name={key}
+                          value={details[key]}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm"
+                        >
+                          <option value="">Select Department</option>
+                          {departments.map((dept) => (
+                            <option key={dept} value={dept}>
+                              {dept}
+                            </option>
+                          ))}
+                        </select>
+                      ) : key === "position" ? (
+                        <select
+                          name={key}
+                          value={details[key]}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm"
+                        >
+                          <option value="">Select Position</option>
+                          {positions.map((pos) => (
+                            <option key={pos} value={pos}>
+                              {pos}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          name={key}
+                          value={details[key]}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm"
+                        />
+                      )
+                    ) : (
+                      details[key] || "Not Provided"
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Footer Section */}
+        <div
+          className="card-footer text-center"
+          style={{
+            backgroundColor: "#d7ecff",
+            borderBottomLeftRadius: "15px",
+            borderBottomRightRadius: "15px",
+          }}
+        >
+          <button
+            className={`btn ${
+              isEditing ? "btn-success" : "btn-primary"
+            } px-4 py-2`}
+            onClick={toggleEditing}
+            style={{
+              backgroundColor: isEditing ? "#7ec4ff" : "#004080",
+              borderColor: "transparent",
+            }}
+          >
+            {isEditing ? "Save Changes" : "Edit Profile"}
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default Profile;
+export default EmpProfile;

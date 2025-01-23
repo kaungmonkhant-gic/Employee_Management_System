@@ -44,7 +44,7 @@ function LoginForm() {
       if (userData.token) {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("role", userData.role);
-        navigate("/admin-dashboard");
+        navigate("/profile");
       } else {
         setError(userData.message);
       }
