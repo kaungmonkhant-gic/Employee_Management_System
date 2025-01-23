@@ -19,7 +19,7 @@ public class EmpDailyAtts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "emp_daily_att_id")
-    private Integer id;
+    private Integer empDailyAttId;
     
     @Column(name = "employee_id")
     private Integer employeeId;

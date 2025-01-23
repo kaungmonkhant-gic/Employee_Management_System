@@ -19,7 +19,7 @@ public class Leaves {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "leave_id")
-    private Integer id;
+    private Integer leaveId;
 
     @Column(name = "leave_type", nullable = false)
     private String leaveType;

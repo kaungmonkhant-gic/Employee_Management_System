@@ -3,7 +3,7 @@ import axios from "axios";
 
 function EmployeeSalary() {
   const [salaries, setSalaries] = useState([]);
-  const [userRole, setUserRole] = useState("employee"); 
+  const [userRole] = useState("employee"); 
 
   
   useEffect(() => {

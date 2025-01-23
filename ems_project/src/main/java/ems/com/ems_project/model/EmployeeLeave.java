@@ -14,7 +14,7 @@ public class EmployeeLeave {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_leave_id")
-    private Integer id;
+    private Integer employeeLeaveId;
 
     @Column(name = "annual_leave", nullable = false)
     private Double annualLeave;

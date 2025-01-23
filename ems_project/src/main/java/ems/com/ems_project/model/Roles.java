@@ -17,16 +17,7 @@ public class Roles {
     @Column(name = "role_id")
     private Integer roleId;
 
-    @Column(name = "role_name", nullable = false)
+    @Column(name = "role_name", nullable = false,unique =true)
     private String roleName;
-
-    // Getter and setter for roleId
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
-    }
 }
 
