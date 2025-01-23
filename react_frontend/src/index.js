@@ -19,7 +19,7 @@ import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 function PrivateRoute({ children }) {
-  const isAuthenticated = localStorage.getItem("authToken"); // Example: Replace with your auth logic
+  const isAuthenticated = localStorage.getItem("token"); // Example: Replace with your auth logic
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
