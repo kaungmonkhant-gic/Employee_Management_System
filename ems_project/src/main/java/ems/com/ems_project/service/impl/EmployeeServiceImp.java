@@ -14,8 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,9 +87,9 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public EmployeeProfile getEmployeeById(Integer employeeId) {
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
+    public EmployeeProfile getEmployeeById(Integer Id) {
+        Employee employee = employeeRepository.findById(Id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + Id));
 
         // Use ModelMapper to map Employee to EmployeeProfile
         EmployeeProfile employeeProfile = modelMapper.map(employee, EmployeeProfile.class);

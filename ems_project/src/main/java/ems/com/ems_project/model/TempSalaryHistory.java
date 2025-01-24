@@ -16,8 +16,8 @@ public class TempSalaryHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "temp_employee_salary_id")
-    private Integer tempEmployeeSalaryId;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
     @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;

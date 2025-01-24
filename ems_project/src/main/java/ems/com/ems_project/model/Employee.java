@@ -31,18 +31,10 @@ public class Employee implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
-    public Integer getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Integer employeeId) {
-        this.employeeId = employeeId;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "employee_id")
-    private Integer employeeId;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -78,6 +70,15 @@ public class Employee implements UserDetails {
 
     @Column(name = "address")
     private String address;
+
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
 
     public Date getDob() {
         return dob;
@@ -226,21 +227,21 @@ public class Employee implements UserDetails {
 
     @ManyToOne
     //@JsonIgnore
-    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Departments department;
 
     @ManyToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "position_id")
+    @JoinColumn(name = "position_id", referencedColumnName = "id")
     //@JsonIgnore
     private Positions position;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     //@JsonIgnore
     private Roles role;
 
     @OneToOne
-    @JoinColumn(name = "employee_salary_id", referencedColumnName = "employee_salary_id")
+    @JoinColumn(name = "employee_salary_id", referencedColumnName = "id")
     //@JsonIgnore
     private EmployeeSalary employeeSalary;
 
@@ -286,46 +287,46 @@ public class Employee implements UserDetails {
         if (this == o) return true;
         if (!(o instanceof Employee)) return false;
         Employee employee = (Employee) o;
-        return this.employeeId != null && this.employeeId.equals(employee.getEmployeeId());
+        return this.Id != null && this.Id.equals(employee.getId());
     }
 
     @Override
     public int hashCode() {
-        return employeeId != null ? employeeId.hashCode() : 0;
+        return Id != null ? Id.hashCode() : 0;
     }
 
 
     public Integer getDepartmentId() {
-        return department != null ? department.getDepartmentId() : null;
+        return department != null ? department.getId() : null;
     }
 
     public void setDepartmentId(Integer departmentId) {
         if (department == null) {
             department = new Departments();
         }
-        department.setDepartmentId(departmentId);
+        department.setId(departmentId);
     }
     
     public Integer getPositionId() {
-        return position != null ? position.getPositionId() : null;
+        return position != null ? position.getId() : null;
     }
 
     public void setPositionId(Integer positionId) {
         if (position == null) {
             position = new Positions();
         }
-        position.setPositionId(positionId);
+        position.setId(positionId);
     }
 
     public Integer getRoleId() {
-        return role != null ? role.getRoleId() : null;
+        return role != null ? role.getId() : null;
     }
 
     public void setRoleId(Integer roleId) {
         if (role == null) {
             role = new Roles();
         }
-        role.setRoleId(roleId);
+        role.setId(roleId);
     }
 
     public String getRoleName() {

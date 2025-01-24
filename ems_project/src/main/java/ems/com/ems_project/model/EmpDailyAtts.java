@@ -18,8 +18,8 @@ public class EmpDailyAtts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "emp_daily_att_id")
-    private Integer empDailyAttId;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
     
     @Column(name = "employee_id")
     private Integer employeeId;
@@ -49,10 +49,10 @@ public class EmpDailyAtts {
     private Boolean leaveEarly;
 
     @OneToOne
-    @JoinColumn(name = "leave_id", referencedColumnName = "leave_id")
+    @JoinColumn(name = "leave_id", referencedColumnName = "id")
     private Leaves leave;
 
     @OneToOne
-    @JoinColumn(name = "ot_id", referencedColumnName = "ot_id")
+    @JoinColumn(name = "ot_id", referencedColumnName = "id")
     private Ots overtime;
 }

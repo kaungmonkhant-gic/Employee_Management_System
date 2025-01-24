@@ -11,7 +11,7 @@ public interface EmployeeService extends UserDetailsService {
 
     List<EmployeeProfile> getAllEmployees();
     
-    EmployeeProfile getEmployeeById(Integer employeeId);
+    EmployeeProfile getEmployeeById(Integer Id);
 
     ReqRes getProfile(String email);
 

@@ -11,12 +11,21 @@ import lombok.Setter;
 @Table(name = "roles")
 @Data
 public class Roles {
-    public Integer getRoleId() {
-        return roleId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
+
+    @Column(name = "role_name", nullable = false,unique =true)
+    private String roleName;
+
+    public Integer getId() {
+        return Id;
     }
 
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
+    public void setId(Integer id) {
+        Id = id;
     }
 
     public String getRoleName() {
@@ -26,13 +35,5 @@ public class Roles {
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Integer roleId;
-
-    @Column(name = "role_name", nullable = false,unique =true)
-    private String roleName;
 }
 
