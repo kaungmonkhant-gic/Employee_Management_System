@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/salary")
 public class EmployeeSalaryController {
@@ -39,5 +41,12 @@ public class EmployeeSalaryController {
         employeeSalaryService.deleteEmployeeSalary(employeeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    // Get salary details for all employees
+    @GetMapping("/all")
+    public ResponseEntity<List<EmployeeSalary>> getAllSalaries() {
+        List<EmployeeSalary> allSalaries = employeeSalaryService.getAllEmployeeSalaries();
+        return new ResponseEntity<>(allSalaries, HttpStatus.OK);
+    }
+
 }
 
