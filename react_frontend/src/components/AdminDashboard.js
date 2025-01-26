@@ -11,11 +11,14 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="d-flex vh-100">
+    <div className="d-flex min-vh-100">
       {/* Sidebar */}
       <div
         className="d-flex flex-column bg-dark text-light p-3"
-        style={{ width: "250px" }}
+        style={{
+          width: "250px",
+          minHeight: "100vh", // Ensure the sidebar is full height
+        }}
       >
         <h2 className="text-center mb-4">Admin Dashboard</h2>
         <nav className="nav flex-column">
