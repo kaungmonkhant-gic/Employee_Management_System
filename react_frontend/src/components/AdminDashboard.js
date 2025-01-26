@@ -7,11 +7,13 @@ function AdminDashboard() {
   const location = useLocation();
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
   return (
-    <div className="d-flex vh-100">
+    <div style={{ height: "100vh", overflow: "" }}>
+    <div className="d-flex h-100">
       {/* Sidebar */}
       <div
         className="d-flex flex-column bg-dark text-light p-3"
@@ -58,6 +60,7 @@ function AdminDashboard() {
         </div>
       </div>
     </div>
+  </div>
   );
 }
 
