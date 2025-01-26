@@ -39,7 +39,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
                 // Use ModelMapper to map Employee to EmployeeProfile
                 EmployeeProfile employeeProfile = modelMapper.map(employee, EmployeeProfile.class);
-            
+
                 // Prepare response
                 reqRes.setEmployeeProfile(employeeProfile);
                 reqRes.setStatusCode(200);
@@ -64,12 +64,15 @@ public class EmployeeServiceImp implements EmployeeService {
         }
 
         Employee emp = employee.get();
-        
+
+        // Handle roles (assuming one role per employee)
+        String roleName = emp.getRoleName();
+
 
         return User.builder()
                 .username(emp.getEmail())
                 .password(emp.getPassword()) // Hashed password from the database
-                //.roles(emp.getRole()) // Uncomment if roles are used
+                .roles(roleName)// Uncomment if roles are used
                 .build();
     }
 
@@ -97,7 +100,7 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
 
-    @Override
+
     public ReqRes registerEmployee(Employee employee) {
         ReqRes reqRes = new ReqRes();
 

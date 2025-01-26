@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
     // Get all employees
-    @GetMapping("/all/employee")
+    @GetMapping("/admin/all")
     public ResponseEntity<List<EmployeeProfile>> getAllEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
-    @GetMapping("/employee/{id}")
+    @GetMapping("/admin/employee/{id}")
     public ResponseEntity<ReqRes> getEmployeeById(@PathVariable Integer id) {
         ReqRes reqRes = new ReqRes();
         try {
@@ -53,7 +53,7 @@ public class EmployeeController {
 
 
 
- // Endpoint to register a new employee
+    // Endpoint to register a new employee
     @PostMapping("/register")
     public ResponseEntity<ReqRes> registerEmployee(@Valid @RequestBody Employee employee) {
         ReqRes reqRes = employeeService.registerEmployee(employee);
@@ -66,7 +66,7 @@ public class EmployeeController {
         } else {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }    
+    }
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {
         try {
@@ -85,7 +85,7 @@ public class EmployeeController {
         }
     }
  // Update an existing employee
-    @PutMapping("/update/{employeeId}")
+    @PutMapping("/admin/update/{employeeId}")
     public ResponseEntity<ReqRes> updateEmployee(@PathVariable Integer employeeId, @Valid @RequestBody Employee employee) {
         ReqRes reqRes = employeeService.updateEmployee(employeeId, employee);
 
@@ -99,7 +99,7 @@ public class EmployeeController {
     }
 
     // Delete an employee by ID
-    @DeleteMapping("/delete/{employeeId}")
+    @DeleteMapping("/admin/delete/{employeeId}")
     public ResponseEntity<ReqRes> deleteEmployee(@PathVariable Integer employeeId) {
         ReqRes reqRes = employeeService.deleteEmployee(employeeId);
 
