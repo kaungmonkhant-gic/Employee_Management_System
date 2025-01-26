@@ -55,7 +55,7 @@ public class EmployeeController {
 
     // Endpoint to register a new employee
     @PostMapping("/register")
-    public ResponseEntity<ReqRes> registerEmployee(@Valid @RequestBody Employee employee) {
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody Employee employee) {
         ReqRes reqRes = employeeService.registerEmployee(employee);
 
         // Return appropriate response based on status code
