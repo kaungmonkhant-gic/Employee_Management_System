@@ -14,9 +14,25 @@ public class Positions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "position_id")
-    private Integer positionId;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
     @Column(name = "position_name", nullable = false)
     private String positionName;
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
+
+    public String getPositionName() {
+        return positionName;
+    }
+
+    public void setPositionName(String positionName) {
+        this.positionName = positionName;
+    }
 }

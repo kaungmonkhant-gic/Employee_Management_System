@@ -1,14 +1,18 @@
 package ems.com.ems_project.service.impl;
 
+import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.service.EmployeeService;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ems.com.ems_project.config.PasswordEncoderConfig;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +23,25 @@ public class EmployeeServiceImp implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private PasswordEncoderConfig passwordEncoderConfig; // Use PasswordEncoderConfig for encoding
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public ReqRes getProfile(String email) {
         ReqRes reqRes = new ReqRes();
         try {
             Optional<Employee> userOptional = employeeRepository.findByEmail(email);
             if (userOptional.isPresent()) {
-                reqRes.setEmployee(userOptional.get());
+                Employee employee = userOptional.get();
+
+                // Use ModelMapper to map Employee to EmployeeProfile
+                EmployeeProfile employeeProfile = modelMapper.map(employee, EmployeeProfile.class);
+
+                // Prepare response
+                reqRes.setEmployeeProfile(employeeProfile);
                 reqRes.setStatusCode(200);
                 reqRes.setMessage("Profile retrieval successful.");
             } else {
@@ -41,7 +57,6 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Assuming you are loading the employee using their email (as username) for authentication purposes
         Optional<Employee> employee = employeeRepository.findByEmail(username);
 
         if (employee.isEmpty()) {
@@ -49,27 +64,139 @@ public class EmployeeServiceImp implements EmployeeService {
         }
 
         Employee emp = employee.get();
+
+        // Handle roles (assuming one role per employee)
+        String roleName = emp.getRoleName();
+
+
         return User.builder()
                 .username(emp.getEmail())
-                .password(emp.getPassword())  // Assuming Employee model has a password field
-                //.roles(emp.getRole())  // Assuming Employee model has a role field
+                .password(emp.getPassword()) // Hashed password from the database
+                .roles(roleName)// Uncomment if roles are used
                 .build();
     }
 
     @Override
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<EmployeeProfile> getAllEmployees() {
+        // Fetch all employees from the repository
+        List<Employee> employees = employeeRepository.findAll();
+
+        // Use ModelMapper to map each Employee entity to an EmployeeProfile object
+        return employees.stream().map(employee -> {
+            EmployeeProfile profile = modelMapper.map(employee, EmployeeProfile.class);
+
+            return profile;
+        }).toList();
     }
 
     @Override
-    public Optional<Employee> getEmployeeById(Integer employeeId) {
-        return employeeRepository.findById(employeeId);
+    public EmployeeProfile getEmployeeById(Integer Id) {
+        Employee employee = employeeRepository.findById(Id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + Id));
+
+        // Use ModelMapper to map Employee to EmployeeProfile
+        EmployeeProfile employeeProfile = modelMapper.map(employee, EmployeeProfile.class);
+        return employeeProfile;
     }
 
+
+
+    public ReqRes registerEmployee(Employee employee) {
+        ReqRes reqRes = new ReqRes();
+
+        // Check for duplicate email
+        if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
+            reqRes.setStatusCode(400); // Bad Request
+            reqRes.setMessage("Email is required.");
+            return reqRes;
+        }
+
+        Optional<Employee> existingEmployee = employeeRepository.findByEmail(employee.getEmail());
+        if (existingEmployee.isPresent()) {
+            reqRes.setStatusCode(409); // Conflict
+            reqRes.setMessage("Employee with this email already exists.");
+            return reqRes;
+        }
+
+        try {
+            // Hash the password
+            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employee.getPassword());
+            employee.setPassword(hashedPassword);
+
+            // Save the employee
+            Employee savedEmployee = employeeRepository.save(employee);
+            reqRes.setEmployee(savedEmployee);
+            reqRes.setStatusCode(201); // Created
+            reqRes.setMessage("Employee registered successfully.");
+        } catch (Exception e) {
+            reqRes.setStatusCode(500); // Internal Server Error
+            reqRes.setMessage("An error occurred during registration: " + e.getMessage());
+        }
+
+        return reqRes;
+    }
+
+    public ReqRes updateEmployee(Integer employeeId, Employee employee) {
+        ReqRes reqRes = new ReqRes();
+
+        try {
+            // Fetch the existing employee by ID
+            Optional<Employee> existingEmployeeOptional = employeeRepository.findById(employeeId);
+            if (existingEmployeeOptional.isPresent()) {
+                Employee existingEmp = existingEmployeeOptional.get();
+
+                // Update basic fields
+                existingEmp.setName(employee.getName());
+                existingEmp.setEmail(employee.getEmail());
+                existingEmp.setPhone(employee.getPhone());
+                existingEmp.setAddress(employee.getAddress());
+
+                // Update foreign key references (IDs)
+                existingEmp.setDepartmentId(employee.getDepartmentId());  // Just set the department ID
+                existingEmp.setPositionId(employee.getPositionId());      // Just set the position ID
+                existingEmp.setRoleId(employee.getRoleId());              // Just set the role ID
+
+                // Optionally update password if provided
+                if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
+                    String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employee.getPassword());
+                    existingEmp.setPassword(hashedPassword);
+                }
+
+                // Save the updated employee
+                Employee updatedEmployee = employeeRepository.save(existingEmp);
+                reqRes.setEmployee(updatedEmployee);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("Employee updated successfully.");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("Employee not found.");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("An error occurred while updating the employee: " + e.getMessage());
+        }
+
+        return reqRes;
+    }
+
+
+    // Delete employee
     @Override
-    public Employee addEmployee(Employee employee) {
-        return employeeRepository.save(employee);
+    public ReqRes deleteEmployee(Integer employeeId) {
+        ReqRes reqRes = new ReqRes();
+
+        // Check if the employee exists
+        Optional<Employee> existingEmployee = employeeRepository.findById(employeeId);
+        if (existingEmployee.isPresent()) {
+            employeeRepository.delete(existingEmployee.get());
+
+            reqRes.setStatusCode(200);  // Success
+            reqRes.setMessage("Employee deleted successfully.");
+        } else {
+            reqRes.setStatusCode(404);  // Not Found
+            reqRes.setMessage("Employee not found with ID: " + employeeId);
+        }
+
+        return reqRes;
     }
-
-
 }

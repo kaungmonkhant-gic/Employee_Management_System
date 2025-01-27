@@ -2,9 +2,13 @@ package ems.com.ems_project.model;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 //import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
@@ -13,6 +17,14 @@ import lombok.Getter;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import ems.com.ems_project.validation.ValidDOB;
+import ems.com.ems_project.validation.ValidEmail;
+import ems.com.ems_project.validation.ValidGender;
+import ems.com.ems_project.validation.ValidMaritalStatus;
+import ems.com.ems_project.validation.ValidNRC;
+import ems.com.ems_project.validation.ValidPassword;
+import ems.com.ems_project.validation.ValidPhoneNumber;
 //import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Getter
 @Setter
@@ -21,13 +33,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 public class Employee implements UserDetails {
 
+	private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "employee_id")
-    private Integer id;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
     @Column(name = "name", nullable = false)
     private String name;
+
     @Column(name = "dob")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dob;
@@ -35,10 +50,10 @@ public class Employee implements UserDetails {
     @Column(name = "nrc", unique = true)
     private String nrc;
 
-    @Column(name = "gender")
+    @Column(name = "gender",nullable = false)
     private String gender;
 
-    @Column(name = "marital_status")
+    @Column(name = "marital_status",nullable = false)
     private String maritalStatus;
 
     @Column(name = "phone", unique = true)
@@ -52,6 +67,7 @@ public class Employee implements UserDetails {
 
     @Column(name = "address")
     private String address;
+
 
     @Column(name = "education")
     private String education;
@@ -67,47 +83,80 @@ public class Employee implements UserDetails {
     @Column(name = "resign_date")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date resignDate;
-    
- // Relationships
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    //@JsonIgnore
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Departments department;
 
     @ManyToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "position_id")
-    @JsonIgnore
+    @JoinColumn(name = "position_id", referencedColumnName = "id")
+    //@JsonIgnore
     private Positions position;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    @JsonIgnore
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    //@JsonIgnore
     private Roles role;
 
-    @OneToOne
-    @JoinColumn(name = "employee_salary_id", referencedColumnName = "employee_salary_id")
-    @JsonIgnore
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "employee_salary_id", referencedColumnName = "id")
+    //@JsonIgnore
     private EmployeeSalary employeeSalary;
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return this.email;
-	}
-
-    public Integer getEmployeeId() {
-        return id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role != null && role.getRoleName() != null) {
+            return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+        }
+        return List.of(); // Return an empty list if no role is assigned
     }
 
-    public void setEmployeeId(Integer employeeId) {
-        this.id = employeeId;
+	
+	@Override
+    @JsonIgnore
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employee)) return false;
+        Employee employee = (Employee) o;
+        return this.Id != null && this.Id.equals(employee.getId());
+    }
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
     }
 
     public String getName() {
@@ -164,14 +213,6 @@ public class Employee implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getAddress() {
@@ -244,6 +285,65 @@ public class Employee implements UserDetails {
 
     public void setEmployeeSalary(EmployeeSalary employeeSalary) {
         this.employeeSalary = employeeSalary;
+    }
+
+    @Override
+    public int hashCode() {
+        return Id != null ? Id.hashCode() : 0;
+    }
+
+
+    public Integer getDepartmentId() {
+        return department != null ? department.getId() : null;
+    }
+
+    public void setDepartmentId(Integer departmentId) {
+        if (department == null) {
+            department = new Departments();
+        }
+        department.setId(departmentId);
+    }
+    
+    public Integer getPositionId() {
+        return position != null ? position.getId() : null;
+    }
+
+    public void setPositionId(Integer positionId) {
+        if (position == null) {
+            position = new Positions();
+        }
+        position.setId(positionId);
+    }
+
+    public Integer getRoleId() {
+        return role != null ? role.getId() : null;
+    }
+
+    public void setRoleId(Integer roleId) {
+        if (role == null) {
+            role = new Roles();
+        }
+        role.setId(roleId);
+    }
+
+    public String getRoleName() {
+        return role != null ? role.getRoleName() : null;
+   }
+    
+    public String getDepartmentName() {
+        return department != null ? department.getDepartmentName() : null;
+    }
+
+    public String getPositionName() {
+        return position != null ? position.getPositionName() : null;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
 

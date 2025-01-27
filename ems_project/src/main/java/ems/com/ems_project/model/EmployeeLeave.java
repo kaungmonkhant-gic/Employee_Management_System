@@ -13,8 +13,8 @@ public class EmployeeLeave {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "employee_leave_id")
-    private Integer id;
+    @Column(name = "id")
+    private Integer Id;
 
     @Column(name = "annual_leave", nullable = false)
     private Double annualLeave;

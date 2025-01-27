@@ -14,10 +14,26 @@ public class Roles {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Integer roleId;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
-    @Column(name = "role_name", nullable = false)
+    @Column(name = "role_name", nullable = false,unique =true)
     private String roleName;
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 }
 

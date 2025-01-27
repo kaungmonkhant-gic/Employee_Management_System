@@ -18,8 +18,8 @@ public class Leaves {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "leave_id")
-    private Integer id;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
     @Column(name = "leave_type", nullable = false)
     private String leaveType;
@@ -46,7 +46,7 @@ public class Leaves {
     private Boolean isApproved;
     
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
     
 }

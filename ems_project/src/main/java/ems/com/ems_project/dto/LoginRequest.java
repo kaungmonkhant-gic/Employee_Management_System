@@ -1,5 +1,7 @@
 package ems.com.ems_project.dto;
 
+import ems.com.ems_project.validation.ValidEmail;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequest {
+	@ValidEmail
     private String email;
-    private String password;
 
     public String getEmail() {
         return email;
@@ -26,5 +28,7 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    private String password;
 }
 

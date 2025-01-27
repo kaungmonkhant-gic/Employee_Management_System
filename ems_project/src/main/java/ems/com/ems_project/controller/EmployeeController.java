@@ -1,56 +1,72 @@
 package ems.com.ems_project.controller;
 
-import ems.com.ems_project.dto.LoginResponse;
+import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.service.EmployeeService;
-import lombok.val;
-
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 //import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
     // Get all employees
-    @GetMapping("/all/employee")
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<EmployeeProfile>> getAllEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
-    @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<?> getEmployeeById(@PathVariable Integer employeeId) {
-        Optional<Employee> employee = employeeService.getEmployeeById(employeeId);
-        if (employee.isPresent()) {
-            return ResponseEntity.ok(employee.get());
-        } else {
-            return ResponseEntity.status(404).body("Employee not found with ID: " + employeeId);
-        }
-    }
-
-
-    // Add an employee
-    @PostMapping("/add")
-    public ResponseEntity<?> addEmployee(@val @RequestBody Employee employee) {
+    @GetMapping("/admin/employee/{id}")
+    public ResponseEntity<ReqRes> getEmployeeById(@PathVariable Integer id) {
+        ReqRes reqRes = new ReqRes();
         try {
-            Employee savedEmployee = employeeService.addEmployee(employee);
-            return ResponseEntity.ok(savedEmployee);
+            // Fetch the employee profile from the service
+            EmployeeProfile employeeProfile = employeeService.getEmployeeById(id);
+
+            // Set success status code and message
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Profile retrieval successful.");
+            reqRes.setEmployeeProfile(employeeProfile);
+
+            // Return the response with status 200 (OK)
+            return ResponseEntity.ok(reqRes);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error adding employee: " + e.getMessage());
+            // Handle error (e.g., employee not found)
+            reqRes.setStatusCode(404);
+            reqRes.setMessage("Employee not found with ID: " + id);
+
+            // Return the response with status 404 (Not Found)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reqRes);
         }
     }
-    
+
+
+
+    // Endpoint to register a new employee
+    @PostMapping("/register")
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody Employee employee) {
+        ReqRes reqRes = employeeService.registerEmployee(employee);
+
+        // Return appropriate response based on status code
+        if (reqRes.getStatusCode() == 201) {
+            return new ResponseEntity<>(reqRes, HttpStatus.CREATED);
+        } else if (reqRes.getStatusCode() == 409) {
+            return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {
         try {
@@ -68,6 +84,34 @@ public class EmployeeController {
             return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
         }
     }
+ // Update an existing employee
+    @PutMapping("/admin/update/{employeeId}")
+    public ResponseEntity<ReqRes> updateEmployee(@PathVariable Integer employeeId, @Valid @RequestBody Employee employee) {
+        ReqRes reqRes = employeeService.updateEmployee(employeeId, employee);
+
+        if (reqRes.getStatusCode() == 200) {
+            return new ResponseEntity<>(reqRes, HttpStatus.OK);
+        } else if (reqRes.getStatusCode() == 404) {
+            return new ResponseEntity<>(reqRes, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Delete an employee by ID
+    @DeleteMapping("/admin/delete/{employeeId}")
+    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable Integer employeeId) {
+        ReqRes reqRes = employeeService.deleteEmployee(employeeId);
+
+        if (reqRes.getStatusCode() == 200) {
+            return new ResponseEntity<>(reqRes, HttpStatus.OK);
+        } else if (reqRes.getStatusCode() == 404) {
+            return new ResponseEntity<>(reqRes, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
+
 
    

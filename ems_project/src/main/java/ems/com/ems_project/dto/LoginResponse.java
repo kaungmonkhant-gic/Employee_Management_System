@@ -26,5 +26,15 @@ public class LoginResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    private String roleName;
 }
 

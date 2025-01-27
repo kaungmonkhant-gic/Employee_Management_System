@@ -19,9 +19,8 @@ public class Ots {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
-    @Column(name = "ot_id", nullable = false)
-    private Integer id;
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
     
     @Column(name = "employee_id")
     private Integer employeeId;
