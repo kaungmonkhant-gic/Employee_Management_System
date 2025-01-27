@@ -101,7 +101,7 @@ const EmpProfile = () => {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
+    <div className="container mt-5 vh-100" style={{ maxWidth: "600px" }}>
 
       <div
         className="card shadow border-0"

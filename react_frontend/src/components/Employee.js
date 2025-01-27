@@ -1,48 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import employeeController from "../Controller/employeeController";
 
 function Employee() {
-  const [employees, setEmployees] = useState([
-    {
-      id: 1,
-      name: "山田",
-      email: "yamada@gmail.com",
-      position: "Manager",
-      number: "001",
-      empid: "EMP001",
-      dob: "1990-01-01",
-      nrc: "NRC123456",
-      gender: "Male",
-      maritalStatus: "Single",
-      phone: "123-456-7890",
-      address: "Tokyo, Japan",
-      education: "Bachelor's Degree",
-      workExp: "5 years",
-      joinDate: "2015-03-15",
-      resignDate: "",
-    },
-    {
-      id: 2,
-      name: "小林",
-      email: "kobayashi@gmail.com",
-      position: "Developer",
-      number: "002",
-      empid: "EMP002",
-      dob: "1992-05-10",
-      nrc: "NRC987654",
-      gender: "Female",
-      maritalStatus: "Married",
-      phone: "987-654-3210",
-      address: "Osaka, Japan",
-      education: "Master's Degree",
-      workExp: "3 years",
-      joinDate: "2018-06-20",
-      resignDate: "",
-    },
-  ]);
-  
-
-  const [newEmployee, setNewEmployee] = useState({
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+const [newEmployee, setNewEmployee] = useState({
     name: "",
     email: "",
     position: "",
@@ -62,6 +26,28 @@ function Employee() {
 
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
+  // Fetch data from API on component mount
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const data = await employeeController.fetchUsers();
+        setEmployees(data);
+      } catch (err) {
+        setError("Failed to fetch employee data. Please try again.");
+        console.error("Error fetching employees:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []); // Only runs on mount since dependencies are empty
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
+
+  
 
   const positions = [
     "Manager",
@@ -75,9 +61,9 @@ function Employee() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (editingEmployee) {
-      setEditingEmployee({ ...editingEmployee, [name]: value });
+      setEditingEmployee((prev) => ({ ...prev, [name]: value }));
     } else {
-      setNewEmployee({ ...newEmployee, [name]: value });
+      setNewEmployee((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -88,7 +74,7 @@ function Employee() {
         id: employees.length + 1,
         ...newEmployee,
       };
-      setEmployees([...employees, newEmployeeData]);
+      setEmployees((prev) => [...prev, newEmployeeData]);
       setNewEmployee({
         name: "",
         email: "",
@@ -125,10 +111,11 @@ function Employee() {
       editingEmployee.email &&
       editingEmployee.position
     ) {
-      const updatedEmployees = employees.map((employee) =>
-        employee.id === editingEmployee.id ? editingEmployee : employee
+      setEmployees((prev) =>
+        prev.map((employee) =>
+          employee.id === editingEmployee.id ? editingEmployee : employee
+        )
       );
-      setEmployees(updatedEmployees);
       setEditingEmployee(null);
       setIsRegisterScreen(false);
     } else {
@@ -137,8 +124,7 @@ function Employee() {
   };
 
   const handleDelete = (id) => {
-    const updatedEmployees = employees.filter((employee) => employee.id !== id);
-    setEmployees(updatedEmployees);
+    setEmployees((prev) => prev.filter((employee) => employee.id !== id));
   };
 
   const handleRegisterClick = () => {
@@ -147,8 +133,8 @@ function Employee() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4">Employee Management System</h2>
+    <div className="container mt-5 vh-100">
+      <h2 className="text-center mb-4">Register New Employee</h2>
 
       {!isRegisterScreen ? (
         <div>
@@ -159,8 +145,7 @@ function Employee() {
             Register New Employee
           </button>
 
-          <div>
-  <h3>Employee List</h3>
+          <div className="vh-100 overflow-auto">
   <table className="table table-bordered table-hover">
   <thead className="table-primary">
     <tr>
@@ -225,11 +210,14 @@ function Employee() {
 
         </div>
       ) : (
-        <div className="card p-4 mb-4" style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <h3>{editingEmployee ? "Edit Employee" : "Register New Employee"}</h3>
+        <div
+  className="d-flex justify-content-center align-items-center "
+>
+        <div className="card p-2 " style={{ maxWidth: "600px", width: "100%",overflow: "auto" }}>
+          <h3>{editingEmployee ? "Edit Employee" : ""}</h3>
           <form onSubmit={editingEmployee ? handleUpdate : handleRegister}>
-            <div className="mb-3">
-              <label htmlFor="name" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="name" className="form-label fw-bold">
                 Name
               </label>
               <input
@@ -244,8 +232,8 @@ function Employee() {
                 className="form-control"
               />
             </div>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="email" className="form-label fw-bold">
                 Email
               </label>
               <input
@@ -260,8 +248,8 @@ function Employee() {
                 className="form-control"
               />
             </div>
-            <div className="mb-3">
-              <label htmlFor="position" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="position" className="form-label fw-bold">
                 Position
               </label>
               <select
@@ -287,8 +275,8 @@ function Employee() {
             </div>
 
             {/* Additional Fields */}
-            <div className="mb-3">
-              <label htmlFor="empid" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="empid" className="form-label fw-bold">
                 Employee ID
               </label>
               <input
@@ -302,8 +290,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="dob" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="dob" className="form-label fw-bold">
                 Date of Birth
               </label>
               <input
@@ -316,8 +304,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="nrc" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="nrc" className="form-label fw-bold">
                 NRC
               </label>
               <input
@@ -331,8 +319,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="gender" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="gender" className="form-label fw-bold">
                 Gender
               </label>
               <select
@@ -351,8 +339,8 @@ function Employee() {
               </select>
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="maritalStatus" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="maritalStatus" className="form-label fw-bold">
                 Marital Status
               </label>
               <select
@@ -371,8 +359,8 @@ function Employee() {
               </select>
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="phone" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="phone" className="form-label fw-bold">
                 Phone
               </label>
               <input
@@ -386,8 +374,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="address" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="address" className="form-label fw-bold">
                 Address
               </label>
               <textarea
@@ -400,8 +388,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="education" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="education" className="form-label fw-bold">
                 Education
               </label>
               <input
@@ -415,8 +403,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="workExp" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="workExp" className="form-label fw-bold">
                 Work Experience
               </label>
               <input
@@ -430,8 +418,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="joinDate" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="joinDate" className="form-label fw-bold">
                 Join Date
               </label>
               <input
@@ -444,8 +432,8 @@ function Employee() {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="resignDate" className="form-label">
+            <div className="mb-2">
+              <label htmlFor="resignDate" className="form-label fw-bold">
                 Resign Date
               </label>
               <input
@@ -469,6 +457,7 @@ function Employee() {
               Cancel
             </button>
           </form>
+        </div>
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ function EmployeeDashboard() {
   const location = useLocation();
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
