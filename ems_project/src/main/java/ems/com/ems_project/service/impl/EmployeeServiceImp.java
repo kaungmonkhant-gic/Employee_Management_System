@@ -1,12 +1,21 @@
 package ems.com.ems_project.service.impl;
 
 import ems.com.ems_project.dto.EmployeeProfile;
+import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
+import ems.com.ems_project.model.Departments;
 import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.Positions;
+import ems.com.ems_project.model.Roles;
+import ems.com.ems_project.repository.DepartmentsRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
+import ems.com.ems_project.repository.PositionsRepository;
+import ems.com.ems_project.repository.RolesRepository;
 import ems.com.ems_project.service.EmployeeService;
 
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +37,12 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private DepartmentsRepository departmentRepository;
+    @Autowired
+    private RolesRepository roleRepository;
+    @Autowired
+    private PositionsRepository positionRepository;
 
     @Override
     public ReqRes getProfile(String email) {
@@ -100,27 +115,82 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
 
-
-    public ReqRes registerEmployee(Employee employee) {
+    public ReqRes registerEmployee(RegisterDTO registerDTO) {
         ReqRes reqRes = new ReqRes();
 
-        // Check for duplicate email
-        if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
+        // Check for missing email
+        if (registerDTO.getEmail() == null || registerDTO.getEmail().isEmpty()) {
             reqRes.setStatusCode(400); // Bad Request
             reqRes.setMessage("Email is required.");
             return reqRes;
         }
 
-        Optional<Employee> existingEmployee = employeeRepository.findByEmail(employee.getEmail());
+        // Check for duplicate email
+        Optional<Employee> existingEmployee = employeeRepository.findByEmail(registerDTO.getEmail());
         if (existingEmployee.isPresent()) {
             reqRes.setStatusCode(409); // Conflict
-            reqRes.setMessage("Employee with this email already exists.");
+            reqRes.setMessage("Employee with email " + registerDTO.getEmail() + " already exists.");
             return reqRes;
         }
 
         try {
+            // Fetch department, position, and role from repositories
+            Optional<Departments> department = departmentRepository.findById(registerDTO.getDepartmentId());
+            Optional<Positions> position = positionRepository.findById(registerDTO.getPositionId());
+            Optional<Roles> role = roleRepository.findById(registerDTO.getRoleId());
+
+            // Ensure that department, position, and role exist
+            if (department.isEmpty()) {
+                reqRes.setStatusCode(400); // Bad Request
+                reqRes.setMessage("Department not found.");
+                return reqRes;
+            }
+
+            if (position.isEmpty()) {
+                reqRes.setStatusCode(400); // Bad Request
+                reqRes.setMessage("Position not found.");
+                return reqRes;
+            }
+
+            if (role.isEmpty()) {
+                reqRes.setStatusCode(400); // Bad Request
+                reqRes.setMessage("Role not found.");
+                return reqRes;
+            }
+
+
+            // Manually get the next available ID
+            //Integer nextId = employeeRepository.getMaxId() + 1; // Assuming you have a custom method to fetch the max ID
+
+            // Create new Employee entity
+            Employee employee = new Employee();
+            //employee.setId(nextId);
+
+            // Set fields directly (without ModelMapper for these nested objects)
+            employee.setEmail(registerDTO.getEmail());
+            employee.setName(registerDTO.getName());
+            employee.setPhone(registerDTO.getPhone());
+            employee.setGender(registerDTO.getGender());
+            employee.setDob(registerDTO.getDob());
+            employee.setNrc(registerDTO.getNrc());
+            employee.setMaritalStatus(registerDTO.getMaritalStatus());
+            employee.setAddress(registerDTO.getAddress());
+            employee.setWorkExp(registerDTO.getWorkExp());
+            employee.setEducation(registerDTO.getEducation());
+
+            // Set the role, department, and position
+            employee.setRole(role.get());
+            employee.setDepartment(department.get());
+            employee.setPosition(position.get());
+
             // Hash the password
-            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employee.getPassword());
+            if (registerDTO.getPassword() == null || registerDTO.getPassword().isEmpty()) {
+                reqRes.setStatusCode(400); // Bad Request
+                reqRes.setMessage("Password is required.");
+                return reqRes;
+            }
+
+            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
             employee.setPassword(hashedPassword);
 
             // Save the employee
@@ -129,12 +199,15 @@ public class EmployeeServiceImp implements EmployeeService {
             reqRes.setStatusCode(201); // Created
             reqRes.setMessage("Employee registered successfully.");
         } catch (Exception e) {
+            // Log the exception for debugging purposes
+            System.err.println("Error during registration: " + e.getMessage());
             reqRes.setStatusCode(500); // Internal Server Error
             reqRes.setMessage("An error occurred during registration: " + e.getMessage());
         }
 
         return reqRes;
     }
+
 
     public ReqRes updateEmployee(Integer employeeId, Employee employee) {
         ReqRes reqRes = new ReqRes();
@@ -178,7 +251,6 @@ public class EmployeeServiceImp implements EmployeeService {
 
         return reqRes;
     }
-
 
     // Delete employee
     @Override

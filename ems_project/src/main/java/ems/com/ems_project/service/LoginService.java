@@ -12,45 +12,6 @@ import org.springframework.stereotype.Service;
 
 import ems.com.ems_project.config.PasswordEncoderConfig;
 
-//@Service
-//public class LoginService {
-//
-//    @Autowired
-//    private EmployeeRepository userRepository;
-//
-//    @Autowired
-//    private PasswordEncoderConfig passwordEncoderConfig;
-//    
-//    @Autowired
-//    private JWTUtils jwtutils;
-
-
-//    public LoginResponse login(LoginRequest loginRequest) {
-//        // Validate user credentials and generate JWT token
-//        Employee employee = userRepository.findByEmail(loginRequest.getEmail())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        if (passwordEncoderConfig.passwordEncoder().matches(loginRequest.getPassword(), employee.getPassword())) {
-//            String token = generateToken(employee);
-//            LoginResponse response = new LoginResponse();
-//            response.setToken(token);
-//            response.setMessage("Login Successful");
-//   
-//
-//            return response;
-//        }
-//
-//        throw new RuntimeException("Invalid credentials");
-//    }
-//
-//    private String generateToken(Employee employee) {
-//        // Implement JWT token generation logic
-//        return jwtutils.generateToken(employee);
-//    } 
-//    
-//    
-//
-//}
     @Service
     public class LoginService {
 

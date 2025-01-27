@@ -3,10 +3,6 @@ package ems.com.ems_project.model;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-//import java.util.List;
-
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,14 +14,6 @@ import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ems.com.ems_project.validation.ValidDOB;
-import ems.com.ems_project.validation.ValidEmail;
-import ems.com.ems_project.validation.ValidGender;
-import ems.com.ems_project.validation.ValidMaritalStatus;
-import ems.com.ems_project.validation.ValidNRC;
-import ems.com.ems_project.validation.ValidPassword;
-import ems.com.ems_project.validation.ValidPhoneNumber;
-//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Getter
 @Setter
 @Entity
@@ -86,20 +74,20 @@ public class Employee implements UserDetails {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     //@JsonIgnore
-    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    @JoinColumn(name = "department_id")
     private Departments department;
 
     @ManyToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "id")
+    @JoinColumn(name = "position_id")
     //@JsonIgnore
     private Positions position;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @JoinColumn(name = "role_id")
     //@JsonIgnore
     private Roles role;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_salary_id", referencedColumnName = "id")
     //@JsonIgnore
     private EmployeeSalary employeeSalary;

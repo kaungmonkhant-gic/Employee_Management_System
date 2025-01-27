@@ -1,6 +1,7 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.EmployeeProfile;
+import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.service.EmployeeService;
@@ -55,14 +56,16 @@ public class EmployeeController {
 
     // Endpoint to register a new employee
     @PostMapping("/register")
-    public ResponseEntity<ReqRes> registerEmployee(@RequestBody Employee employee) {
-        ReqRes reqRes = employeeService.registerEmployee(employee);
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerDTO) {
+        ReqRes reqRes = employeeService.registerEmployee(registerDTO);
 
         // Return appropriate response based on status code
         if (reqRes.getStatusCode() == 201) {
             return new ResponseEntity<>(reqRes, HttpStatus.CREATED);
         } else if (reqRes.getStatusCode() == 409) {
             return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
+        } else if (reqRes.getStatusCode() == 400) {
+            return new ResponseEntity<>(reqRes, HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
