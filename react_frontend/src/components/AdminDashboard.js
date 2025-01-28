@@ -29,9 +29,7 @@ function AdminDashboard() {
       >
         <h2 className="text-center mb-4">Admin Dashboard</h2>
         <nav className="nav flex-column">
-        <Link to="/admin-dashboard/profileForm" className="nav-link text-light">
-            Profile Form
-          </Link>
+
           <Link to="/admin-dashboard" className="nav-link text-light">
             Dashboard
           </Link>
