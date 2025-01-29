@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8081"; // Replace with your API base URL
+const API_BASE_URL = "http://localhost:8080"; // Replace with your API base URL
 
 // Create an axios instance with default configuration
 const apiClient = axios.create({
@@ -45,7 +45,7 @@ const employeeService = {
   getEmployees: async () => {
     try {
       console.log("Service call to /employee/all");
-      const response = await apiClient.get("/employee/all");
+      const response = await apiClient.get("/admin/all");
       console.log("Response:", response);
       return response.data;
     } catch (error) {

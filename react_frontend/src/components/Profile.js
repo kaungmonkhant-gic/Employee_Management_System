@@ -7,13 +7,12 @@ const EmpProfile = () => {
     name: "",
     dob: "",
     email: "",
-    facebook: "",
     phone: "",
     gender: "",
-    city: "",
-    country: "",
+    address: "",
     department: "",
     position: "",
+    role: "",
   };
 
   const [details, setDetails] = useState(initialDetails);
@@ -35,20 +34,33 @@ const EmpProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("/api/user/profile", {
+        const response = await fetch("http://localhost:8080/profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        const data = await response.json();
+        console.log(data);
 
-        if (response.ok) {
-          const data = await response.json();
-          setDetails(data.profile);
-          setProfilePic(data.profilePic || profilePic);
+        if (response.status === 200) {
+          console.log(data);
+          setDetails({
+            employeeId: data.employeeProfile.id,
+            name: data.employeeProfile.name,
+            dob: data.employeeProfile.dob,
+            email: data.employeeProfile.email,
+            phone: data.employeeProfile.phone,
+            gender: data.employeeProfile.gender,
+            department: data.employeeProfile.departmentName,
+            position: data.employeeProfile.positionName,
+            role: data.employeeProfile.roleName,
+            address: data.employeeProfile.address,
+          });
+          console.log("TEStung:" + setDetails);
         } else {
-          console.error("Failed to fetch profile:", response.statusText);
+          console.error("Error fetching profile:", data.message);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -57,6 +69,7 @@ const EmpProfile = () => {
 
     fetchProfile();
   }, []);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
