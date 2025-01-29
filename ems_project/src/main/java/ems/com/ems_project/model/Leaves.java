@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Leaves {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",unique = true,nullable = false)
     private Integer Id;
 
@@ -45,7 +44,7 @@ public class Leaves {
     @Column(name = "is_approved")
     private Boolean isApproved;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
     

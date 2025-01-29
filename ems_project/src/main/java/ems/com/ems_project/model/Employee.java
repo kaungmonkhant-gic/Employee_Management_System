@@ -24,9 +24,8 @@ public class Employee implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @Column(name = "id",length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -72,25 +71,20 @@ public class Employee implements UserDetails {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date resignDate;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL)
     //@JsonIgnore
     @JoinColumn(name = "department_id")
     private Departments department;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "position_id")
     //@JsonIgnore
     private Positions position;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")
     //@JsonIgnore
     private Roles role;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_salary_id", referencedColumnName = "id")
-    //@JsonIgnore
-    private EmployeeSalary employeeSalary;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -131,20 +125,12 @@ public class Employee implements UserDetails {
         return true;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Employee)) return false;
-        Employee employee = (Employee) o;
-        return this.Id != null && this.Id.equals(employee.getId());
+      public String getId() {
+        return id;
     }
 
-    public Integer getId() {
-        return Id;
-    }
-
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -267,36 +253,36 @@ public class Employee implements UserDetails {
         this.role = role;
     }
 
-    public EmployeeSalary getEmployeeSalary() {
-        return employeeSalary;
-    }
 
-    public void setEmployeeSalary(EmployeeSalary employeeSalary) {
-        this.employeeSalary = employeeSalary;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Employee employee = (Employee) obj;
+        return id != null && id.equals(employee.id);
     }
 
     @Override
     public int hashCode() {
-        return Id != null ? Id.hashCode() : 0;
+        return id != null ? id.hashCode() : 0;
     }
 
-
-    public Integer getDepartmentId() {
+    public String getDepartmentId() {
         return department != null ? department.getId() : null;
     }
 
-    public void setDepartmentId(Integer departmentId) {
+    public void setDepartmentId(String departmentId) {
         if (department == null) {
             department = new Departments();
         }
         department.setId(departmentId);
     }
-    
-    public Integer getPositionId() {
+
+    public String getPositionId() {
         return position != null ? position.getId() : null;
     }
 
-    public void setPositionId(Integer positionId) {
+    public void setPositionId(String positionId) {
         if (position == null) {
             position = new Positions();
         }

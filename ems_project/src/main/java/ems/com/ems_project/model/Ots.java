@@ -18,12 +18,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Ots {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
-    
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
+
     @Column(name = "employee_id")
-    private Integer employeeId;
+    private String employeeId;
 
     @Column(name = "date")
     @JsonFormat(pattern = "yyyy-MM-dd")

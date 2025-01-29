@@ -22,7 +22,7 @@ public class EmpDailyAtts {
     private Integer Id;
     
     @Column(name = "employee_id")
-    private Integer employeeId;
+    private String employeeId;
     
     
     @Column(name = "date")

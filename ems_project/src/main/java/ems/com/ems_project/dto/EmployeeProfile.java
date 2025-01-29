@@ -5,7 +5,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class EmployeeProfile {
-    private Integer Id;
+    private String Id;
     private String name;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -33,11 +33,11 @@ public class EmployeeProfile {
     // Getters and Setters for all fields
 
 
-	public Integer getId() {
+	public String getId() {
 		return Id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		Id = id;
 	}
 

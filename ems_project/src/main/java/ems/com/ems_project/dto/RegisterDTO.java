@@ -1,6 +1,8 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -15,6 +17,11 @@ import java.util.Date;
 @Getter
 @Setter
 public class RegisterDTO {
+
+    @Id
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
+
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -47,10 +54,10 @@ public class RegisterDTO {
     private String address;
 
     @NotNull(message = "Department ID is required")
-    private Integer departmentId;
+    private String departmentId;
 
     @NotNull(message = "Position ID is required")
-    private Integer positionId;
+    private String positionId;
 
     @NotNull(message = "Role ID is required")
     private Integer roleId;
