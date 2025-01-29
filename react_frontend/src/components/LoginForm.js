@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Form, Button, Card, Alert, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import UserService from "../services/UserService";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({}); // State to store validation errors
-  const [error, setError] = useState(""); // State for general server errors
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
@@ -16,7 +18,7 @@ function LoginForm() {
     const newErrors = {};
     const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
 
-    if (!username) newErrors.username = "Username is required.";
+    if (!username) newErrors.username = "Email is required.";
     else if (!emailPattern.test(username))
       newErrors.username = "Enter a valid Gmail address.";
 
@@ -28,11 +30,10 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form fields
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors); // Update errors state
-      return; // Prevent form submission
+      setErrors(validationErrors);
+      return;
     }
 
     setErrors({}); // Clear errors if validation passes
@@ -51,74 +52,82 @@ function LoginForm() {
     } catch (error) {
       console.log(error);
       setError("Login failed. Please check your credentials.");
-      setTimeout(() => {
-        setError("");
-      }, 5000);
+      setTimeout(() => setError(""), 5000);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow p-4">
-            <h2 className="text-center">Welcome Back</h2>
-            <p className="text-center text-muted">Please login to your account</p>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
+    <div style={{
+      background: "linear-gradient(to bottom right, #EAF3FA, #D4E4F2)",
+      color: "#3B4A59",
+    }}>
+    <Container className="d-flex justify-content-center align-items-center vh-100" style={{
+      background: "linear-gradient(to bottom right, #EAF3FA, #D4E4F2)", // Gradient background similar to App.js
+      color: "#3B4A59",
+    }}>
+      <Card className="shadow-lg p-4 rounded w-100" style={{ maxWidth: '400px' }}>
+        <Card.Body>
+          <h2 className="text-center fw-bold mb-3">Welcome Back</h2>
+          <p className="text-center text-muted mb-4">Sign in to your account</p>
+
+          {error && <Alert variant="danger" className="text-center">{error}</Alert>}
+
+          <Form onSubmit={handleSubmit}>
+            {/* Email Input */}
+            <Form.Group controlId="email" className="mb-3">
+              <Form.Label>Email Address</Form.Label>
+              <div className="input-group">
+                <span className="input-group-text">
+                  <FaEnvelope />
+                </span>
+                <Form.Control
                   type="text"
-                  id="email"
                   placeholder="Enter your Gmail"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className={`form-control ${
-                    errors.username ? "is-invalid" : ""
-                  }`}
+                  isInvalid={!!errors.username}
                 />
-                {errors.username && (
-                  <div className="invalid-feedback">{errors.username}</div>
-                )}
               </div>
+              <Form.Control.Feedback type="invalid">
+                {errors.username}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
+            {/* Password Input */}
+            <Form.Group controlId="password" className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <div className="input-group">
+                <span className="input-group-text">
+                  <FaLock />
+                </span>
+                <Form.Control
                   type="password"
-                  id="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`form-control ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
+                  isInvalid={!!errors.password}
                 />
-                {errors.password && (
-                  <div className="invalid-feedback">{errors.password}</div>
-                )}
               </div>
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-              {error && (
-                <div className="alert alert-danger text-center">{error}</div>
-              )}
+            {/* Login Button */}
+            <Button variant="primary" type="submit" className="w-100">
+              Login
+            </Button>
+          </Form>
 
-              <button type="submit" className="btn btn-primary w-100">
-                Login
-              </button>
-            </form>
-            <div className="text-center mt-3">
-              <Link to="/forgot-password" className="text-decoration-none">
-                Forgot Password?
-              </Link>
-            </div>
+          {/* Forgot Password & Sign Up Links */}
+          <div className="text-center mt-3">
+            <Link to="/forgot-password" className="text-decoration-none">
+              Forgot Password?
+            </Link>
           </div>
-        </div>
-      </div>
+        </Card.Body>
+      </Card>
+    </Container>
     </div>
   );
 }
