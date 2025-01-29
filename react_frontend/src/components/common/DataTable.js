@@ -51,7 +51,7 @@ const DataTable = ({ fetchData, columns, keyField }) => {
 
     return (
         <Table id="datatable" striped bordered hover responsive>
-            <thead>
+            <thead class="table-primary text-nowrap">
             <tr>
                 {columns.map((col) => (
                     <th key={col.field}>{col.headerName}</th>

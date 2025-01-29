@@ -238,28 +238,42 @@ const EmpProfile = () => {
 
         {/* Footer Section */}
         <div
-          className="card-footer text-center"
-          style={{
-            backgroundColor: "#d7ecff",
-            borderBottomLeftRadius: "15px",
-            borderBottomRightRadius: "15px",
-          }}
-        >
-          <button
-            className={`btn ${
-              isEditing ? "btn-success" : "btn-primary"
-            } px-4 py-2`}
-            onClick={toggleEditing}
-            style={{
-              backgroundColor: isEditing ? "#7ec4ff" : "#004080",
-              borderColor: "transparent",
-            }}
-          >
-            {isEditing ? "Save Changes" : "Edit Profile"}
-          </button>
-        </div>
-      </div>
-    </div>
+  className="card-footer text-center d-flex justify-content-center gap-2"
+  style={{
+    backgroundColor: "#d7ecff",
+    borderBottomLeftRadius: "15px",
+    borderBottomRightRadius: "15px",
+  }}
+>
+  {/* Save / Edit Button */}
+  <button
+    className={`btn ${isEditing ? "btn-success" : "btn-primary"} px-4 py-2`}
+    onClick={toggleEditing}
+    style={{
+      backgroundColor: isEditing ? "#7ec4ff" : "#004080",
+      borderColor: "transparent",
+    }}
+  >
+    {isEditing ? "Save Changes" : "Edit Profile"}
+  </button>
+
+  {/* Cancel Button (Only when editing) */}
+  {isEditing && (
+    <button
+      className="btn btn-secondary px-4 py-2 ms-2"
+      onClick={() => setIsEditing(false)}
+      style={{
+        backgroundColor: "#b0bec5", // Light grayish-blue
+        borderColor: "transparent",
+        color: "#000", // Dark text for contrast
+      }}
+    >
+      Cancel
+    </button>
+  )}
+</div>
+</div>
+</div>
   );
 };
 
