@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PositionsRepository extends JpaRepository<Positions, String> {
-    Optional<Positions> findById(String Id);
+public interface PositionsRepository extends JpaRepository<Positions, Integer> {
+    Optional<Positions> findById(Integer Id);
 }
 

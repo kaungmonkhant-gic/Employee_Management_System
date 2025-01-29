@@ -13,18 +13,19 @@ import lombok.Setter;
 public class Departments {
 
     @Id
-    @Column(name = "id",length = 10, nullable = false, unique = true)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
 
     @Column(name = "department_name", nullable = false)
     private String departmentName;
 
-    public String getId() {
-        return id;
+    public Integer getId() {
+        return Id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(Integer id) {
+        Id = id;
     }
 
     public String getDepartmentName() {

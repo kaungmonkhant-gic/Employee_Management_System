@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DepartmentsRepository extends JpaRepository<Departments, String> {
-    Optional<Departments> findById(String Id);
+public interface DepartmentsRepository extends JpaRepository<Departments, Integer> {
+    Optional<Departments> findById(Integer Id);
 }
 

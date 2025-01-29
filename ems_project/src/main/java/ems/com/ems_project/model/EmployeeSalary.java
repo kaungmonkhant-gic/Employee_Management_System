@@ -13,11 +13,12 @@ import lombok.Setter;
 public class EmployeeSalary {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",unique = true,nullable = false)
     private Integer Id;
 
-    @Column(name = "employee_id",length = 10, nullable = false)
-    private String employee_id;
+    @Column(name = "employee_id")
+    private Integer employeeId;
 
     @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;
@@ -27,8 +28,4 @@ public class EmployeeSalary {
 
     @Column(name = "transportation")
     private Double transportation;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    private Employee employee;
 }

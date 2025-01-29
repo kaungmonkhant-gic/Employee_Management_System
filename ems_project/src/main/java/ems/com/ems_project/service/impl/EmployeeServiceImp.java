@@ -105,7 +105,7 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public EmployeeProfile getEmployeeById(String Id) {
+    public EmployeeProfile getEmployeeById(Integer Id) {
         Employee employee = employeeRepository.findById(Id)
                 .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + Id));
 
@@ -167,7 +167,6 @@ public class EmployeeServiceImp implements EmployeeService {
             //employee.setId(nextId);
 
             // Set fields directly (without ModelMapper for these nested objects)
-//            employee.setId(registerDTO.getId());
             employee.setEmail(registerDTO.getEmail());
             employee.setName(registerDTO.getName());
             employee.setPhone(registerDTO.getPhone());
@@ -208,8 +207,9 @@ public class EmployeeServiceImp implements EmployeeService {
 
         return reqRes;
     }
-    @Override
-    public ReqRes updateEmployee(String employeeId, Employee employee) {
+
+
+    public ReqRes updateEmployee(Integer employeeId, Employee employee) {
         ReqRes reqRes = new ReqRes();
 
         try {
@@ -254,7 +254,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
     // Delete employee
     @Override
-    public ReqRes deleteEmployee(String employeeId) {
+    public ReqRes deleteEmployee(Integer employeeId) {
         ReqRes reqRes = new ReqRes();
 
         // Check if the employee exists

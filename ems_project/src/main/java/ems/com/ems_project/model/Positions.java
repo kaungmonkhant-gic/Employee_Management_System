@@ -12,17 +12,20 @@ import lombok.Setter;
 @Data
 public class Positions {
 
-    @Column(name = "id",length = 10, nullable = false, unique = true)
-    private String Id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id",unique = true,nullable = false)
+    private Integer Id;
+
     @Column(name = "position_name", nullable = false)
     private String positionName;
 
-    public String getId() {
+    public Integer getId() {
         return Id;
     }
 
-    public void setId(String id) {
-        this.Id = Id;
+    public void setId(Integer id) {
+        Id = id;
     }
 
     public String getPositionName() {

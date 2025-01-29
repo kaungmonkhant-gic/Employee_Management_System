@@ -29,7 +29,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/admin/employee/{id}")
-    public ResponseEntity<ReqRes> getEmployeeById(@PathVariable String id) {
+    public ResponseEntity<ReqRes> getEmployeeById(@PathVariable Integer id) {
         ReqRes reqRes = new ReqRes();
         try {
             // Fetch the employee profile from the service
@@ -89,7 +89,7 @@ public class EmployeeController {
     }
  // Update an existing employee
     @PutMapping("/admin/update/{employeeId}")
-    public ResponseEntity<ReqRes> updateEmployee(@PathVariable String employeeId, @Valid @RequestBody Employee employee) {
+    public ResponseEntity<ReqRes> updateEmployee(@PathVariable Integer employeeId, @Valid @RequestBody Employee employee) {
         ReqRes reqRes = employeeService.updateEmployee(employeeId, employee);
 
         if (reqRes.getStatusCode() == 200) {
@@ -103,7 +103,7 @@ public class EmployeeController {
 
     // Delete an employee by ID
     @DeleteMapping("/admin/delete/{employeeId}")
-    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String employeeId) {
+    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable Integer employeeId) {
         ReqRes reqRes = employeeService.deleteEmployee(employeeId);
 
         if (reqRes.getStatusCode() == 200) {
