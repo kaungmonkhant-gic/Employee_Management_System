@@ -175,6 +175,7 @@ public class EmployeeServiceImp implements EmployeeService {
             employee.setAddress(registerDTO.getAddress());
             employee.setWorkExp(registerDTO.getWorkExp());
             employee.setEducation(registerDTO.getEducation());
+            employee.setJoinDate(registerDTO.getJoinDate());
 
             // Set the role, department, and position
             employee.setRole(role.get());
