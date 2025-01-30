@@ -12,7 +12,7 @@ public interface EmployeeService extends UserDetailsService {
 
     List<EmployeeProfile> getAllEmployees();
     
-    EmployeeProfile getEmployeeById(Integer Id);
+    EmployeeProfile getEmployeeById(String Id);
 
     ReqRes getProfile(String email);
 
@@ -20,9 +20,9 @@ public interface EmployeeService extends UserDetailsService {
     ReqRes registerEmployee(RegisterDTO registerDTO);
 
     // Update an existing employee
-    ReqRes updateEmployee(Integer Id, Employee employee);
+    ReqRes updateEmployee(String Id, Employee employee);
 
     // Delete an employee by ID
-    ReqRes deleteEmployee(Integer Id);
+    ReqRes deleteEmployee(String Id);
 }
 

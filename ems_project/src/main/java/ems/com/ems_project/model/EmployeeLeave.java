@@ -12,8 +12,7 @@ import lombok.Setter;
 public class EmployeeLeave {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id",nullable = false,unique = true)
     private Integer Id;
 
     @Column(name = "annual_leave", nullable = false)

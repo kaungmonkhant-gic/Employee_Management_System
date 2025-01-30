@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,19 +15,18 @@ import lombok.Setter;
 public class Departments {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "department_name", nullable = false)
     private String departmentName;
 
-    public Integer getId() {
-        return Id;
+    public String getId() {
+        return id;
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDepartmentName() {
@@ -35,5 +36,8 @@ public class Departments {
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
     }
+
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Employee> employees = new ArrayList<>();
 }
 

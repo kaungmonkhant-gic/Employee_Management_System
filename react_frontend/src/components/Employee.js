@@ -3,6 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import employeeController from "../Controller/employeeController";
 import DataTable from "./common/DataTable";
 import nrcData from "../Data/nrc.json";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+
 
 function Employee() {
   const [employees, setEmployees] = useState([]);
@@ -13,7 +15,7 @@ function Employee() {
     departmentName: "",
     roleName:"",
     number: "",
-    empid: "",
+    id: "",
     dob: "",
     nrcRegion: "",
     nrcTownship: "",
@@ -39,12 +41,13 @@ function Employee() {
   useEffect(() => {
     setNrcOptions(nrcData);
   }, []);
+
   const columns = [
-    {field: "id", headerName: "ID"},
+    {field: "number", headerName: "No."},
     {field: "name", headerName: "Name"},
     {field: "email", headerName: "Email"},
     {field: "positionName", headerName: "Position"},
-    {field: "empid", headerName: "Emp ID"},
+    {field: "id", headerName: "Emp ID"},
     {field: "dob", headerName: "DOB"},
     {field: "nrc", headerName: "NRC"},
     {field: "gender", headerName: "Gender"},
@@ -55,15 +58,36 @@ function Employee() {
     {field: "workExp", headerName: "WorkExp"},
     {field: "joinDate", headerName: "Joined Date"},
     {field: "resignDate", headerName: "Resign Date"},
-    {field: "positionName", headerName: "Position"},
     {field: "departmentName", headerName: "Department"},
     {field: "roleName", headerName: "Role"},
-    
+    {
+      field: "actions",
+      headerName: "Actions",
+      sortable: false,
+      filterable: false,
+      width: 150,
+      renderCell: (params) => (
+        <div className="d-flex gap-2">
+          <button
+            className="btn btn-warning btn-sm"
+            onClick={() => handleEdit(params.row.id)}
+          >
+            <FaEdit />
+          </button>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={() => handleDelete(params.row.id)}
+          >
+            <FaTrashAlt />
+          </button>
+        </div>
+      ),
+    },
   ];
-
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
-
+  
+  
   const positions = [
     "Manager",
     "Developer",
@@ -81,43 +105,63 @@ function Employee() {
       setNewEmployee((prev) => ({...prev, [name]: value}));
     }
   };
-
+  
+  
   const handleRegister = (e) => {
     e.preventDefault();
+    if (employees.some((employee) => employee.id === newEmployee.id)) {
+      alert("Employee ID must be unique!");
+      return;
+    }
+
     if (newEmployee.name && newEmployee.email && newEmployee.position) {
       const newEmployeeData = {
-        id: employees.length + 1,
         ...newEmployee,
+        number: employees.length + 1,
+        id: newEmployee.id.toUpperCase(), // Convert empid to uppercase
       };
+
       setEmployees((prev) => [...prev, newEmployeeData]);
       setNewEmployee({
         name: "",
         email: "",
-        position: "",
-        number: "",
-        empid: "",
+        
+        id: "",
         dob: "",
-        nrc: "",
+        nrcRegion: "",
+        nrcTownship: "",
+        nrcType: "",
+        nrcDetails: "",
         gender: "",
+        roleName:"",
         maritalStatus: "",
         phone: "",
         address: "",
         education: "",
         workExp: "",
+        departmentName: "",
+        positionName: "",
         joinDate: "",
         resignDate: "",
       });
       setIsRegisterScreen(false);
     } else {
-      alert("Please fill all fields!");
+      alert("Please fill all required fields!");
     }
   };
 
-  const handleEdit = (id) => {
-    const employeeToEdit = employees.find((employee) => employee.id === id);
+  const handleEdit = (number) => {
+    console.log("Editing:", number);
+    const employeeToEdit = employees.find((employee) => employee.number === number);
     setEditingEmployee(employeeToEdit);
     setIsRegisterScreen(true);
   };
+  
+  const handleDelete = (number) => {
+    console.log("Deleting employee number:", number);
+    setEmployees((prev) => prev.filter((employee) => employee.number !== number));
+  };
+  
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -128,7 +172,7 @@ function Employee() {
     ) {
       setEmployees((prev) =>
           prev.map((employee) =>
-              employee.id === editingEmployee.id ? editingEmployee : employee
+              employee.number === editingEmployee.number ? editingEmployee : employee
           )
       );
       setEditingEmployee(null);
@@ -138,20 +182,38 @@ function Employee() {
     }
   };
 
-  const handleDelete = (id) => {
-    setEmployees((prev) => prev.filter((employee) => employee.id !== id));
-  };
-
   const handleRegisterClick = () => {
     setIsRegisterScreen(true);
     setEditingEmployee(null);
   };
+// const fetchEmployees = async () => {
+//   const data = await employeeController.fetchUsers();
+//   setEmployees(data.sort((a, b) => a.number - b.number));
+// };
+
+useEffect(() => {
+  fetchEmployees();
+}, []);
+
+const fetchEmployees = async () => {
+  const data = await employeeController.fetchUsers();
+  
+  // Ensure each employee has a 'number' field
+  const updatedData = data.map((employee, index) => ({
+    ...employee,
+    number: index + 1, // Assign a number
+  }));
+
+  setEmployees(updatedData);
+};
 
   return (
       <div className="container mt-5 vh-100">
-        <h2 className="text-center mb-4">Register New Employee</h2>
+         
+        
 
         {!isRegisterScreen ? (
+          
             <div>
               <button
                   className="btn btn-primary mb-4"
@@ -161,20 +223,46 @@ function Employee() {
               </button>
 
               <div className="vh-100 overflow-auto">
-                <DataTable
-                    fetchData={employeeController.fetchUsers}
-                    columns={columns}
-                    keyField="id"
-                />
+              
+              <DataTable
+  fetchData={() => employeeController.fetchUsers().then(data => 
+    data.map((employee, index) => ({ ...employee, number: index + 1 })) // Add number field
+  )}
+  columns={columns}
+  keyField="number"
+/>
+
+
 
               </div>
 
             </div>
         ) : (
-            <div
-                className="d-flex justify-content-center align-items-center "
-            >
+            <div className="d-flex justify-content-center align-items-center ">
+               
+              
               <div className="card p-2 " style={{maxWidth: "800px", width: "100%", overflow: "auto"}}>
+                {/* <div className="mb-4 p-3 rounded" style={{ backgroundColor: "#E2EAF4"}}>
+              <h2 className="text-center"  style={{ color: "white" }}>
+                  Register New Employee
+              </h2>
+              </div> */}
+              <div
+          className="card-header d-flex align-items-center"
+          style={{
+            backgroundColor: "#FFFFFF",
+            color: "#004080",
+            
+          }}
+        >
+       
+          <div className="d-flex flex-column align-items-center text-center w-100">
+          <h2 className="text-center"  style={{ color: "black" }}>
+                  Register New Employee
+              </h2>
+          </div>
+
+        </div>
                 <h3>{editingEmployee ? "Edit Employee" : ""}</h3>
                 <form onSubmit={editingEmployee ? handleUpdate : handleRegister}>
                 <div className="row">
@@ -205,28 +293,28 @@ function Employee() {
       />
     </div>
     <div className="mb-2">
-      <label htmlFor="position" className="form-label fw-bold">Position</label>
+      <label htmlFor="positionName" className="form-label fw-bold">Position</label>
       <select
-        id="position"
-        name="position"
+        id="positionName"
+        name="positionName"
         value={editingEmployee ? editingEmployee.position : newEmployee.position}
         onChange={handleChange}
         className="form-select"
       >
         <option value="" disabled>Select Position</option>
-        {positions.map((position, index) => (
-          <option key={index} value={position}>{position}</option>
+        {positions.map((positionName, index) => (
+          <option key={index} value={positionName}>{positionName}</option>
         ))}
       </select>
     </div>
     <div className="mb-2">
-      <label htmlFor="empid" className="form-label fw-bold">Employee ID</label>
+      <label htmlFor="id" className="form-label fw-bold">Employee ID</label>
       <input
         type="text"
-        id="empid"
-        name="empid"
+        id="id"
+        name="id"
         placeholder="Enter employee ID"
-        value={editingEmployee ? editingEmployee.empid : newEmployee.empid}
+        value={editingEmployee ? editingEmployee.id : newEmployee.id}
         onChange={handleChange}
         className="form-control"
       />
@@ -411,7 +499,7 @@ function Employee() {
         className="form-control"
       />
     </div>
-    <div className="mb-3">
+    <div className="mb-2">
       <label htmlFor="resignDate" className="form-label fw-bold">Resign Date</label>
       <input
         type="date"

@@ -18,7 +18,7 @@ public class EmployeeSalaryController {
 
     // Get salary details for an employee by employeeId
     @GetMapping("/{employeeId}")
-    public ResponseEntity<EmployeeSalary> getSalaryByEmployeeId(@PathVariable Integer employeeId) {
+    public ResponseEntity<EmployeeSalary> getSalaryByEmployeeId(@PathVariable String employeeId) {
         EmployeeSalary employeeSalary = employeeSalaryService.getEmployeeSalaryById(employeeId);
 
         if (employeeSalary != null) {
@@ -37,7 +37,7 @@ public class EmployeeSalaryController {
 
     // Delete salary details for an employee
     @DeleteMapping("/delete/{employeeId}")
-    public ResponseEntity<Void> deleteSalary(@PathVariable Integer employeeId) {
+    public ResponseEntity<Void> deleteSalary(@PathVariable String employeeId) {
         employeeSalaryService.deleteEmployeeSalary(employeeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
