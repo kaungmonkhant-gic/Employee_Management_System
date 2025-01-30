@@ -164,6 +164,7 @@ public class EmployeeServiceImp implements EmployeeService {
             //employee.setId(nextId);
 
             // Set fields directly (without ModelMapper for these nested objects)
+            employee.setId(registerDTO.getId());
             employee.setEmail(registerDTO.getEmail());
             employee.setName(registerDTO.getName());
             employee.setPhone(registerDTO.getPhone());
