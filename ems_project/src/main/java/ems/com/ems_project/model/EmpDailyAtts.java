@@ -17,12 +17,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class EmpDailyAtts {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",unique = true,nullable = false)
     private Integer Id;
     
-    @Column(name = "employee_id")
-    private Integer employeeId;
+    @Column(length = 10,name = "employee_id",nullable = false)
+    private String employeeId;
     
     
     @Column(name = "date")
@@ -48,11 +48,11 @@ public class EmpDailyAtts {
     @Column(name = "leave_early")
     private Boolean leaveEarly;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "leave_id", referencedColumnName = "id")
     private Leaves leave;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ot_id", referencedColumnName = "id")
     private Ots overtime;
 }

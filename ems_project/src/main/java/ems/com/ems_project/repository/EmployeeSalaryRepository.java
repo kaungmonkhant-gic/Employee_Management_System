@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalary, Integer> {
+public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalary, String> {
 
-    Optional<EmployeeSalary> findById(Integer employeeId);
+    Optional<EmployeeSalary> findById(String employeeId);
 
-    void deleteByEmployeeId(Integer employeeId);
+    void deleteByEmployeeId(String employeeId);
 }
 

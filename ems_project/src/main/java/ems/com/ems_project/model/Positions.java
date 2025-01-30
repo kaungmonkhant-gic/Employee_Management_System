@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -13,19 +16,18 @@ import lombok.Setter;
 public class Positions {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "position_name", nullable = false)
     private String positionName;
 
-    public Integer getId() {
-        return Id;
+    public String getId() {
+        return id;
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getPositionName() {
@@ -35,4 +37,7 @@ public class Positions {
     public void setPositionName(String positionName) {
         this.positionName = positionName;
     }
+
+    @OneToMany(mappedBy = "position", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Employee> employees = new ArrayList<>();
 }

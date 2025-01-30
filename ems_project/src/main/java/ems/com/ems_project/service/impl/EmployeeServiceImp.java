@@ -12,10 +12,7 @@ import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.PositionsRepository;
 import ems.com.ems_project.repository.RolesRepository;
 import ems.com.ems_project.service.EmployeeService;
-
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -105,7 +102,7 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public EmployeeProfile getEmployeeById(Integer Id) {
+    public EmployeeProfile getEmployeeById(String Id) {
         Employee employee = employeeRepository.findById(Id)
                 .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + Id));
 
@@ -114,7 +111,7 @@ public class EmployeeServiceImp implements EmployeeService {
         return employeeProfile;
     }
 
-
+@Override
     public ReqRes registerEmployee(RegisterDTO registerDTO) {
         ReqRes reqRes = new ReqRes();
 
@@ -208,8 +205,8 @@ public class EmployeeServiceImp implements EmployeeService {
         return reqRes;
     }
 
-
-    public ReqRes updateEmployee(Integer employeeId, Employee employee) {
+ @Override
+    public ReqRes updateEmployee(String employeeId, Employee employee) {
         ReqRes reqRes = new ReqRes();
 
         try {
@@ -254,7 +251,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
     // Delete employee
     @Override
-    public ReqRes deleteEmployee(Integer employeeId) {
+    public ReqRes deleteEmployee(String employeeId) {
         ReqRes reqRes = new ReqRes();
 
         // Check if the employee exists

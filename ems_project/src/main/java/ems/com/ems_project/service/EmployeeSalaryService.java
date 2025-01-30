@@ -15,7 +15,7 @@ public class EmployeeSalaryService {
     private EmployeeSalaryRepository employeeSalaryRepository;
 
     // Get salary details for an employee by employeeId
-    public EmployeeSalary getEmployeeSalaryById(Integer employeeId) {
+    public EmployeeSalary getEmployeeSalaryById(String employeeId) {
         Optional<EmployeeSalary> employeeSalary = employeeSalaryRepository.findById(employeeId);
         return employeeSalary.orElse(null);
     }
@@ -26,7 +26,7 @@ public class EmployeeSalaryService {
     }
 
     // Delete salary details for an employee by employeeId
-    public void deleteEmployeeSalary(Integer employeeId) {
+    public void deleteEmployeeSalary(String employeeId) {
         employeeSalaryRepository.deleteByEmployeeId(employeeId);
     }
 

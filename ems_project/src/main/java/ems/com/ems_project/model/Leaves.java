@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Leaves {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",unique = true,nullable = false)
     private Integer Id;
 
@@ -39,14 +38,14 @@ public class Leaves {
     @Column(name = "reason")
     private String reason;
 
-    @Column(name = "manager_id")
-    private Integer managerId;
+    @Column(length = 10,name = "manager_id",nullable = false)
+    private String managerId;
 
     @Column(name = "is_approved")
     private Boolean isApproved;
     
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
     private Employee employee;
     
 }
