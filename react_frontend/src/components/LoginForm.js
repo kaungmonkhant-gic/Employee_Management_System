@@ -29,8 +29,8 @@ function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -57,77 +57,102 @@ function LoginForm() {
   };
 
   return (
-    <div style={{
-      background: "linear-gradient(to bottom right, #EAF3FA, #D4E4F2)",
-      color: "#3B4A59",
-    }}>
-    <Container className="d-flex justify-content-center align-items-center vh-100" style={{
-      background: "linear-gradient(to bottom right, #EAF3FA, #D4E4F2)", // Gradient background similar to App.js
-      color: "#3B4A59",
-    }}>
-      <Card className="shadow-lg p-4 rounded w-100" style={{ maxWidth: '400px' }}>
-        <Card.Body>
-          <h2 className="text-center fw-bold mb-3">Welcome Back</h2>
-          <p className="text-center text-muted mb-4">Sign in to your account</p>
+    <div
+      style={{
+        background: "linear-gradient(to bottom right, #EAF3FA, #D4E4F2)",
+        color: "#3B4A59",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Container className="d-flex justify-content-center">
+        <Card
+          className="shadow-lg p-5 w-100"
+          style={{
+            maxWidth: "420px",
+            borderRadius: "16px",
+            background: "#ffffff",
+          }}
+        >
+          <Card.Body>
+            <h2 className="text-center fw-bold mb-3">Welcome Back</h2>
+            <p className="text-center text-muted mb-4">Sign in to your account</p>
 
-          {error && <Alert variant="danger" className="text-center">{error}</Alert>}
+            {error && <Alert variant="danger" className="text-center">{error}</Alert>}
 
-          <Form onSubmit={handleSubmit}>
-            {/* Email Input */}
-            <Form.Group controlId="email" className="mb-3">
-              <Form.Label>Email Address</Form.Label>
-              <div className="input-group">
-                <span className="input-group-text">
-                  <FaEnvelope />
-                </span>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter your Gmail"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  isInvalid={!!errors.username}
-                />
-              </div>
-              <Form.Control.Feedback type="invalid">
-                {errors.username}
-              </Form.Control.Feedback>
-            </Form.Group>
+            <Form onSubmit={handleSubmit}>
+              {/* Email Input */}
+              <Form.Group controlId="email" className="mb-3">
+                <Form.Label>Email Address</Form.Label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-0">
+                    <FaEnvelope className="text-secondary" />
+                  </span>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter your Gmail"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    isInvalid={!!errors.username}
+                    className="rounded-end"
+                  />
+                </div>
+                <Form.Control.Feedback type="invalid">
+                  {errors.username}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-            {/* Password Input */}
-            <Form.Group controlId="password" className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <div className="input-group">
-                <span className="input-group-text">
-                  <FaLock />
-                </span>
-                <Form.Control
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  isInvalid={!!errors.password}
-                />
-              </div>
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-            </Form.Group>
+              {/* Password Input */}
+              <Form.Group controlId="password" className="mb-3">
+                <Form.Label>Password</Form.Label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-0">
+                    <FaLock className="text-secondary" />
+                  </span>
+                  <Form.Control
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    isInvalid={!!errors.password}
+                    className="rounded-end"
+                  />
+                </div>
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-            {/* Login Button */}
-            <Button variant="primary" type="submit" className="w-100">
-              Login
-            </Button>
-          </Form>
+              {/* Login Button */}
+              <Button
+                variant="primary"
+                type="submit"
+                className="w-100 mt-2"
+                style={{
+                  padding: "12px",
+                  fontSize: "1.1rem",
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  background: "#007bff",
+                  borderColor: "#007bff",
+                  transition: "0.3s",
+                }}
+              >
+                Login
+              </Button>
+            </Form>
 
-          {/* Forgot Password & Sign Up Links */}
-          <div className="text-center mt-3">
-            <Link to="/forgot-password" className="text-decoration-none">
-              Forgot Password?
-            </Link>
-          </div>
-        </Card.Body>
-      </Card>
-    </Container>
+            {/* Forgot Password & Sign Up Links */}
+            <div className="text-center mt-4">
+              <Link to="/forgot-password" className="text-decoration-none text-primary">
+                Forgot Password?
+              </Link>
+            </div>
+          </Card.Body>
+        </Card>
+      </Container>
     </div>
   );
 }
