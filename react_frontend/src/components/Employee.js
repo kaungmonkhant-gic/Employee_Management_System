@@ -3,11 +3,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import employeeController from "../Controller/employeeController";
 import DataTable from "./common/DataTable";
 import nrcData from "../Data/nrc.json";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
-
+import { FaEdit, FaTrash } from "react-icons/fa"; 
 
 function Employee() {
   const [employees, setEmployees] = useState([]);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [isRegisterScreen, setIsRegisterScreen] = useState(false);
   const [newEmployee, setNewEmployee] = useState({
     name: "",
     email: "",
@@ -43,49 +44,46 @@ function Employee() {
   }, []);
 
   const columns = [
-    {field: "number", headerName: "No."},
-    {field: "name", headerName: "Name"},
-    {field: "email", headerName: "Email"},
-    {field: "positionName", headerName: "Position"},
-    {field: "id", headerName: "Emp ID"},
-    {field: "dob", headerName: "DOB"},
-    {field: "nrc", headerName: "NRC"},
-    {field: "gender", headerName: "Gender"},
-    {field: "maritalStatus", headerName: "Marital Status"},
-    {field: "phone", headerName: "Phone"},
-    {field: "address", headerName: "Address"},
-    {field: "education", headerName: "Education"},
-    {field: "workExp", headerName: "WorkExp"},
-    {field: "joinDate", headerName: "Joined Date"},
-    {field: "resignDate", headerName: "Resign Date"},
-    {field: "departmentName", headerName: "Department"},
-    {field: "roleName", headerName: "Role"},
+    { field: "number", headerName: "No." },
+    { field: "name", headerName: "Name" },
+    { field: "email", headerName: "Email" },
+    { field: "positionName", headerName: "Position" },
+    { field: "id", headerName: "Emp ID" },
+    { field: "dob", headerName: "DOB" },
+    { field: "nrc", headerName: "NRC" },
+    { field: "gender", headerName: "Gender" },
+    { field: "maritalStatus", headerName: "Marital Status" },
+    { field: "phone", headerName: "Phone" },
+    { field: "address", headerName: "Address" },
+    { field: "education", headerName: "Education" },
+    { field: "workExp", headerName: "WorkExp" },
+    { field: "joinDate", headerName: "Joined Date" },
+    { field: "resignDate", headerName: "Resign Date" },
+    { field: "departmentName", headerName: "Department" },
+    { field: "roleName", headerName: "Role" },
     {
       field: "actions",
       headerName: "Actions",
-      sortable: false,
-      filterable: false,
-      width: 150,
-      renderCell: (params) => (
-        <div className="d-flex gap-2">
-          <button
-            className="btn btn-warning btn-sm"
-            onClick={() => handleEdit(params.row.id)}
-          >
-            <FaEdit />
-          </button>
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={() => handleDelete(params.row.id)}
-          >
-            <FaTrashAlt />
-          </button>
-        </div>
+      render: (row) => (
+          <div className="d-flex gap-2">
+              <button 
+                  onClick={() => handleEdit(row)} 
+                  className="btn btn-outline-primary btn-sm"
+                  title="Edit Employee"
+              >
+                  <FaEdit />
+              </button>
+              <button 
+                  onClick={() => handleDelete(row)} 
+                  className="btn btn-outline-danger btn-sm"
+                  title="Delete Employee"
+              >
+                  <FaTrash />
+              </button>
+          </div>
       ),
-    },
-  ];
-  const [editingEmployee, setEditingEmployee] = useState(null);
-  const [isRegisterScreen, setIsRegisterScreen] = useState(false);
+  },
+];
   
   
   const positions = [
@@ -150,25 +148,23 @@ function Employee() {
     }
   };
 
-  const handleEdit = (number) => {
-    console.log("Editing:", number);
-    const employeeToEdit = employees.find((employee) => employee.number === number);
-    setEditingEmployee(employeeToEdit);
+  const handleEdit = (employee) => {
+    console.log("Editing:", employee);
+    setEditingEmployee(employee); // Set the full employee object
     setIsRegisterScreen(true);
   };
   
-  const handleDelete = (number) => {
-    console.log("Deleting employee number:", number);
-    setEmployees((prev) => prev.filter((employee) => employee.number !== number));
+  const handleDelete = (employee) => {
+    console.log("Deleting:", employee.number);
+    setEmployees((prev) => prev.filter((e) => e.number !== employee.number));
   };
   
-
   const handleUpdate = (e) => {
     e.preventDefault();
     if (
         editingEmployee.name &&
         editingEmployee.email &&
-        editingEmployee.position
+        editingEmployee.positionName
     ) {
       setEmployees((prev) =>
           prev.map((employee) =>
@@ -186,32 +182,30 @@ function Employee() {
     setIsRegisterScreen(true);
     setEditingEmployee(null);
   };
-// const fetchEmployees = async () => {
-//   const data = await employeeController.fetchUsers();
-//   setEmployees(data.sort((a, b) => a.number - b.number));
-// };
 
 useEffect(() => {
   fetchEmployees();
 }, []);
 
 const fetchEmployees = async () => {
-  const data = await employeeController.fetchUsers();
-  
-  // Ensure each employee has a 'number' field
-  const updatedData = data.map((employee, index) => ({
-    ...employee,
-    number: index + 1, // Assign a number
-  }));
-
-  setEmployees(updatedData);
+  try {
+    const data = await employeeController.fetchUsers();
+    if (Array.isArray(data)) {
+      const updatedData = data.map((employee, index) => ({
+        ...employee,
+        number: index + 1, // Ensure a unique number field
+      }));
+      setEmployees(updatedData);
+    } else {
+      console.error("Invalid data format:", data);
+    }
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+  }
 };
 
   return (
       <div className="container mt-5 vh-100">
-         
-        
-
         {!isRegisterScreen ? (
           
             <div>
@@ -225,28 +219,17 @@ const fetchEmployees = async () => {
               <div className="vh-100 overflow-auto">
               
               <DataTable
-  fetchData={() => employeeController.fetchUsers().then(data => 
-    data.map((employee, index) => ({ ...employee, number: index + 1 })) // Add number field
-  )}
-  columns={columns}
-  keyField="number"
-/>
-
-
-
+              fetchData={() => employeeController.fetchUsers().then(data => 
+                data.map((employee, index) => ({ ...employee, number: index + 1 })) // Add number field
+              )}
+              columns={columns}
+              keyField="number"/>
               </div>
-
             </div>
         ) : (
             <div className="d-flex justify-content-center align-items-center ">
-               
-              
               <div className="card p-2 " style={{maxWidth: "800px", width: "100%", overflow: "auto"}}>
-                {/* <div className="mb-4 p-3 rounded" style={{ backgroundColor: "#E2EAF4"}}>
-              <h2 className="text-center"  style={{ color: "white" }}>
-                  Register New Employee
-              </h2>
-              </div> */}
+               
               <div
           className="card-header d-flex align-items-center"
           style={{
@@ -255,7 +238,6 @@ const fetchEmployees = async () => {
             
           }}
         >
-       
           <div className="d-flex flex-column align-items-center text-center w-100">
           <h2 className="text-center"  style={{ color: "black" }}>
                   Register New Employee
@@ -330,7 +312,7 @@ const fetchEmployees = async () => {
         className="form-control"
       />
     </div>
-    
+
           {/* NRC Fields */}
           <div className="mb-2">
             <label className="form-label fw-bold">NRC</label>
