@@ -17,7 +17,7 @@ const DataTable = ({ fetchData, columns, keyField }) => {
                 setData(result);
             } catch (err) {
                 setError("Failed to fetch data. Please try again.");
-                console.error("Error fetching data:", err);
+                //console.log.error("Error fetching data:", err);
             } finally {
                 setLoading(false);
             }
