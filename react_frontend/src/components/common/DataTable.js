@@ -17,7 +17,7 @@ const DataTable = ({ fetchData, columns, keyField }) => {
                 setData(result);
             } catch (err) {
                 setError("Failed to fetch data. Please try again.");
-                console.error("Error fetching data:", err);
+                //console.log.error("Error fetching data:", err);
             } finally {
                 setLoading(false);
             }
@@ -51,21 +51,23 @@ const DataTable = ({ fetchData, columns, keyField }) => {
 
     return (
         <Table id="datatable" striped bordered hover responsive>
-            <thead class="table-primary text-nowrap">
-            <tr>
-                {columns.map((col) => (
-                    <th key={col.field}>{col.headerName}</th>
-                ))}
-            </tr>
-            </thead>
-            <tbody>
-            {data.map((row) => (
-                <tr key={row[keyField]}>
+            <thead className="table-primary text-nowrap">
+                <tr>
                     {columns.map((col) => (
-                        <td key={`${row[keyField]}-${col.field}`}>{row[col.field]}</td>
+                        <th key={col.field}>{col.headerName}</th>
                     ))}
                 </tr>
-            ))}
+            </thead>
+            <tbody>
+                {data.map((row) => (
+                    <tr key={row[keyField]}>
+                        {columns.map((col) => (
+                            <td key={`${row[keyField]}-${col.field}`}>
+                                {col.render ? col.render(row) : row[col.field]}
+                            </td>
+                        ))}
+                    </tr>
+                ))}
             </tbody>
         </Table>
     );

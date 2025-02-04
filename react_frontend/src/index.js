@@ -16,6 +16,7 @@ import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
 import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import ForgotPassword from "./components/common/ForgotPassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -29,7 +30,7 @@ root.render(
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
-
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/"
              element={
                <PrivateRoute>
