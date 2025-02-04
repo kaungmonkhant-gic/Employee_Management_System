@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalary, String> {
 
-    Optional<EmployeeSalary> findById(String employeeId);
+    Optional<EmployeeSalary> findByEmployeeId(String employeeId);
 
     void deleteByEmployeeId(String employeeId);
 }

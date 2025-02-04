@@ -21,9 +21,6 @@ public class EmpDailyAtts {
     @Column(name = "id",unique = true,nullable = false)
     private Integer Id;
     
-    @Column(length = 10,name = "employee_id",nullable = false)
-    private String employeeId;
-    
     
     @Column(name = "date")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -55,4 +52,9 @@ public class EmpDailyAtts {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ot_id", referencedColumnName = "id")
     private Ots overtime;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
+    //@JsonIgnore
+    private Employee employee;
 }

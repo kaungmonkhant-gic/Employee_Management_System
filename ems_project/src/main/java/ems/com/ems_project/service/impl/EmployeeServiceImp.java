@@ -1,33 +1,36 @@
 package ems.com.ems_project.service.impl;
-
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.ReqRes;
-import ems.com.ems_project.model.Departments;
-import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.Positions;
-import ems.com.ems_project.model.Roles;
-import ems.com.ems_project.repository.DepartmentsRepository;
-import ems.com.ems_project.repository.EmployeeRepository;
-import ems.com.ems_project.repository.PositionsRepository;
-import ems.com.ems_project.repository.RolesRepository;
+import ems.com.ems_project.model.*;
+import ems.com.ems_project.repository.*;
 import ems.com.ems_project.service.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImp implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private  EmployeeSalaryRepository employeeSalaryRepository;
+
+    @Autowired
+    private EmployeeLeaveRepository employeeLeaveRepository;
 
     @Autowired
     private PasswordEncoderConfig passwordEncoderConfig; // Use PasswordEncoderConfig for encoding
@@ -89,29 +92,107 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeProfile> getAllEmployees() {
-        // Fetch all employees from the repository
-        List<Employee> employees = employeeRepository.findAll();
+    public ReqRes getAllEmployees() {
+        ReqRes reqRes = new ReqRes();
+        try {
+            List<Employee> employees = employeeRepository.findAll();
 
-        // Use ModelMapper to map each Employee entity to an EmployeeProfile object
-        return employees.stream().map(employee -> {
-            EmployeeProfile profile = modelMapper.map(employee, EmployeeProfile.class);
+            // Map Employees to EmployeeDTO and fetch salary & leave details
+            List<EmployeeDTO> employeeDTO = employees.stream().map(employee -> {
+                EmployeeDTO dto = modelMapper.map(employee, EmployeeDTO.class);
 
-            return profile;
-        }).toList();
+                // Fetch salary details from EmployeeSalary table
+                employeeSalaryRepository.findByEmployeeId(employee.getId()).ifPresent(salary -> {
+                    dto.setBasicSalary(salary.getBasicSalary());
+                    dto.setHouseAllowance(salary.getHouseAllowance());
+                    dto.setTransportation(salary.getTransportation());
+                    dto.setTotalSalary(salary.getTotalSalary());
+                });
+
+                // Fetch leave details from EmployeeLeave table
+                employeeLeaveRepository.findByEmployeeId(employee.getId()).ifPresent(leave -> {
+                    dto.setAnnualLeave(leave.getAnnualLeave());
+                    dto.setCasualLeave(leave.getCasualLeave());
+                    dto.setMedicalLeave(leave.getMedicalLeave());
+                    dto.setTotalLeave(leave.getTotal());
+                });
+
+                return dto;
+            }).collect(Collectors.toList());
+
+            // Set response data with EmployeeDTO list
+            reqRes.setEmployeeList(employeeDTO);  // Set the list of EmployeeDTOs
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Employees retrieved successfully.");
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("An error occurred while retrieving employees: " + e.getMessage());
+        }
+        return reqRes;
+    }
+
+
+    @Override
+    public EmployeeDTO getEmployeeById(String id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with ID: " + id));
+
+        // Map Employee to EmployeeDTO using ModelMapper
+        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+
+        // Fetch salary details if available
+        employeeSalaryRepository.findByEmployeeId(employee.getId()).ifPresent(salary -> {
+            employeeDTO.setBasicSalary(salary.getBasicSalary());
+            employeeDTO.setHouseAllowance(salary.getHouseAllowance()) ;
+            employeeDTO.setTransportation(salary.getTransportation());
+            employeeDTO.setTotalSalary(salary.getTotalSalary());
+        });
+
+        // Fetch leave details if available
+        employeeLeaveRepository.findByEmployeeId(employee.getId()).ifPresent(leave -> {
+            employeeDTO.setAnnualLeave(leave.getAnnualLeave());
+            employeeDTO.setCasualLeave(leave.getCasualLeave());
+            employeeDTO.setMedicalLeave(leave.getMedicalLeave());
+            employeeDTO.setTotalLeave(leave.getTotal());
+        });
+
+        return employeeDTO;
+    }
+
+
+    @Override
+    public ReqRes updateProfile(String email, EmployeeProfile updatedProfile) {
+        ReqRes reqRes = new ReqRes();
+        try {
+            Optional<Employee> userOptional = employeeRepository.findByEmail(email);
+            if (userOptional.isPresent()) {
+                Employee employee = userOptional.get();
+
+                // Use ModelMapper to update Employee with the new values from EmployeeProfile
+                modelMapper.map(updatedProfile, employee);
+
+                // Save the updated employee to the database
+                Employee updatedEmployee = employeeRepository.save(employee);
+
+                // Map the updated Employee entity to EmployeeProfile DTO
+                EmployeeProfile employeeProfile = modelMapper.map(updatedEmployee, EmployeeProfile.class);
+
+                // Prepare response with updated profile
+                reqRes.setEmployeeProfile(employeeProfile);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("Profile updated successfully.");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("Employee not found.");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("An error occurred while updating profile: " + e.getMessage());
+        }
+        return reqRes;
     }
 
     @Override
-    public EmployeeProfile getEmployeeById(String Id) {
-        Employee employee = employeeRepository.findById(Id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + Id));
-
-        // Use ModelMapper to map Employee to EmployeeProfile
-        EmployeeProfile employeeProfile = modelMapper.map(employee, EmployeeProfile.class);
-        return employeeProfile;
-    }
-
-@Override
     public ReqRes registerEmployee(RegisterDTO registerDTO) {
         ReqRes reqRes = new ReqRes();
 
@@ -155,16 +236,9 @@ public class EmployeeServiceImp implements EmployeeService {
                 return reqRes;
             }
 
-
-            // Manually get the next available ID
-            //Integer nextId = employeeRepository.getMaxId() + 1; // Assuming you have a custom method to fetch the max ID
-
             // Create new Employee entity
             Employee employee = new Employee();
-            //employee.setId(nextId);
-
-            // Set fields directly (without ModelMapper for these nested objects)
-            employee.setId(registerDTO.getId());
+            employee.setId(registerDTO.getId());  // If ID is provided, use it; otherwise, auto-generate.
             employee.setEmail(registerDTO.getEmail());
             employee.setName(registerDTO.getName());
             employee.setPhone(registerDTO.getPhone());
@@ -194,6 +268,24 @@ public class EmployeeServiceImp implements EmployeeService {
 
             // Save the employee
             Employee savedEmployee = employeeRepository.save(employee);
+
+            // Save EmployeeSalary entity
+            EmployeeSalary employeeSalary = new EmployeeSalary();
+            employeeSalary.setEmployee(savedEmployee);
+            employeeSalary.setBasicSalary(registerDTO.getBasicSalary());
+            employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
+            employeeSalary.setTransportation(registerDTO.getTransportation());
+            employeeSalaryRepository.save(employeeSalary);
+
+            EmployeeLeave employeeLeave = new EmployeeLeave();
+            employeeLeave.setEmployee(savedEmployee);
+            employeeLeave.setAnnualLeave(registerDTO.getAnnualLeave());
+            employeeLeave.setCasualLeave(registerDTO.getCasualLeave());
+            employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
+            employeeLeave.setTotal(registerDTO.getTotalLeave());
+            employeeLeaveRepository.save(employeeLeave);
+
+            // Set response details
             reqRes.setEmployee(savedEmployee);
             reqRes.setStatusCode(201); // Created
             reqRes.setMessage("Employee registered successfully.");
@@ -207,7 +299,8 @@ public class EmployeeServiceImp implements EmployeeService {
         return reqRes;
     }
 
- @Override
+
+    @Override
     public ReqRes updateEmployee(String employeeId, Employee employee) {
         ReqRes reqRes = new ReqRes();
 
@@ -253,11 +346,11 @@ public class EmployeeServiceImp implements EmployeeService {
 
     // Delete employee
     @Override
-    public ReqRes deleteEmployee(String employeeId) {
+    public ReqRes deleteEmployee(String Id) {
         ReqRes reqRes = new ReqRes();
 
         // Check if the employee exists
-        Optional<Employee> existingEmployee = employeeRepository.findById(employeeId);
+        Optional<Employee> existingEmployee = employeeRepository.findById(Id);
         if (existingEmployee.isPresent()) {
             employeeRepository.delete(existingEmployee.get());
 
@@ -265,7 +358,7 @@ public class EmployeeServiceImp implements EmployeeService {
             reqRes.setMessage("Employee deleted successfully.");
         } else {
             reqRes.setStatusCode(404);  // Not Found
-            reqRes.setMessage("Employee not found with ID: " + employeeId);
+            reqRes.setMessage("Employee not found with ID: " + Id);
         }
 
         return reqRes;

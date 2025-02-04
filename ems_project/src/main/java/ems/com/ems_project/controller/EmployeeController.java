@@ -1,9 +1,11 @@
 package ems.com.ems_project.controller;
 
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.service.DropDownService;
 import ems.com.ems_project.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 //import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/")
@@ -21,51 +24,42 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    private DropDownService dropdownService;
 
-    // Get all employees
-    @GetMapping("/admin/all")
-    public ResponseEntity<List<EmployeeProfile>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
-    }
+    @GetMapping("/all")
+    public ResponseEntity<ReqRes> getAllEmployees() {
+        ReqRes reqRes = employeeService.getAllEmployees();
 
-    @GetMapping("/admin/employee/{id}")
-    public ResponseEntity<ReqRes> getEmployeeById(@PathVariable String id) {
-        ReqRes reqRes = new ReqRes();
-        try {
-            // Fetch the employee profile from the service
-            EmployeeProfile employeeProfile = employeeService.getEmployeeById(id);
-
-            // Set success status code and message
-            reqRes.setStatusCode(200);
-            reqRes.setMessage("Profile retrieval successful.");
-            reqRes.setEmployeeProfile(employeeProfile);
-
-            // Return the response with status 200 (OK)
-            return ResponseEntity.ok(reqRes);
-        } catch (Exception e) {
-            // Handle error (e.g., employee not found)
-            reqRes.setStatusCode(404);
-            reqRes.setMessage("Employee not found with ID: " + id);
-
-            // Return the response with status 404 (Not Found)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reqRes);
+        // Return appropriate response based on status code
+        if (reqRes.getStatusCode() == 200) {
+            return ResponseEntity.ok(reqRes); // Success - HTTP 200
+        } else {
+            return ResponseEntity.status(reqRes.getStatusCode()).body(reqRes); // Error - HTTP 500 or others
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
+        EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
+        return ResponseEntity.ok(employeeDTO);
+    }
 
-
-    // Endpoint to register a new employee
+    @GetMapping("/dropdown")
+    public ResponseEntity<Map<String, List<String>>> getDropdownData() {
+        Map<String, List<String>> dropdownData = dropdownService.getDropdownData();
+        return ResponseEntity.ok(dropdownData);
+    }
     @PostMapping("/register")
-    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> registerEmployee(@RequestBody RegisterDTO registerDTO) {
         ReqRes reqRes = employeeService.registerEmployee(registerDTO);
 
-        // Return appropriate response based on status code
+        // Handle the response based on status code
         if (reqRes.getStatusCode() == 201) {
             return new ResponseEntity<>(reqRes, HttpStatus.CREATED);
-        } else if (reqRes.getStatusCode() == 409) {
-            return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
         } else if (reqRes.getStatusCode() == 400) {
             return new ResponseEntity<>(reqRes, HttpStatus.BAD_REQUEST);
+        } else if (reqRes.getStatusCode() == 409) {
+            return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
         } else {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -87,6 +81,20 @@ public class EmployeeController {
             return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
         }
     }
+    @PutMapping("/profile")
+    public ResponseEntity<ReqRes> updateProfile(@PathVariable String email, @RequestBody EmployeeProfile updatedProfile) {
+        // Call the service method to update the profile
+        ReqRes response = employeeService.updateProfile(email, updatedProfile);
+
+        // Return appropriate response based on the result
+        if (response.getStatusCode() == 200) {
+            return ResponseEntity.ok(response);
+        } else if (response.getStatusCode() == 404) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 
     @PutMapping("/admin/update/{employeeId}")
@@ -103,9 +111,9 @@ public class EmployeeController {
     }
 
     // Delete an employee by ID
-    @DeleteMapping("/admin/delete/{employeeId}")
-    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String employeeId) {
-        ReqRes reqRes = employeeService.deleteEmployee(employeeId);
+    @DeleteMapping("/admin/delete/{Id}")
+    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String Id) {
+        ReqRes reqRes = employeeService.deleteEmployee(Id);
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);

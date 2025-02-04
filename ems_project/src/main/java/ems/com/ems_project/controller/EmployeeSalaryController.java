@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/salary")
@@ -18,14 +19,15 @@ public class EmployeeSalaryController {
 
     // Get salary details for an employee by employeeId
     @GetMapping("/{employeeId}")
-    public ResponseEntity<EmployeeSalary> getSalaryByEmployeeId(@PathVariable String employeeId) {
-        EmployeeSalary employeeSalary = employeeSalaryService.getEmployeeSalaryById(employeeId);
+    public ResponseEntity<Optional<EmployeeSalary>> getSalaryByEmployeeId(@PathVariable String employeeId) {
+        Optional<EmployeeSalary> employeeSalary = employeeSalaryService.getSalaryByEmployeeId(employeeId);
 
         if (employeeSalary != null) {
             return new ResponseEntity<>(employeeSalary, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        
     }
 
     // Add or Update salary details for an employee
@@ -38,7 +40,7 @@ public class EmployeeSalaryController {
     // Delete salary details for an employee
     @DeleteMapping("/delete/{employeeId}")
     public ResponseEntity<Void> deleteSalary(@PathVariable String employeeId) {
-        employeeSalaryService.deleteEmployeeSalary(employeeId);
+        employeeSalaryService.deleteSalaryByEmployeeId(employeeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     // Get salary details for all employees

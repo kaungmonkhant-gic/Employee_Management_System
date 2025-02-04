@@ -3,6 +3,8 @@ package ems.com.ems_project.model;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import ems.com.ems_project.dto.EmployeeDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -324,5 +326,6 @@ public class Employee implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }
 

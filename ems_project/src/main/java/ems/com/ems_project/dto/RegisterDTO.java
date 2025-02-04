@@ -18,7 +18,6 @@ import java.util.Date;
 @Setter
 public class RegisterDTO {
 
-    @Id
     private String id;
 
 
@@ -69,6 +68,17 @@ public class RegisterDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
+
+
+    private Double basicSalary;
+    private Double houseAllowance;
+    private Double transportation;
+    private Double totalSalary;
+    // Leave details
+    private Double annualLeave;
+    private Double casualLeave;
+    private Double medicalLeave;
+    private Double totalLeave;
 
     // Optional field
 
@@ -199,5 +209,69 @@ public class RegisterDTO {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public Double getBasicSalary() {
+        return basicSalary;
+    }
+
+    public void setBasicSalary(Double basicSalary) {
+        this.basicSalary = basicSalary;
+    }
+
+    public Double getHouseAllowance() {
+        return houseAllowance;
+    }
+
+    public void setHouseAllowance(Double houseAllowance) {
+        this.houseAllowance = houseAllowance;
+    }
+
+    public Double getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
+    }
+
+    public Double getTotalSalary() {
+        return totalSalary;
+    }
+
+    public void setTotalSalary(Double totalSalary) {
+        this.totalSalary = totalSalary;
+    }
+
+    public Double getAnnualLeave() {
+        return annualLeave;
+    }
+
+    public void setAnnualLeave(Double annualLeave) {
+        this.annualLeave = annualLeave;
+    }
+
+    public Double getCasualLeave() {
+        return casualLeave;
+    }
+
+    public void setCasualLeave(Double casualLeave) {
+        this.casualLeave = casualLeave;
+    }
+
+    public Double getMedicalLeave() {
+        return medicalLeave;
+    }
+
+    public void setMedicalLeave(Double medicalLeave) {
+        this.medicalLeave = medicalLeave;
+    }
+
+    public Double getTotalLeave() {
+        return totalLeave;
+    }
+
+    public void setTotalLeave(Double totalLeave) {
+        this.totalLeave = totalLeave;
     }
 }

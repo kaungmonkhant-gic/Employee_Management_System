@@ -30,7 +30,6 @@ public class EmployeeProfile {
     private String roleName;
     private String positionName;
     private String departmentName;
-
     // Getters and Setters for all fields
 
 
@@ -162,5 +161,4 @@ public class EmployeeProfile {
 		this.resignDate = resignDate;
 	}
 
-	
 }

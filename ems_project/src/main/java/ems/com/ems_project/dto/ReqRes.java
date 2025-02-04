@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ems.com.ems_project.model.Employee;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -26,7 +30,7 @@ public class ReqRes {
     private String token;
     private Employee employee;
     private EmployeeProfile employeeProfile;
-    private List<Employee> employeeList;
+    private List<EmployeeDTO> employeeList;
     private List<EmployeeProfile> employeeProfiles;
 
     public String getError() {
@@ -69,11 +73,11 @@ public class ReqRes {
         this.employeeProfile = employeeProfile;
     }
 
-    public List<Employee> getEmployeeList() {
+    public List<EmployeeDTO> getEmployeeList() {
         return employeeList;
     }
 
-    public void setEmployeeList(List<Employee> employeeList) {
+    public void setEmployeeList(List<EmployeeDTO> employeeList) {
         this.employeeList = employeeList;
     }
 
