@@ -55,9 +55,13 @@ const employeeController = {
 
   registerEmployee: async (employeeData) => {
     try {
-      return await employeeService.registerEmployee(employeeData);
+        console.log("Starting employee registration...");
+        const response = await employeeService.registerEmployee(employeeData);
+        console.log("Employee registered successfully:", response);
+        return response;
     } catch (error) {
-      throw new Error("Failed to register employee. Please try again later.");
+        console.error("Error registering employee:", error);
+        throw new Error("Failed to register employee. Please try again later.");
     }
   },
 

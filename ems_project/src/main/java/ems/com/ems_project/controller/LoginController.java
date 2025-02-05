@@ -19,6 +19,7 @@ public class LoginController {
     // User login
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        System.out.println("Login Start");
         return ResponseEntity.ok(loginService.login(loginRequest));
     }
 }

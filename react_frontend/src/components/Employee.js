@@ -45,7 +45,7 @@ function Employee() {
         minWidth: 150,
         flex: 1,
         cellClassName: "text-center",
-        render: (row) => (row.resignDate ? row.resignDate : <span className="text-muted">0-0-0000</span>),
+        render: (row) => (row.resignDate ? row.resignDate : <span className="text-muted">Not Set</span>),
       },
       {
         field: "actions",

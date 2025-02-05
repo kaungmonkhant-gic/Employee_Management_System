@@ -263,6 +263,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public ReqRes registerEmployee(RegisterDTO registerDTO) {
+        System.out.println("Employee Register Start");
         ReqRes reqRes = new ReqRes();
 
         // Check for missing email
@@ -282,10 +283,10 @@ public class EmployeeServiceImp implements EmployeeService {
 
         try {
             // Fetch department, position, and role from repositories
-            Optional<Departments> department = departmentRepository.findById(registerDTO.getDepartmentId());
-            Optional<Positions> position = positionRepository.findById(registerDTO.getPositionId());
+            Optional<Departments> department = departmentRepository.findById("DEPT00" + registerDTO.getDepartmentId());
+            Optional<Positions> position = positionRepository.findById("POS00" + registerDTO.getPositionId());
             Optional<Roles> role = roleRepository.findById(registerDTO.getRoleId());
-
+            System.out.println("!!!!1!!!!");
             // Ensure that department, position, and role exist
             if (department.isEmpty()) {
                 reqRes.setStatusCode(400); // Bad Request
@@ -304,7 +305,7 @@ public class EmployeeServiceImp implements EmployeeService {
                 reqRes.setMessage("Role not found.");
                 return reqRes;
             }
-
+            System.out.println("!!!!2!!!!");
             // Create new Employee entity
             Employee employee = new Employee();
             employee.setId(registerDTO.getId());  // If ID is provided, use it; otherwise, auto-generate.
@@ -326,17 +327,20 @@ public class EmployeeServiceImp implements EmployeeService {
             employee.setPosition(position.get());
 
             // Hash the password
-            if (registerDTO.getPassword() == null || registerDTO.getPassword().isEmpty()) {
-                reqRes.setStatusCode(400); // Bad Request
-                reqRes.setMessage("Password is required.");
-                return reqRes;
-            }
+//            if (registerDTO.getPassword() == null || registerDTO.getPassword().isEmpty()) {
+//                reqRes.setStatusCode(400); // Bad Request
+//                reqRes.setMessage("Password is required.");
+//                return reqRes;
+//            }
 
-            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
+            System.out.println("!!!!3!!!!");
+
+            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode("123456");
             employee.setPassword(hashedPassword);
 
             // Save the employee
             Employee savedEmployee = employeeRepository.save(employee);
+            System.out.println("!!!!4!!!!");
 
             // Save EmployeeSalary entity
             EmployeeSalary employeeSalary = new EmployeeSalary();
@@ -345,6 +349,7 @@ public class EmployeeServiceImp implements EmployeeService {
             employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
             employeeSalary.setTransportation(registerDTO.getTransportation());
             employeeSalaryRepository.save(employeeSalary);
+            System.out.println("!!!!5!!!!");
 
             EmployeeLeave employeeLeave = new EmployeeLeave();
             employeeLeave.setEmployee(savedEmployee);
@@ -353,6 +358,7 @@ public class EmployeeServiceImp implements EmployeeService {
             employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
             employeeLeave.setTotal(registerDTO.getTotalLeave());
             employeeLeaveRepository.save(employeeLeave);
+            System.out.println("!!!!6!!!!");
 
             // Set response details
             reqRes.setEmployee(savedEmployee);

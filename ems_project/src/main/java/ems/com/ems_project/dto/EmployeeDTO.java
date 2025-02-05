@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class EmployeeDTO {
 
-    private String Id;
+    private String id;
     private String name;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -49,11 +49,11 @@ public class EmployeeDTO {
     // Getters and Setters
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getName() {

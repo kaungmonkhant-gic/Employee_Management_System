@@ -45,8 +45,10 @@ public class EmployeeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerDTO) {
-        ReqRes reqRes = employeeService.registerEmployee(registerDTO);
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerRequest) {
+        System.out.println("register request");
+        System.out.println(registerRequest.toString());
+        ReqRes reqRes = employeeService.registerEmployee(registerRequest);
 
         // Handle the response based on status code
         if (reqRes.getStatusCode() == 201) {

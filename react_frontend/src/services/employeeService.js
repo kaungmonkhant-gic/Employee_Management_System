@@ -5,6 +5,9 @@ const API_BASE_URL = "http://localhost:8081"; // Replace with your actual API UR
 // Create an axios instance with default configuration
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Interceptor to include the Bearer token in requests
@@ -77,6 +80,7 @@ const employeeService = {
       throw error;
     }
   },
+
   registerEmployee: async (employeeData) => {
     try {
       console.log("Service call to /register", employeeData);
