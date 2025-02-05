@@ -30,7 +30,7 @@ const employeeService = {
   getEmployees: async () => {
         try {
           console.log("Service call to /admin/all");
-          const response = await apiClient.get("/all");
+          const response = await apiClient.get("/employee/all");
           console.log("Response:", response);
           return response.data.employeeList;
         } catch (error) {
@@ -84,7 +84,7 @@ const employeeService = {
   registerEmployee: async (employeeData) => {
     try {
       console.log("Service call to /register", employeeData);
-      const response = await apiClient.post("/register", employeeData);
+      const response = await apiClient.post("/employee/register", employeeData);
       console.log("Employee registered successfully:", response.data);
       return response.data;
     } catch (error) {
