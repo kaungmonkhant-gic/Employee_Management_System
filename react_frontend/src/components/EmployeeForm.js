@@ -3,7 +3,7 @@ import nrcData from "../Data/nrc.json";
 import employeeController from "../Controller/employeeController";
 import axios from "axios";
 
-function EmployeeForm({ onSubmit, onCancel, editingEmployee, }) {
+function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
 
   const API_BASE_URL = "http://localhost:8081"; // Replace with your actual API URL
 
@@ -135,7 +135,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, }) {
 
         {/* Header */}
         <div className="card-header text-dark text-center rounded-3">
-          <h3 className="m-0">{editingEmployee ? "Edit Employee" : "Register New Employee"}</h3>
+          <h3 className="m-0">{headerText}</h3>
         </div>
 
         {/* Form */}
