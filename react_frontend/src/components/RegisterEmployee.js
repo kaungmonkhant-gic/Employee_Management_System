@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import nrcData from "../Data/nrc.json";
 
-function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions }) {
+function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions = [], departments = [], roles = [] }) {
+
   const [employeeData, setEmployeeData] = useState({
     name: "",
     email: "",
@@ -23,25 +24,31 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions }) {
     joinDate: "",
     resignDate: "",
   });
+ 
+  // const [nrcOptions, setNrcOptions] = useState({
+  //   regions: [],
+  //   townships: [],
+  //   types: [],
+  //   details: []
+  // });
 
-  const [nrcOptions, setNrcOptions] = useState({
-    regions: [],
-    townships: [],
-    types: [],
-    details: []
-  });
-
-  // Load NRC data on mount
+  // // Load NRC data on mount
+  // useEffect(() => {
+  //   setNrcOptions(nrcData);
+  // }, []);
+  
   useEffect(() => {
-    setNrcOptions(nrcData);
-  }, []);
-
-
-  useEffect(() => {
-    if (editingEmployee) {
-      setEmployeeData(editingEmployee);
-    }
+    if (!editingEmployee) return; // Guard clause to exit early
+  
+    setEmployeeData(prev => ({
+      ...prev,
+      ...editingEmployee,
+      departmentName: editingEmployee.departmentName || "",
+      roleName: editingEmployee.roleName || ""
+    }));
   }, [editingEmployee]);
+  
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,8 +57,13 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!employeeData.name || !employeeData.email || !employeeData.positionName) {
+      alert("Please fill in all required fields.");
+      return;
+    }
     onSubmit(employeeData);
   };
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -106,36 +118,36 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions }) {
                 <input type="text" name="phone" value={employeeData.phone} onChange={handleChange} className="form-control form-control-lg" />
               </div>
 
-              <div className="mb-2">
-  <label className="form-label fw-bold">NRC</label>
-  <div className="d-flex gap-2">
-    
-    {/* NRC Region Dropdown */}
-    <select
-      name="nrcRegion"
-      value={employeeData.nrcRegion}
-      onChange={handleChange}
-      className="form-select form-select-lg"
-      style={{ flex: "1" }}  // Adjusted size
-      required
-    >
-      <option value="">Region</option>
-      {[...new Set(nrcData.data.map((item) => item.nrc_code))].map(
-        (code, index) => (
-          <option key={index} value={code}>{code}</option>
-        )
-      )}
-    </select>
+          <div className="mb-2">
+            <label className="form-label fw-bold">NRC</label>
+            <div className="d-flex gap-2">
+        
+        {/* NRC Region Dropdown */}
+        <select
+          name="nrcRegion"
+          value={employeeData.nrcRegion}
+          onChange={handleChange}
+          className="form-select form-select-lg"
+          style={{ flex: "1" }}  // Adjusted size
+          required
+        >
+          <option value="">Region</option>
+          {[...new Set(nrcData.data.map((item) => item.nrc_code))].map(
+            (code, index) => (
+              <option key={index} value={code}>{code}</option>
+            )
+          )}
+        </select>
 
-    {/* NRC Township Dropdown */}
-    <select
-      name="nrcTownship"
-      value={employeeData.nrcTownship}
-      onChange={handleChange}
-      className="form-select form-select-lg"
-      style={{ flex: "2" }}  // Adjusted size
-      required
-    >
+        {/* NRC Township Dropdown */}
+        <select
+          name="nrcTownship"
+          value={employeeData.nrcTownship}
+          onChange={handleChange}
+          className="form-select form-select-lg"
+          style={{ flex: "2" }}  // Adjusted size
+          required
+        >
       <option value="">Township</option>
       {nrcData.data
         .filter((item) => item.nrc_code === employeeData.nrcRegion)
@@ -171,34 +183,43 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions }) {
       placeholder="Details"
       style={{ flex: "2" }}  // Adjusted size
       required
-    />
-  </div>
-</div>
+       />
+      </div>
+    </div>
 
-<div className="mb-2">
-    <label className="form-label fw-semibold">Marital Status</label>
-    <select 
-      name="maritalStatus" 
-      value={employeeData.maritalStatus} 
-      onChange={handleChange} 
-      className="form-select form-select-lg"
-    >
-      <option value="">Select Marital Status</option>
-      <option value="Married">Married</option>
-      <option value="Single">Single</option>
-      <option value="Divorced">Divorced</option>
-    </select>
-  </div>
-  <div className="mb-2">
-  <label className="form-label fw-semibold">Address</label>
-  <textarea
-    name="address"
-    value={employeeData.address}
-    onChange={handleChange}
-    className="form-control form-control-lg"
-    style={{ height: "calc(2.5rem + 2px)", resize: "none" }}  // Ensures equal height
-  />
-</div>
+      <div className="mb-2">
+          <label className="form-label fw-semibold">Marital Status</label>
+          <select 
+            name="maritalStatus" 
+            value={employeeData.maritalStatus} 
+            onChange={handleChange} 
+            className="form-select form-select-lg"
+          >
+            <option value="">Select Marital Status</option>
+            <option value="Married">Married</option>
+            <option value="Single">Single</option>
+            <option value="Divorced">Divorced</option>
+          </select>
+      </div>
+          <div className="mb-2">
+          <label className="form-label fw-semibold">Address</label>
+          <textarea
+            name="address"
+            value={employeeData.address}
+            onChange={handleChange}
+            className="form-control form-control-lg"
+            style={{ height: "calc(2.5rem + 2px)", resize: "none" }}  // Ensures equal height
+          />
+        </div>
+        <div className="mb-2">
+                <label className="form-label fw-semibold">Education</label>
+                <input type="text" name="education" value={employeeData.education} onChange={handleChange} className="form-control form-control-lg" />
+              </div>
+
+              <div className="mb-2">
+                <label className="form-label fw-semibold">Work Experience</label>
+                <input type="text" name="workExp" value={employeeData.workExp} onChange={handleChange} className="form-control form-control-lg" />
+              </div>
 
             </div>
 
@@ -226,34 +247,31 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, positions }) {
 
               <div className="mb-2">
                 <label className="form-label fw-semibold">Department</label>
-                <select name="departmentName" value={employeeData.departmentName} onChange={handleChange} className="form-select form-select-lg">
-                  <option value="">Select Department</option>
-                  <option value="Human Resource">Human Resource</option>
-                  <option value="Finance">Finance</option>
-                  <option value="IT">IT</option>
-                </select>
+                <select
+                name="departmentName"
+                value={employeeData.departmentName}
+                onChange={handleChange}
+                className="form-select form-select-lg"
+                required
+              >
+                <option value="">Select Department</option>
+                {Array.isArray(departments) &&
+                  departments.map((department, index) => (
+                    <option key={index} value={department?.name || department}>
+                  {department?.name || department}
+                </option>
+                  ))}
+              </select>
               </div>
-
               <div className="mb-2">
                 <label className="form-label fw-semibold">Role</label>
-                <select name="roleName" value={employeeData.roleName} onChange={handleChange} className="form-select form-select-lg">
-                  <option value="">Select Role</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Manager">Manager</option>
-                  <option value="Employee">Employee</option>
+                <select name="roleName" value={employeeData.roleName} onChange={handleChange} className="form-select form-select-lg" required>
+                  <option value="">Select Roles</option>
+                  {roles.map((role, index) => (
+                    <option key={index} value={role}>{role}</option>
+                  ))}
                 </select>
               </div>
-
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Education</label>
-                <input type="text" name="education" value={employeeData.education} onChange={handleChange} className="form-control form-control-lg" />
-              </div>
-
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Work Experience</label>
-                <input type="text" name="workExp" value={employeeData.workExp} onChange={handleChange} className="form-control form-control-lg" />
-              </div>
-            
             <div className="mb-2">
             <label className="form-label fw-semibold">Join Date</label>
             <input 

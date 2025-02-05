@@ -15,44 +15,58 @@ function Employee() {
   
   const positions = ["Manager", "Developer", "Designer", "Tester", "HR", "Intern"];
 
-  const columns = [
-    { field: "number", headerName: "No." },
-      { field: "name", headerName: "Name" },
-      { field: "email", headerName: "Email" },
-      { field: "positionName", headerName: "Position" },
-      { field: "id", headerName: "Emp ID" },
-      { field: "dob", headerName: "DOB" },
-      { field: "nrc", headerName: "NRC" },
-      { field: "gender", headerName: "Gender" },
-      { field: "maritalStatus", headerName: "Marital Status" },
-      { field: "phone", headerName: "Phone" },
-      { field: "address", headerName: "Address" },
-      { field: "education", headerName: "Education" },
-      { field: "workExp", headerName: "WorkExp" },
-      { field: "departmentName", headerName: "Department" },
-      { field: "roleName", headerName: "Role" },
-      { field: "joinDate", headerName: "Joined Date" },
+ 
+    const columns = [
+      { field: "number", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+      { field: "name", headerName: "Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "email", headerName: "Email", minWidth: 200, flex: 1.5, cellClassName: "text-center" },
+      { field: "positionName", headerName: "Position", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "id", headerName: "Emp ID", minWidth: 120, flex: 0.8, cellClassName: "text-center" },
+      { field: "dob", headerName: "DOB", minWidth: 120, flex: 0.8, cellClassName: "text-center" },
+      { field: "nrc", headerName: "NRC", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "gender", headerName: "Gender", minWidth: 100, flex: 0.7, cellClassName: "text-center" },
+      { field: "maritalStatus", headerName: "Marital Status", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      { field: "phone", headerName: "Phone", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "address", headerName: "Address", minWidth: 200, flex: 2, cellClassName: "text-center" },
+      { field: "education", headerName: "Education", minWidth: 180, flex: 1.2, cellClassName: "text-center" },
+      { field: "workExp", headerName: "Work Exp", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      { field: "departmentName", headerName: "Department", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "roleName", headerName: "Role", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      { field: "basicSalary", headerName: "Basic Salary", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "houseAllowance", headerName: "House Allowance", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "transportation", headerName: "Transportation", minWidth: 150, flex: 1, cellClassName: "text-center" },
+      { field: "annualLeave", headerName: "Annual Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      { field: "casualLeave", headerName: "Casual Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      { field: "medicalLeave", headerName: "Medical Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      { field: "joinDate", headerName: "Join Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
       {
         field: "resignDate",
         headerName: "Resign Date",
-        render: (row) => (row.resignDate ? row.resignDate : <span className="text-muted">Not Resigned Yet</span>),
+        minWidth: 150,
+        flex: 1,
+        cellClassName: "text-center",
+        render: (row) => (row.resignDate ? row.resignDate : <span className="text-muted">0-0-0000</span>),
       },
-    {
-      field: "actions",
-      headerName: "Actions",
-      render: (row) => (
-        <div className="d-flex gap-2">
-          <button onClick={() => handleEdit(row)} className="btn btn-outline-primary btn-sm">
-            <FaEdit />
-          </button>
-          <button onClick={() => handleDelete(row)} className="btn btn-outline-danger btn-sm">
-            <FaTrash />
-          </button>
-        </div>
-      ),
-    },
-  ];
-
+      {
+        field: "actions",
+        headerName: "Actions",
+        minWidth: 120,
+        flex: 0.8,
+        cellClassName: "text-center",
+        render: (row) => (
+          <div className="d-flex justify-content-center gap-2"> {/* Center actions */}
+            <button onClick={() => handleEdit(row)} className="btn btn-outline-primary btn-sm">
+              <FaEdit />
+            </button>
+            <button onClick={() => handleDelete(row)} className="btn btn-outline-danger btn-sm">
+              <FaTrash />
+            </button>
+          </div>
+        ),
+      },
+    ];
+    
+  
   useEffect(() => {
     fetchEmployees();
   }, []);
@@ -96,7 +110,7 @@ function Employee() {
     setIsRegisterScreen(false);
   };
 
-  return (
+     return (
     <div className="container mt-5 vh-100">
       {!isRegisterScreen ? (
         <>
@@ -104,15 +118,20 @@ function Employee() {
             Register New Employee
           </button>
           <DataTable
-    fetchData={() => 
-      employeeController.fetchUsers().then(data => 
-        Array.isArray(data) ? data.map((employee, index) => ({ ...employee, number: index + 1 })) : []
-      )
-    }
-    columns={columns}
-    keyField="number"
-  />
-
+          fetchData={() =>
+            employeeController.fetchUsers().then(data =>
+              Array.isArray(data) ? data.map((employee, index) => ({ ...employee, number: index + 1 })) : []
+            )
+          }
+          columns={columns}
+          keyField="number"
+          responsive
+          fixedHeader
+          fixedHeaderScrollHeight="400px"
+          noDataComponent="No employees found"
+          highlightOnHover
+          pagination
+        />
         </>
       ) : (
         <RegisterEmployee onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} positions={positions} />

@@ -8,10 +8,10 @@ const EmpProfile = () => {
     position: "",
     department: "",
     role:"",
-    empid: "",
+    id: "",
     dob: "",
     gender: "",
-    martialStatus: "",
+    maritalStatus: "",
     phone: "",
     address: "",
     education: "",
@@ -49,7 +49,7 @@ const EmpProfile = () => {
         if (response.status === 200) {
           console.log(data);
           setDetails({
-            employeeId: data.employeeProfile.empid,
+            id: data.employeeProfile.id,
             name: data.employeeProfile.name,
             dob: data.employeeProfile.dob,
             email: data.employeeProfile.email,
@@ -59,7 +59,7 @@ const EmpProfile = () => {
             position: data.employeeProfile.positionName,
             role: data.employeeProfile.roleName,
             address: data.employeeProfile.address,
-            martialStatus: data.employeeProfile.martialStatus,
+            maritalStatus: data.employeeProfile.maritalStatus,
             education: data.employeeProfile.education,
             workExp: data.employeeProfile.workExp,
             joinDate: data.employeeProfile.joinDate,
