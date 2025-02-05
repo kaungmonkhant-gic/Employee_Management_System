@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import employeeController from "../Controller/employeeController";
 import DataTable from "./common/DataTable";
-import RegisterEmployee from "./RegisterEmployee";
+import EmployeeForm from "./EmployeeForm.js";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 function Employee() {
@@ -134,7 +134,7 @@ function Employee() {
         />
         </>
       ) : (
-        <RegisterEmployee onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} positions={positions} />
+        <EmployeeForm onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} headerText={"Register New Employee"} />
       )}
     </div>
   );
