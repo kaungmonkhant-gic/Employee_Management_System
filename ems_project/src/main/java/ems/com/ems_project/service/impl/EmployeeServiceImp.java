@@ -283,9 +283,15 @@ public class EmployeeServiceImp implements EmployeeService {
 
         try {
             // Fetch department, position, and role from repositories
-            Optional<Departments> department = departmentRepository.findById("DEPT00" + registerDTO.getDepartmentId());
+            System.out.println(registerDTO.getDepartmentId());
+            Optional<Departments> department = departmentRepository.findById(registerDTO.getDepartmentId());
+            System.out.println(department);
+            System.out.println(registerDTO.getRoleId());
+            System.out.println(registerDTO.getPositionId());
             Optional<Positions> position = positionRepository.findById("POS00" + registerDTO.getPositionId());
             Optional<Roles> role = roleRepository.findById(registerDTO.getRoleId());
+            System.out.println(position);
+            System.out.println(role);
             System.out.println("!!!!1!!!!");
             // Ensure that department, position, and role exist
             if (department.isEmpty()) {
