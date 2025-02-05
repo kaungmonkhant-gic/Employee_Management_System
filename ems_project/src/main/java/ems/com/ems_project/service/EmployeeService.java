@@ -16,13 +16,13 @@ public interface EmployeeService extends UserDetailsService {
     EmployeeDTO getEmployeeById(String Id);
 
     ReqRes getProfile(String email);
-    ReqRes updateProfile(String email, EmployeeProfile updatedProfile);
+    ReqRes updateProfile(String Id, EmployeeProfile updatedProfile);
 
     //ReqRes registerEmployee(Employee employee);
     ReqRes registerEmployee(RegisterDTO registerDTO);
 
     // Update an existing employee
-    ReqRes updateEmployee(String Id, Employee employee);
+    ReqRes updateEmployee(String Id, EmployeeDTO employeeDTO);
 
     // Delete an employee by ID
     ReqRes deleteEmployee(String Id);

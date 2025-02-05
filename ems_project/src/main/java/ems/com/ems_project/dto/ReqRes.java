@@ -16,6 +16,17 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReqRes {
 
+
+    private int statusCode;
+    private String error;
+    private String message;
+    private String token;
+    private EmployeeProfile employeeProfile;
+    private List<EmployeeDTO> employeeList;
+    private List<EmployeeProfile> employeeProfiles;
+    private EmployeeDTO employeeDTO;
+    private Employee employee;// Change type from Employee to RegisterDTO
+
     public int getStatusCode() {
         return statusCode;
     }
@@ -23,15 +34,6 @@ public class ReqRes {
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
-
-    private int statusCode;
-    private String error;
-    private String message;
-    private String token;
-    private Employee employee;
-    private EmployeeProfile employeeProfile;
-    private List<EmployeeDTO> employeeList;
-    private List<EmployeeProfile> employeeProfiles;
 
     public String getError() {
         return error;
@@ -57,14 +59,6 @@ public class ReqRes {
         this.token = token;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
     public EmployeeProfile getEmployeeProfile() {
         return employeeProfile;
     }
@@ -88,4 +82,25 @@ public class ReqRes {
     public void setEmployeeProfiles(List<EmployeeProfile> employeeProfiles) {
         this.employeeProfiles = employeeProfiles;
     }
+
+    public EmployeeDTO getEmployeeDTO() {
+        return employeeDTO;
+    }
+
+    public void setEmployeeDTO(EmployeeDTO employeeDTO) {
+        this.employeeDTO = employeeDTO;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    public void setRegisterDTO(RegisterDTO updatedEmployee) {
+    }
+
+
 }

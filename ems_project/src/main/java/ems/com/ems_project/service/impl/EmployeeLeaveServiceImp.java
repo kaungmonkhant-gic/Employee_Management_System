@@ -7,34 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class EmployeeLeaveServiceImp implements EmployeeLeaveService {
 
     @Autowired
-    private EmployeeLeaveRepository employeeLeaveRepository;
+    private EmployeeLeaveRepository leaveRepository;
 
     @Override
-    public int getTotalLeavesByEmployeeId(String employeeId) {
-        return employeeLeaveRepository.countByEmployeeId(employeeId);
+    public EmployeeLeave getLeaveByEmployeeId(String employeeId) {
+        Optional<EmployeeLeave> leave = leaveRepository.findByEmployeeId(employeeId);
+        return leave.orElse(null);
     }
 
     @Override
-    public List<EmployeeLeave> getLeavesByEmployeeId(String employeeId) {
-        return List.of();
-    }
-
-//    @Override
-//    public List<EmployeeLeave> getLeavesByEmployeeId(String employeeId) {
-//        return employeeLeaveRepository.findByEmployeeId(employeeId);
-//    }
-
-    @Override
-    public EmployeeLeave saveOrUpdateLeave(EmployeeLeave employeeLeave) {
-        return employeeLeaveRepository.save(employeeLeave);
+    public EmployeeLeave saveOrUpdateLeave(EmployeeLeave leave) {
+        return leaveRepository.save(leave);
     }
 
     @Override
-    public void deleteLeavesByEmployeeId(String employeeId) {
-        employeeLeaveRepository.deleteByEmployeeId(employeeId);
+    public List<EmployeeLeave> getAllLeaves() {
+        return leaveRepository.findAll();
     }
 }

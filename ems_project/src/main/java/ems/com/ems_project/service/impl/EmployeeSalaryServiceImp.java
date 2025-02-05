@@ -1,38 +1,32 @@
 package ems.com.ems_project.service.impl;
 
+import java.util.List;
 import ems.com.ems_project.model.EmployeeSalary;
 import ems.com.ems_project.repository.EmployeeSalaryRepository;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
 
     @Autowired
-    private EmployeeSalaryRepository employeeSalaryRepository;
+    private EmployeeSalaryRepository salaryRepository;
 
     @Override
-    public Optional<EmployeeSalary> getSalaryByEmployeeId(String employeeId) {
-        return employeeSalaryRepository.findByEmployeeId(employeeId);
+    public EmployeeSalary getSalaryByEmployeeId(String employeeId) {
+        Optional<EmployeeSalary> salary = salaryRepository.findByEmployeeId(employeeId);
+        return salary.orElse(null);
     }
 
     @Override
-    public EmployeeSalary saveOrUpdateSalary(EmployeeSalary employeeSalary) {
-        return employeeSalaryRepository.save(employeeSalary);
+    public EmployeeSalary saveOrUpdateSalary(EmployeeSalary salary) {
+        return salaryRepository.save(salary);
     }
 
     @Override
-    public void deleteSalaryByEmployeeId(String employeeId) {
-        employeeSalaryRepository.deleteByEmployeeId(employeeId);
-    }
-
-    @Override
-    public List<EmployeeSalary> getAllEmployeeSalaries() {
-        return employeeSalaryRepository.findAll();
+    public List<EmployeeSalary> getAllSalaries() {
+        return salaryRepository.findAll();
     }
 }
-

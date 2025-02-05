@@ -4,19 +4,19 @@ import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
-import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.service.DropDownService;
 import ems.com.ems_project.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 //import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/")
@@ -24,7 +24,7 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-    private DropDownService dropdownService;
+
 
     @GetMapping("/all")
     public ResponseEntity<ReqRes> getAllEmployees() {
@@ -44,13 +44,8 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeDTO);
     }
 
-    @GetMapping("/dropdown")
-    public ResponseEntity<Map<String, List<String>>> getDropdownData() {
-        Map<String, List<String>> dropdownData = dropdownService.getDropdownData();
-        return ResponseEntity.ok(dropdownData);
-    }
     @PostMapping("/register")
-    public ResponseEntity<?> registerEmployee(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerDTO) {
         ReqRes reqRes = employeeService.registerEmployee(registerDTO);
 
         // Handle the response based on status code
@@ -81,25 +76,21 @@ public class EmployeeController {
             return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
         }
     }
-    @PutMapping("/profile")
-    public ResponseEntity<ReqRes> updateProfile(@PathVariable String email, @RequestBody EmployeeProfile updatedProfile) {
-        // Call the service method to update the profile
-        ReqRes response = employeeService.updateProfile(email, updatedProfile);
+    @PutMapping("/profile/update")
+    public ResponseEntity<ReqRes> updateProfile(@RequestBody EmployeeProfile updatedProfile, Principal principal) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUserId = principal.getName(); // Assuming the ID is stored as the username in authentication
 
-        // Return appropriate response based on the result
-        if (response.getStatusCode() == 200) {
-            return ResponseEntity.ok(response);
-        } else if (response.getStatusCode() == 404) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        ReqRes response = employeeService.updateProfile(loggedInUserId, updatedProfile);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
 
-    @PutMapping("/admin/update/{employeeId}")
-    public ResponseEntity<ReqRes> updateEmployee(@PathVariable String employeeId, @Valid @RequestBody Employee employee) {
-        ReqRes reqRes = employeeService.updateEmployee(employeeId, employee);
+
+    @PutMapping("/update/{id}") // Ensure the variable name matches
+    public ResponseEntity<ReqRes> updateEmployee(@PathVariable("id") String employeeId,
+                                                 @Valid @RequestBody EmployeeDTO employeeDTO) {
+        ReqRes reqRes = employeeService.updateEmployee(employeeId, employeeDTO); // ✅ Now using the correct variable
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);
@@ -109,6 +100,7 @@ public class EmployeeController {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     // Delete an employee by ID
     @DeleteMapping("/admin/delete/{Id}")

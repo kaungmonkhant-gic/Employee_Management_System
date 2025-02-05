@@ -6,15 +6,7 @@ import java.util.List;
 
 public interface EmployeeLeaveService {
 
-    // Fetch total leaves taken by an employee
-    int getTotalLeavesByEmployeeId(String employeeId);
-
-    // Fetch all leave records for an employee
-    List<EmployeeLeave> getLeavesByEmployeeId(String employeeId);
-
-    // Save or update leave record
-    EmployeeLeave saveOrUpdateLeave(EmployeeLeave employeeLeave);
-
-    // Delete leave record by employee ID
-    void deleteLeavesByEmployeeId(String employeeId);
+    EmployeeLeave getLeaveByEmployeeId(String employeeId);
+    EmployeeLeave saveOrUpdateLeave(EmployeeLeave leave);
+    List<EmployeeLeave> getAllLeaves();
 }

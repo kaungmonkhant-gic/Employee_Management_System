@@ -5,6 +5,8 @@ import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.*;
 import ems.com.ems_project.repository.*;
+import ems.com.ems_project.service.EmployeeLeaveService;
+import ems.com.ems_project.service.EmployeeSalaryService;
 import ems.com.ems_project.service.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +39,18 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Autowired
     private ModelMapper modelMapper;
+
     @Autowired
     private DepartmentsRepository departmentRepository;
     @Autowired
     private RolesRepository roleRepository;
     @Autowired
     private PositionsRepository positionRepository;
+    @Autowired
+    private EmployeeSalaryService salaryService;
+
+    @Autowired
+    private EmployeeLeaveService leaveService;
 
     @Override
     public ReqRes getProfile(String email) {
@@ -159,25 +167,86 @@ public class EmployeeServiceImp implements EmployeeService {
         return employeeDTO;
     }
 
-
     @Override
-    public ReqRes updateProfile(String email, EmployeeProfile updatedProfile) {
+    public ReqRes updateProfile(String loggedInUserId, EmployeeProfile updatedProfile) {
         ReqRes reqRes = new ReqRes();
         try {
-            Optional<Employee> userOptional = employeeRepository.findByEmail(email);
+
+            System.out.println("Logged-in User ID: " + loggedInUserId);
+            // Fetch logged-in employee by ID (username or user ID)
+            Optional<Employee> userOptional = employeeRepository.findByEmail(loggedInUserId);
             if (userOptional.isPresent()) {
                 Employee employee = userOptional.get();
+//
+//                // Skip checking and updating the ID (as ID should not be changed)
+//                if (!employee.getEmail().equals(updatedProfile.getEmail())) {
+//                    reqRes.setStatusCode(400);
+//                    reqRes.setMessage("Employee email cannot be updated.");
+//                    return reqRes;
+//                }
 
-                // Use ModelMapper to update Employee with the new values from EmployeeProfile
-                modelMapper.map(updatedProfile, employee);
+                // Update fields only if they are provided in the request
+                if (updatedProfile.getName() != null) {
+                    employee.setName(updatedProfile.getName());
+                }
+                if (updatedProfile.getDob() != null) {
+                    employee.setDob(updatedProfile.getDob());
+                }
+                if (updatedProfile.getNrc() != null) {
+                    employee.setNrc(updatedProfile.getNrc());
+                }
+                if (updatedProfile.getGender() != null) {
+                    employee.setGender(updatedProfile.getGender());
+                }
+                if (updatedProfile.getMaritalStatus() != null) {
+                    employee.setMaritalStatus(updatedProfile.getMaritalStatus());
+                }
+                if (updatedProfile.getPhone() != null) {
+                    employee.setPhone(updatedProfile.getPhone());
+                }
+                if (updatedProfile.getEmail() != null) {
+                    employee.setEmail(updatedProfile.getEmail());
+                }
+                if (updatedProfile.getAddress() != null) {
+                    employee.setAddress(updatedProfile.getAddress());
+                }
+                if (updatedProfile.getEducation() != null) {
+                    employee.setEducation(updatedProfile.getEducation());
+                }
+                if (updatedProfile.getWorkExp() != null) {
+                    employee.setWorkExp(updatedProfile.getWorkExp());
+                }
+                if (updatedProfile.getJoinDate() != null) {
+                    employee.setJoinDate(updatedProfile.getJoinDate());
+                }
+                if (updatedProfile.getResignDate() != null) {
+                    employee.setResignDate(updatedProfile.getResignDate());
+                }
 
-                // Save the updated employee to the database
+                // Update Department if provided
+                if (updatedProfile.getDepartmentName() != null) {
+                    Optional<Departments> departmentOpt = departmentRepository.findByDepartmentName(updatedProfile.getDepartmentName());
+                    departmentOpt.ifPresent(employee::setDepartment);
+                }
+
+                // Update Position if provided
+                if (updatedProfile.getPositionName() != null) {
+                    Optional<Positions> positionOpt = positionRepository.findByPositionName(updatedProfile.getPositionName());
+                    positionOpt.ifPresent(employee::setPosition);
+                }
+
+                // Update Role if provided
+                if (updatedProfile.getRoleName() != null) {
+                    Optional<Roles> roleOpt = roleRepository.findByRoleName(updatedProfile.getRoleName());
+                    roleOpt.ifPresent(employee::setRole);
+                }
+
+                // Save updated employee to the database
                 Employee updatedEmployee = employeeRepository.save(employee);
 
-                // Map the updated Employee entity to EmployeeProfile DTO
+                // Convert updated entity to DTO
                 EmployeeProfile employeeProfile = modelMapper.map(updatedEmployee, EmployeeProfile.class);
 
-                // Prepare response with updated profile
                 reqRes.setEmployeeProfile(employeeProfile);
                 reqRes.setStatusCode(200);
                 reqRes.setMessage("Profile updated successfully.");
@@ -299,50 +368,119 @@ public class EmployeeServiceImp implements EmployeeService {
         return reqRes;
     }
 
-
     @Override
-    public ReqRes updateEmployee(String employeeId, Employee employee) {
+    public ReqRes updateEmployee(String Id, EmployeeDTO employeeDTO) {
         ReqRes reqRes = new ReqRes();
 
+        Optional<Employee> existingEmployee = employeeRepository.findById(Id);
+        if (existingEmployee.isEmpty()) {
+            reqRes.setStatusCode(404);
+            reqRes.setMessage("Employee not found with ID: " + Id);
+            return reqRes;
+        }
+
         try {
-            // Fetch the existing employee by ID
-            Optional<Employee> existingEmployeeOptional = employeeRepository.findById(employeeId);
-            if (existingEmployeeOptional.isPresent()) {
-                Employee existingEmp = existingEmployeeOptional.get();
+            Employee employee = existingEmployee.get();
 
-                // Update basic fields
-                existingEmp.setName(employee.getName());
-                existingEmp.setEmail(employee.getEmail());
-                existingEmp.setPhone(employee.getPhone());
-                existingEmp.setAddress(employee.getAddress());
-
-                // Update foreign key references (IDs)
-                existingEmp.setDepartmentId(employee.getDepartmentId());  // Just set the department ID
-                existingEmp.setPositionId(employee.getPositionId());      // Just set the position ID
-                existingEmp.setRoleId(employee.getRoleId());              // Just set the role ID
-
-                // Optionally update password if provided
-                if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
-                    String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employee.getPassword());
-                    existingEmp.setPassword(hashedPassword);
-                }
-
-                // Save the updated employee
-                Employee updatedEmployee = employeeRepository.save(existingEmp);
-                reqRes.setEmployee(updatedEmployee);
-                reqRes.setStatusCode(200);
-                reqRes.setMessage("Employee updated successfully.");
-            } else {
-                reqRes.setStatusCode(404);
-                reqRes.setMessage("Employee not found.");
+            // Update employee details
+            if (employeeDTO.getEmail() != null && !employeeDTO.getEmail().isEmpty()) {
+                employee.setEmail(employeeDTO.getEmail());
             }
+            if (employeeDTO.getName() != null) {
+                employee.setName(employeeDTO.getName());
+            }
+            if (employeeDTO.getPhone() != null) {
+                employee.setPhone(employeeDTO.getPhone());
+            }
+            if (employeeDTO.getGender() != null) {
+                employee.setGender(employeeDTO.getGender());
+            }
+            if (employeeDTO.getDob() != null) {
+                employee.setDob(employeeDTO.getDob());
+            }
+            if (employeeDTO.getNrc() != null) {
+                employee.setNrc(employeeDTO.getNrc());
+            }
+            if (employeeDTO.getMaritalStatus() != null) {
+                employee.setMaritalStatus(employeeDTO.getMaritalStatus());
+            }
+            if (employeeDTO.getAddress() != null) {
+                employee.setAddress(employeeDTO.getAddress());
+            }
+            if (employeeDTO.getWorkExp() != null) {
+                employee.setWorkExp(employeeDTO.getWorkExp());
+            }
+            if (employeeDTO.getEducation() != null) {
+                employee.setEducation(employeeDTO.getEducation());
+            }
+            if (employeeDTO.getJoinDate() != null) {
+                employee.setJoinDate(employeeDTO.getJoinDate());
+            }
+
+            // Update department, position, and role if provided
+            if (employeeDTO.getDepartmentName() != null) {
+                departmentRepository.findByDepartmentName(employeeDTO.getDepartmentName()).ifPresent(employee::setDepartment);
+            }
+            if (employeeDTO.getPositionName() != null) {
+                positionRepository.findByPositionName(employeeDTO.getPositionName()).ifPresent(employee::setPosition);
+            }
+            if (employeeDTO.getRoleName() != null) {
+                roleRepository.findByRoleName(employeeDTO.getRoleName()).ifPresent(employee::setRole);
+            }
+
+            employeeRepository.save(employee);
+
+            // Update Employee Salary
+            Optional<EmployeeSalary> existingSalary = employeeSalaryRepository.findByEmployeeId(Id);
+            EmployeeSalary employeeSalary = existingSalary.orElse(new EmployeeSalary());
+            if (employeeDTO.getBasicSalary() != null) {
+                employeeSalary.setBasicSalary(employeeDTO.getBasicSalary());
+            }
+            if (employeeDTO.getHouseAllowance() != null) {
+                employeeSalary.setHouseAllowance(employeeDTO.getHouseAllowance());
+            }
+            if (employeeDTO.getTransportation() != null) {
+                employeeSalary.setTransportation(employeeDTO.getTransportation());
+            }
+            employeeSalary.setEmployee(employee);
+            employeeSalaryRepository.save(employeeSalary);
+
+            // Update Employee Leave
+            Optional<EmployeeLeave> existingLeave = employeeLeaveRepository.findByEmployeeId(Id);
+            EmployeeLeave employeeLeave = existingLeave.orElse(new EmployeeLeave());
+            if (employeeDTO.getAnnualLeave() != null) {
+                employeeLeave.setAnnualLeave(employeeDTO.getAnnualLeave());
+            }
+            if (employeeDTO.getCasualLeave() != null) {
+                employeeLeave.setCasualLeave(employeeDTO.getCasualLeave());
+            }
+            if (employeeDTO.getMedicalLeave() != null) {
+                employeeLeave.setMedicalLeave(employeeDTO.getMedicalLeave());
+            }
+            if (employeeDTO.getTotalLeave() != null) {
+                employeeLeave.setTotal(employeeDTO.getTotalLeave());
+            }
+            employeeLeave.setEmployee(employee);
+            employeeLeaveRepository.save(employeeLeave);
+
+            // Calculate total salary
+            double totalSalary = (employeeSalary.getBasicSalary() != null ? employeeSalary.getBasicSalary() : 0.0) +
+                    (employeeSalary.getHouseAllowance() != null ? employeeSalary.getHouseAllowance() : 0.0) +
+                    (employeeSalary.getTransportation() != null ? employeeSalary.getTransportation() : 0.0);
+
+            // Set success response
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Employee updated successfully.");
         } catch (Exception e) {
+            System.err.println("Error updating employee: " + e.getMessage());
             reqRes.setStatusCode(500);
             reqRes.setMessage("An error occurred while updating the employee: " + e.getMessage());
         }
 
         return reqRes;
     }
+
+
 
     // Delete employee
     @Override

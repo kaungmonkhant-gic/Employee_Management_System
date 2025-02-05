@@ -1,6 +1,7 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ems.com.ems_project.model.Employee;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
@@ -68,6 +69,9 @@ public class RegisterDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date resignDate;
 
 
     private Double basicSalary;
@@ -273,5 +277,13 @@ public class RegisterDTO {
 
     public void setTotalLeave(Double totalLeave) {
         this.totalLeave = totalLeave;
+    }
+
+    public Date getResignDate() {
+        return resignDate;
+    }
+
+    public void setResignDate(Date resignDate) {
+        this.resignDate = resignDate;
     }
 }

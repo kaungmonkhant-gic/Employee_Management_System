@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	Optional<Employee> findByEmail(String email);
+	Optional<Employee> findById(String Id);
 //	@Query("SELECT MAX(e.id) FROM Employee e")
 //	Integer getMaxId();
 }
+

@@ -15,39 +15,23 @@ import java.util.Optional;
 public class EmployeeSalaryController {
 
     @Autowired
-    private EmployeeSalaryService employeeSalaryService;
+    private EmployeeSalaryService salaryService;
 
-    // Get salary details for an employee by employeeId
     @GetMapping("/{employeeId}")
-    public ResponseEntity<Optional<EmployeeSalary>> getSalaryByEmployeeId(@PathVariable String employeeId) {
-        Optional<EmployeeSalary> employeeSalary = employeeSalaryService.getSalaryByEmployeeId(employeeId);
-
-        if (employeeSalary != null) {
-            return new ResponseEntity<>(employeeSalary, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        
+    public ResponseEntity<EmployeeSalary> getSalaryByEmployeeId(@PathVariable String employeeId) {
+        EmployeeSalary salary = salaryService.getSalaryByEmployeeId(employeeId);
+        return salary != null ? ResponseEntity.ok(salary) : ResponseEntity.notFound().build();
     }
 
-    // Add or Update salary details for an employee
     @PostMapping("/save")
-    public ResponseEntity<EmployeeSalary> saveOrUpdateSalary(@RequestBody EmployeeSalary employeeSalary) {
-        EmployeeSalary savedSalary = employeeSalaryService.saveOrUpdateSalary(employeeSalary);
-        return new ResponseEntity<>(savedSalary, HttpStatus.CREATED);
+    public ResponseEntity<EmployeeSalary> saveOrUpdateSalary(@RequestBody EmployeeSalary salary) {
+        EmployeeSalary savedSalary = salaryService.saveOrUpdateSalary(salary);
+        return ResponseEntity.ok(savedSalary);
     }
 
-    // Delete salary details for an employee
-    @DeleteMapping("/delete/{employeeId}")
-    public ResponseEntity<Void> deleteSalary(@PathVariable String employeeId) {
-        employeeSalaryService.deleteSalaryByEmployeeId(employeeId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-    // Get salary details for all employees
     @GetMapping("/all")
     public ResponseEntity<List<EmployeeSalary>> getAllSalaries() {
-        List<EmployeeSalary> allSalaries = employeeSalaryService.getAllEmployeeSalaries();
-        return new ResponseEntity<>(allSalaries, HttpStatus.OK);
+        return ResponseEntity.ok(salaryService.getAllSalaries());
     }
 
 }
