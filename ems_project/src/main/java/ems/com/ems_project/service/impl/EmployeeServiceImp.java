@@ -49,9 +49,6 @@ public class EmployeeServiceImp implements EmployeeService {
     @Autowired
     private EmployeeSalaryService salaryService;
 
-    @Autowired
-    private EmployeeLeaveService leaveService;
-
     @Override
     public ReqRes getProfile(String email) {
         ReqRes reqRes = new ReqRes();

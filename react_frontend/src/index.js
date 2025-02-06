@@ -17,6 +17,8 @@ import EmpAttendance from "./components/Employee/EmpAttendance";
 import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import ForgotPassword from "./components/common/ForgotPassword";
+import Leave from "./components/Leave";
+import AddLeave from "./components/AddLeave";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -34,7 +36,7 @@ root.render(
       <Route path="/"
              element={
                <PrivateRoute>
-                 <App />
+                 <App/>
                </PrivateRoute>
              }
       />
@@ -42,12 +44,14 @@ root.render(
             path="/admin-dashboard"
             element={
                 <ProtectedRoute>
-                    <AdminDashboard />
+                    <AdminDashboard/>
                 </ProtectedRoute>
             }
         >
         <Route path="employee" element={<Employee />} />
         <Route path="attendance" element={<Attendance />} />
+        <Route path="leave" element={<Leave />} />
+        <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
