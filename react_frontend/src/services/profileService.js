@@ -25,8 +25,8 @@ const profileService = {
   getProfile: async () => {
     try {
       console.log("Service call to /profile");
-      const response = await apiClient.get("/profile");
-      console.log("Profile Response:", response);
+      const response = await apiClient.get("/employee/profile");
+      console.log("Profile Response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error in getProfile:", error);

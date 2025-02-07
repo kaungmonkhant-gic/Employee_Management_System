@@ -19,7 +19,7 @@ import java.security.Principal;
 
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     @Autowired
@@ -46,8 +46,8 @@ public class EmployeeController {
 
     @PostMapping("/register")
     public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerRequest) {
-        System.out.println("register request");
-        System.out.println(registerRequest.toString());
+//        System.out.println("register request");
+//        System.out.println(registerRequest.toString());
         ReqRes reqRes = employeeService.registerEmployee(registerRequest);
 
         // Handle the response based on status code
@@ -105,9 +105,9 @@ public class EmployeeController {
 
 
     // Delete an employee by ID
-    @DeleteMapping("/admin/delete/{Id}")
-    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String Id) {
-        ReqRes reqRes = employeeService.deleteEmployee(Id);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String id) {
+        ReqRes reqRes = employeeService.deleteEmployee(id);
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);

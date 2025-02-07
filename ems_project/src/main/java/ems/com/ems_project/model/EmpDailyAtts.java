@@ -47,7 +47,7 @@ public class EmpDailyAtts {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "leave_id", referencedColumnName = "id")
-    private Leaves leave;
+    private Leave leave;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ot_id", referencedColumnName = "id")

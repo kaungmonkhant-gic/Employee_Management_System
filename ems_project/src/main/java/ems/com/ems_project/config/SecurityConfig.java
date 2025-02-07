@@ -32,26 +32,45 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoderConfig passwordEncoderConfig;
 
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request-> request
+                .authorizeHttpRequests(request -> request
+                        // Public routes
                         .requestMatchers("/auth/**").permitAll()
-//                        .requestMatchers("/profile").authenticated()
-                        .requestMatchers("/register/","/update").hasAuthority("Admin")
-                        .requestMatchers("/employee/**").hasRole("Employee")
-                        .requestMatchers("/manager/**").hasRole("Manager")
-                        .requestMatchers(HttpMethod.PUT, "/profile/**").hasAnyRole("Admin", "Manager")
-                        .anyRequest().authenticated())
-                .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(
-                        jwtAuthFilter, UsernamePasswordAuthenticationFilter.class
-                );
+
+                        // All logged-in users can view their profile
+                        .requestMatchers(HttpMethod.GET,"/employee/profile").authenticated()
+
+                        .requestMatchers(HttpMethod.PUT, "/employee/profile/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+
+                        // Employee management: Admin (CRUD), Manager (View)
+                        .requestMatchers(HttpMethod.GET, "/employee/all","/employee/{id}").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+                        .requestMatchers(HttpMethod.POST, "/employee/register").hasAuthority("ROLE_Admin")
+                        .requestMatchers(HttpMethod.PUT, "/employee/update/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
+
+                        // Salary management: Admin only
+                        .requestMatchers("/departments/**","/salary/**","/leave/**").hasAuthority("ROLE_Admin")
+
+                        // Attendance management: Admin & Manager
+                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
+                        .requestMatchers(HttpMethod.POST, "/attendance/mark").hasAuthority("ROLE_Employee")
+
+                        // Leave management: Manager only
+                        .requestMatchers("/leave/**").hasAuthority("ROLE_Manager")
+
+                        // Default: All other requests need authentication
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
     }
-    
+
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();

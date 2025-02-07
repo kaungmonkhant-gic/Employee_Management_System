@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import profileController from "../Controller/profileController";
 
 const EmpProfile = () => {
   const initialDetails = {
@@ -36,18 +37,10 @@ const EmpProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:8081/profile", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const data = await response.json();
-        console.log(data);
+        const data = await profileController.fetchEmpProfile();
 
-        if (response.status === 200) {
-          console.log(data);
+        if (data.statusCode === 200) {
+          console.log("fetch data" + data);
           setDetails({
             id: data.employeeProfile.id,
             name: data.employeeProfile.name,

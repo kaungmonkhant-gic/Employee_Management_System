@@ -1,10 +1,11 @@
 import profileService from "../services/profileService";
 
 const profileController = {
-  fetchProfile: async () => {
+  fetchEmpProfile: async () => {
     try {
       const profile = await profileService.getProfile();
-      // Perform additional processing if needed
+      console.log("Profile:", profile);
+
       return profile;
     } catch (error) {
       throw new Error("Failed to fetch profile. Please try again later.");
