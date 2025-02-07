@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import employeeController from "../Controller/employeeController";
 import DataTable from "./common/DataTable";
@@ -10,13 +10,10 @@ function Employee() {
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
   const [headerText, setHeaderText] = useState("Register New Employee");
-  {employees.map((employee) => (
+  employees.map((employee) => (
     <p key={employee.id}>{employee.name}</p>
-  ))}
-  
-  const positions = ["Manager", "Developer", "Designer", "Tester", "HR", "Intern"];
-
- 
+  ))
+   
     const columns = [
       { field: "number", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
       { field: "name", headerName: "Name", minWidth: 150, flex: 1, cellClassName: "text-center" },

@@ -1,25 +1,4 @@
-import axios from "axios";
-
-const API_BASE_URL = "http://localhost:8081"; // Replace with your API base URL
-
-// Create an axios instance with default configuration
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token"); // Retrieve token from localStorage
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // Attach token to headers
-    }
-    config.headers["Content-Type"] = "application/json"; // Explicitly set Content-Type
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+import apiClient from "../components/api/apiclient";
 
 const overtimeService = {
   // Fetch all overtime records
