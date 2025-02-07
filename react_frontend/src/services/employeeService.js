@@ -51,7 +51,7 @@ const employeeService = {
 
   getDepartments: async () => {
     try {
-      const response = await apiClient.get("/dropdown");
+      const response = await apiClient.get("/departments");
       return response.data; // Assuming backend returns an array of departments
     } catch (error) {
       console.error("Error fetching departments:", error);

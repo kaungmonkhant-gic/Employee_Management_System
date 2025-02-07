@@ -27,6 +27,7 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, }) {
     annualLeave: "",
     medicalLeave: "",
     casualLeave: "",
+    //password:"",
     totalLeave: "4",
   });
   const positions = ["Senior Developer", "Junior Developer", "Fresher", "Intern","Accountant"];
@@ -35,10 +36,10 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, }) {
   // const positions = ["POS001", "POS002", "POS003", "POS004","POS005"];
   // const departments = ["DEPT001", "DEPT002", "DEPT003", "DEPT004", "DEPT005"];
   // const roles = ["1", "2", "3"];
- 
+
   // const [error, setError] = useState("");
 
- 
+
 
  // ✅ Populate fields if editing an employee
  useEffect(() => {
@@ -159,7 +160,7 @@ const handleSubmit = async (e) => {
           <div className="mb-2">
             <label className="form-label fw-bold">NRC</label>
             <div className="d-flex gap-2">
-        
+
         {/* NRC Region Dropdown */}
         <select
           name="nrcRegion"
@@ -345,6 +346,11 @@ const handleSubmit = async (e) => {
               className="form-control form-control-lg" 
             />
           </div>
+          <div className="mb-2">
+                <label className="form-label fw-semibold">Password</label>
+                <input type="text" name="password" value={employeeData.password} onChange={handleChange} className="form-control form-control-lg" />
+              </div>
+
                 </div>
               </div>
               
@@ -434,7 +440,7 @@ const handleSubmit = async (e) => {
 
           </div>
         </div>
-              
+
               {/* Buttons */}
               <div className="d-flex justify-content-center mt-4">
                 <button type="submit" className="btn btn-primary me-2">{editingEmployee ? "Update Employee" : "Register Employee"}</button>
