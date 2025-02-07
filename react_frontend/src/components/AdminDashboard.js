@@ -42,6 +42,9 @@ function AdminDashboard() {
           >
             Attendance
           </Link>
+          <Link to="/admin-dashboard/leave" className="nav-link text-light">
+            Leave 
+          </Link>
           <Link to="/admin-dashboard/ot" className="nav-link text-light">
             OT (Overtime)
           </Link>

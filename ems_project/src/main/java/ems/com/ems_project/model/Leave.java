@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Table(name = "leaves")
 @Data
-public class Leaves {
+public class Leave {
 
     @Id
     @Column(name = "id",unique = true,nullable = false)

@@ -1,12 +1,21 @@
 package ems.com.ems_project.service;
 
-import ems.com.ems_project.model.EmployeeLeave;
+import ems.com.ems_project.dto.EmployeeLeaveDTO;
+import ems.com.ems_project.repository.EmployeeLeaveRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface EmployeeLeaveService {
+@Service
+public class EmployeeLeaveService {
 
-    EmployeeLeave getLeaveByEmployeeId(String employeeId);
-    EmployeeLeave saveOrUpdateLeave(EmployeeLeave leave);
-    List<EmployeeLeave> getAllLeaves();
+    @Autowired
+    private EmployeeLeaveRepository employeeLeaveRepository;
+
+    public List<EmployeeLeaveDTO> getAllLeavesWithEmployeeName() {
+        return employeeLeaveRepository.findAll().stream()
+                .map(employeeLeave -> new EmployeeLeaveDTO(employeeLeave, employeeLeave.getEmployee().getName()))
+                .toList();
+    }
 }

@@ -2,7 +2,7 @@ package ems.com.ems_project.service;
 
 import org.springframework.stereotype.Service;
 
-import ems.com.ems_project.model.Leaves;
+import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.repository.LeavesRepository;
 
 import java.util.List;
@@ -15,11 +15,11 @@ public class LeavesService {
         this.leaveRepository = leaveRepository;
     }
 
-    public Leaves saveLeave(Leaves leave) {
+    public Leave saveLeave(Leave leave) {
         return leaveRepository.save(leave);
     }
 
-    public List<Leaves> getAllLeaves() {
+    public List<Leave> getAllLeaves() {
         return leaveRepository.findAll();
     }
 }

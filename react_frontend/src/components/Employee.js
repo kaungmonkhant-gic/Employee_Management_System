@@ -9,6 +9,7 @@ function Employee() {
   const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
+  const [headerText, setHeaderText] = useState("Register New Employee");
   {employees.map((employee) => (
     <p key={employee.id}>{employee.name}</p>
   ))}
@@ -67,30 +68,13 @@ function Employee() {
     ];
     
   
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-  
-  const fetchEmployees = async () => {
-    try {
-      const data = await employeeController.fetchUsers();
-      if (Array.isArray(data)) {
-        setEmployees(data);
-      } else {
-        setEmployees([]); // Fallback to an empty array
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-      setEmployees([]); // Avoid undefined state
-    }
-  };
-  
   const handleRegisterClick = () => {
     setEditingEmployee(null);
     setIsRegisterScreen(true);
   };
 
   const handleEdit = (employee) => {
+    setHeaderText("Edit Employee");
     setEditingEmployee(employee);
     setIsRegisterScreen(true);
   };
@@ -134,7 +118,7 @@ function Employee() {
         />
         </>
       ) : (
-        <EmployeeForm onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} headerText={"Register New Employee"} />
+        <EmployeeForm onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} headerText={headerText} />
       )}
     </div>
   );
