@@ -5,7 +5,6 @@ import DataTable from "./common/DataTable";
 import nrcData from "../Data/nrc.json";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
-
 function Employee() {
   const [employees, setEmployees] = useState([]);
   const [newEmployee, setNewEmployee] = useState({
@@ -13,7 +12,7 @@ function Employee() {
     email: "",
     positionName: "",
     departmentName: "",
-    roleName:"",
+    roleName: "",
     number: "",
     id: "",
     dob: "",
@@ -34,7 +33,7 @@ function Employee() {
     regions: [],
     townships: [],
     types: [],
-    details: []
+    details: [],
   });
 
   // Load NRC data on mount
@@ -43,23 +42,23 @@ function Employee() {
   }, []);
 
   const columns = [
-    {field: "number", headerName: "No."},
-    {field: "name", headerName: "Name"},
-    {field: "email", headerName: "Email"},
-    {field: "positionName", headerName: "Position"},
-    {field: "id", headerName: "Emp ID"},
-    {field: "dob", headerName: "DOB"},
-    {field: "nrc", headerName: "NRC"},
-    {field: "gender", headerName: "Gender"},
-    {field: "maritalStatus", headerName: "Marital Status"},
-    {field: "phone", headerName: "Phone"},
-    {field: "address", headerName: "Address"},
-    {field: "education", headerName: "Education"},
-    {field: "workExp", headerName: "WorkExp"},
-    {field: "joinDate", headerName: "Joined Date"},
-    {field: "resignDate", headerName: "Resign Date"},
-    {field: "departmentName", headerName: "Department"},
-    {field: "roleName", headerName: "Role"},
+    { field: "number", headerName: "No." },
+    { field: "name", headerName: "Name" },
+    { field: "email", headerName: "Email" },
+    { field: "positionName", headerName: "Position" },
+    { field: "id", headerName: "Emp ID" },
+    { field: "dob", headerName: "DOB" },
+    { field: "nrc", headerName: "NRC" },
+    { field: "gender", headerName: "Gender" },
+    { field: "maritalStatus", headerName: "Marital Status" },
+    { field: "phone", headerName: "Phone" },
+    { field: "address", headerName: "Address" },
+    { field: "education", headerName: "Education" },
+    { field: "workExp", headerName: "WorkExp" },
+    { field: "joinDate", headerName: "Joined Date" },
+    { field: "resignDate", headerName: "Resign Date" },
+    { field: "departmentName", headerName: "Department" },
+    { field: "roleName", headerName: "Role" },
     {
       field: "actions",
       headerName: "Actions",
@@ -84,10 +83,10 @@ function Employee() {
       ),
     },
   ];
+
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
-  
-  
+
   const positions = [
     "Manager",
     "Developer",
@@ -98,15 +97,14 @@ function Employee() {
   ];
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     if (editingEmployee) {
-      setEditingEmployee((prev) => ({...prev, [name]: value}));
+      setEditingEmployee((prev) => ({ ...prev, [name]: value }));
     } else {
-      setNewEmployee((prev) => ({...prev, [name]: value}));
+      setNewEmployee((prev) => ({ ...prev, [name]: value }));
     }
   };
-  
-  
+
   const handleRegister = (e) => {
     e.preventDefault();
     if (employees.some((employee) => employee.id === newEmployee.id)) {
@@ -114,7 +112,7 @@ function Employee() {
       return;
     }
 
-    if (newEmployee.name && newEmployee.email && newEmployee.position) {
+    if (newEmployee.name && newEmployee.email && newEmployee.positionName) {
       const newEmployeeData = {
         ...newEmployee,
         number: employees.length + 1,
@@ -125,7 +123,6 @@ function Employee() {
       setNewEmployee({
         name: "",
         email: "",
-        
         id: "",
         dob: "",
         nrcRegion: "",
@@ -133,7 +130,7 @@ function Employee() {
         nrcType: "",
         nrcDetails: "",
         gender: "",
-        roleName:"",
+        roleName: "",
         maritalStatus: "",
         phone: "",
         address: "",
@@ -150,30 +147,25 @@ function Employee() {
     }
   };
 
-  const handleEdit = (number) => {
-    console.log("Editing:", number);
-    const employeeToEdit = employees.find((employee) => employee.number === number);
+  const handleEdit = (id) => {
+    console.log("Editing:", id);
+    const employeeToEdit = employees.find((employee) => employee.id === id);
     setEditingEmployee(employeeToEdit);
     setIsRegisterScreen(true);
   };
-  
-  const handleDelete = (number) => {
-    console.log("Deleting employee number:", number);
-    setEmployees((prev) => prev.filter((employee) => employee.number !== number));
+
+  const handleDelete = (id) => {
+    console.log("Deleting employee ID:", id);
+    setEmployees((prev) => prev.filter((employee) => employee.id !== id));
   };
-  
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    if (
-        editingEmployee.name &&
-        editingEmployee.email &&
-        editingEmployee.position
-    ) {
+    if (editingEmployee.name && editingEmployee.email && editingEmployee.positionName) {
       setEmployees((prev) =>
-          prev.map((employee) =>
-              employee.number === editingEmployee.number ? editingEmployee : employee
-          )
+        prev.map((employee) =>
+          employee.id === editingEmployee.id ? editingEmployee : employee
+        )
       );
       setEditingEmployee(null);
       setIsRegisterScreen(false);
@@ -186,28 +178,24 @@ function Employee() {
     setIsRegisterScreen(true);
     setEditingEmployee(null);
   };
-// const fetchEmployees = async () => {
-//   const data = await employeeController.fetchUsers();
-//   setEmployees(data.sort((a, b) => a.number - b.number));
-// };
 
-useEffect(() => {
-  fetchEmployees();
-}, []);
+  const fetchEmployees = async () => {
+    const data = await employeeController.fetchUsers();
 
-const fetchEmployees = async () => {
-  const data = await employeeController.fetchUsers();
-  
-  // Ensure each employee has a 'number' field
-  const updatedData = data.map((employee, index) => ({
-    ...employee,
-    number: index + 1, // Assign a number
-  }));
+    // Ensure each employee has a 'number' field
+    const updatedData = data.map((employee, index) => ({
+      ...employee,
+      number: index + 1, // Assign a number
+    }));
 
-  setEmployees(updatedData);
-};
+    setEmployees(updatedData);
+  };
 
-  return (
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+    return (
       <div className="container mt-5 vh-100">
          
         
@@ -223,17 +211,13 @@ const fetchEmployees = async () => {
               </button>
 
               <div className="vh-100 overflow-auto">
-              
-              <DataTable
-  fetchData={() => employeeController.fetchUsers().then(data => 
-    data.map((employee, index) => ({ ...employee, number: index + 1 })) // Add number field
-  )}
-  columns={columns}
-  keyField="number"
-/>
-
-
-
+                <DataTable
+                  fetchData={() => employeeController.fetchUsers().then(data => 
+                    data.map((employee, index) => ({ ...employee, number: index + 1 })) // Add number field
+                  )}
+                  columns={columns}
+                  keyField="number"
+                />
               </div>
 
             </div>

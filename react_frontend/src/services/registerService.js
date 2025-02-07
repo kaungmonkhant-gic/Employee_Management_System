@@ -21,11 +21,10 @@ apiClient.interceptors.request.use(
   }
 );
 
-const apiService = {
-  // Register a new user
+const registerService = {
   registerUser: async (userData) => {
     try {
-      console.log("Service call to /register", userData);
+      console.log("Service call to /auth/register", userData);
       const response = await apiClient.post("/register", userData);
       console.log("Registration Response:", response);
       return response.data;
@@ -34,19 +33,6 @@ const apiService = {
       throw error;
     }
   },
-
-  // Fetch all employees
-  getEmployees: async () => {
-    try {
-      console.log("Service call to /admin/all");
-      const response = await apiClient.get("/admin/all");
-      console.log("Response:", response);
-      return response.data;
-    } catch (error) {
-      console.error("Error in getEmployees:", error);
-      throw error;
-    }
-  },
 };
 
-export default apiService;
+export default registerService;

@@ -16,6 +16,7 @@ import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
 import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import AttendanceRecord from "./components/AttendanceRecord";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -50,6 +51,7 @@ root.render(
         <Route path="ot" element={<OT />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
+        <Route path="attendance-record" element={<AttendanceRecord />} />
       </Route>
 
       <Route path="/employee-dashboard/*" element={<EmployeeDashboard />}>
