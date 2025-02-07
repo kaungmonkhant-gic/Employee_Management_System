@@ -40,12 +40,12 @@ function AdminDashboard() {
             Employee
           </Link>
           <div>
-            
+
           <Link to="/admin-dashboard/attendance" className="nav-link text-light" onClick={() => setShowSubMenu(!showSubMenu)} style={{cursor:"pointer"}}>
             Attendance   <i className="bi bi-caret-down " style={{color:"white", marginLeft:"80px"}}></i>
           </Link>
-         
-        
+
+
           <div>
             {showSubMenu && (
               <div className="ms-3">
@@ -59,6 +59,9 @@ function AdminDashboard() {
             )}
           </div>
         </div>
+          <Link to="/admin-dashboard/leave" className="nav-link text-light">
+            Leave
+          </Link>
           <Link to="/admin-dashboard/ot" className="nav-link text-light">
             OT (Overtime)
           </Link>

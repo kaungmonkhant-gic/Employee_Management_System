@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -31,24 +32,45 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoderConfig passwordEncoderConfig;
 
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request-> request.requestMatchers("/auth/**","/public/**","/register").permitAll()
-                        .requestMatchers("/admin/**").hasRole("Admin")
-                        .requestMatchers("/employee/**").hasRole("Employee")
-                        .requestMatchers("/manager/**").hasRole("Manager")
-                        .requestMatchers("/user/**").hasAnyRole("Admin", "Manager","Employee")
-                        .anyRequest().authenticated())
-                .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(
-                        jwtAuthFilter, UsernamePasswordAuthenticationFilter.class
-                );
+                .authorizeHttpRequests(request -> request
+                        // Public routes
+                        .requestMatchers("/auth/**").permitAll()
+
+                        // All logged-in users can view their profile
+                        .requestMatchers(HttpMethod.GET,"/employee/profile").authenticated()
+
+                        .requestMatchers(HttpMethod.PUT, "/employee/profile/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+
+                        // Employee management: Admin (CRUD), Manager (View)
+                        .requestMatchers(HttpMethod.GET, "/employee/all","/employee/{id}").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+                        .requestMatchers(HttpMethod.POST, "/employee/register").hasAuthority("ROLE_Admin")
+                        .requestMatchers(HttpMethod.PUT, "/employee/update/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
+
+                        // Salary management: Admin only
+                        .requestMatchers("/departments/**","/salary/**","/leave/**").hasAuthority("ROLE_Admin")
+
+                        // Attendance management: Admin & Manager
+                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
+                        .requestMatchers(HttpMethod.POST, "/attendance/mark").hasAuthority("ROLE_Employee")
+
+                        // Leave management: Manager only
+                        .requestMatchers("/leave/**").hasAuthority("ROLE_Manager")
+
+                        // Default: All other requests need authentication
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
     }
-    
+
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();

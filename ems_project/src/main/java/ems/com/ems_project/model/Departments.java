@@ -1,5 +1,6 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -38,6 +39,7 @@ public class Departments {
     }
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Employee> employees = new ArrayList<>();
 }
 

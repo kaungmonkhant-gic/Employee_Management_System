@@ -1,71 +1,62 @@
 package ems.com.ems_project.controller;
 
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
-import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 //import javax.validation.Valid;
-import java.util.List;
+
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    // Get all employees
-    @GetMapping("/admin/all")
-    public ResponseEntity<List<EmployeeProfile>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
-    }
 
-    @GetMapping("/admin/employee/{id}")
-    public ResponseEntity<ReqRes> getEmployeeById(@PathVariable String id) {
-        ReqRes reqRes = new ReqRes();
-        try {
-            // Fetch the employee profile from the service
-            EmployeeProfile employeeProfile = employeeService.getEmployeeById(id);
+    @GetMapping("/all")
+    public ResponseEntity<ReqRes> getAllEmployees() {
+        ReqRes reqRes = employeeService.getAllEmployees();
 
-            // Set success status code and message
-            reqRes.setStatusCode(200);
-            reqRes.setMessage("Profile retrieval successful.");
-            reqRes.setEmployeeProfile(employeeProfile);
-
-            // Return the response with status 200 (OK)
-            return ResponseEntity.ok(reqRes);
-        } catch (Exception e) {
-            // Handle error (e.g., employee not found)
-            reqRes.setStatusCode(404);
-            reqRes.setMessage("Employee not found with ID: " + id);
-
-            // Return the response with status 404 (Not Found)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reqRes);
+        // Return appropriate response based on status code
+        if (reqRes.getStatusCode() == 200) {
+            return ResponseEntity.ok(reqRes); // Success - HTTP 200
+        } else {
+            return ResponseEntity.status(reqRes.getStatusCode()).body(reqRes); // Error - HTTP 500 or others
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
+        EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
+        return ResponseEntity.ok(employeeDTO);
+    }
 
-
-    // Endpoint to register a new employee
     @PostMapping("/register")
-    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerDTO) {
-        ReqRes reqRes = employeeService.registerEmployee(registerDTO);
+    public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerRequest) {
+//        System.out.println("register request");
+//        System.out.println(registerRequest.toString());
+        ReqRes reqRes = employeeService.registerEmployee(registerRequest);
 
-        // Return appropriate response based on status code
+        // Handle the response based on status code
         if (reqRes.getStatusCode() == 201) {
             return new ResponseEntity<>(reqRes, HttpStatus.CREATED);
-        } else if (reqRes.getStatusCode() == 409) {
-            return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
         } else if (reqRes.getStatusCode() == 400) {
             return new ResponseEntity<>(reqRes, HttpStatus.BAD_REQUEST);
+        } else if (reqRes.getStatusCode() == 409) {
+            return new ResponseEntity<>(reqRes, HttpStatus.CONFLICT);
         } else {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -87,11 +78,21 @@ public class EmployeeController {
             return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
         }
     }
+    @PutMapping("/profile/update")
+    public ResponseEntity<ReqRes> updateProfile(@RequestBody EmployeeProfile updatedProfile, Principal principal) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUserId = principal.getName(); // Assuming the ID is stored as the username in authentication
+
+        ReqRes response = employeeService.updateProfile(loggedInUserId, updatedProfile);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
 
 
-    @PutMapping("/admin/update/{employeeId}")
-    public ResponseEntity<ReqRes> updateEmployee(@PathVariable String employeeId, @Valid @RequestBody Employee employee) {
-        ReqRes reqRes = employeeService.updateEmployee(employeeId, employee);
+
+    @PutMapping("/update/{id}") // Ensure the variable name matches
+    public ResponseEntity<ReqRes> updateEmployee(@PathVariable("id") String employeeId,
+                                                 @Valid @RequestBody EmployeeDTO employeeDTO) {
+        ReqRes reqRes = employeeService.updateEmployee(employeeId, employeeDTO); // ✅ Now using the correct variable
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);
@@ -102,10 +103,11 @@ public class EmployeeController {
         }
     }
 
+
     // Delete an employee by ID
-    @DeleteMapping("/admin/delete/{employeeId}")
-    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String employeeId) {
-        ReqRes reqRes = employeeService.deleteEmployee(employeeId);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String id) {
+        ReqRes reqRes = employeeService.deleteEmployee(id);
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);

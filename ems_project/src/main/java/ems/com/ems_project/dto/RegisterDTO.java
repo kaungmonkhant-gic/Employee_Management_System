@@ -1,6 +1,10 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.Positions;
+import ems.com.ems_project.validation.ValidEmail;
+import ems.com.ems_project.validation.ValidPassword;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +22,6 @@ import java.util.Date;
 @Setter
 public class RegisterDTO {
 
-    @Id
     private String id;
 
 
@@ -26,11 +29,11 @@ public class RegisterDTO {
     private String name;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Please provide a valid email address")
+    @ValidEmail
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @ValidPassword
     private String password;
 
     @NotBlank(message = "Phone number is required")
@@ -69,6 +72,20 @@ public class RegisterDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date resignDate;
+
+
+    private Double basicSalary;
+    private Double houseAllowance;
+    private Double transportation;
+    private Double totalSalary;
+    // Leave details
+    private Double annualLeave;
+    private Double casualLeave;
+    private Double medicalLeave;
+    private Double totalLeave;
 
     // Optional field
 
@@ -199,5 +216,77 @@ public class RegisterDTO {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public Double getBasicSalary() {
+        return basicSalary;
+    }
+
+    public void setBasicSalary(Double basicSalary) {
+        this.basicSalary = basicSalary;
+    }
+
+    public Double getHouseAllowance() {
+        return houseAllowance;
+    }
+
+    public void setHouseAllowance(Double houseAllowance) {
+        this.houseAllowance = houseAllowance;
+    }
+
+    public Double getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
+    }
+
+    public Double getTotalSalary() {
+        return totalSalary;
+    }
+
+    public void setTotalSalary(Double totalSalary) {
+        this.totalSalary = totalSalary;
+    }
+
+    public Double getAnnualLeave() {
+        return annualLeave;
+    }
+
+    public void setAnnualLeave(Double annualLeave) {
+        this.annualLeave = annualLeave;
+    }
+
+    public Double getCasualLeave() {
+        return casualLeave;
+    }
+
+    public void setCasualLeave(Double casualLeave) {
+        this.casualLeave = casualLeave;
+    }
+
+    public Double getMedicalLeave() {
+        return medicalLeave;
+    }
+
+    public void setMedicalLeave(Double medicalLeave) {
+        this.medicalLeave = medicalLeave;
+    }
+
+    public Double getTotalLeave() {
+        return totalLeave;
+    }
+
+    public void setTotalLeave(Double totalLeave) {
+        this.totalLeave = totalLeave;
+    }
+
+    public Date getResignDate() {
+        return resignDate;
+    }
+
+    public void setResignDate(Date resignDate) {
+        this.resignDate = resignDate;
     }
 }

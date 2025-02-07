@@ -8,9 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalary, String> {
+    Optional<EmployeeSalary> findByEmployeeId(String employeeId);
 
-    Optional<EmployeeSalary> findById(String employeeId);
-
-    void deleteByEmployeeId(String employeeId);
+    void deleteByEmployeeId(String id);
 }
 

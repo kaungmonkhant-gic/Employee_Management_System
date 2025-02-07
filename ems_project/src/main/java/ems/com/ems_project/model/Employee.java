@@ -3,6 +3,8 @@ package ems.com.ems_project.model;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import ems.com.ems_project.dto.EmployeeDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +34,8 @@ public class Employee implements UserDetails {
     private String name;
 
     @Column(name = "dob")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dob;
 
     @Column(name = "nrc", unique = true)
@@ -65,11 +68,13 @@ public class Employee implements UserDetails {
 
    
     @Column(name = "join_date")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
     
     @Column(name = "resign_date")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date resignDate;
 
     @ManyToOne
@@ -79,7 +84,7 @@ public class Employee implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "position_id",nullable = false)
-    //@JsonIgnore
+   // @JsonIgnore
     private Positions position;
 
     @ManyToOne
@@ -324,5 +329,6 @@ public class Employee implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }
 

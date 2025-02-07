@@ -3,6 +3,7 @@ package ems.com.ems_project.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JWTUtils {
@@ -27,6 +30,7 @@ public class JWTUtils {
     }
 
     public String generateToken(UserDetails userDetails){
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -38,11 +42,17 @@ public class JWTUtils {
     public  String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
         return Jwts.builder()
                 .claims(claims)
+                .claim("roles", userDetails.getAuthorities())
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(Key)
                 .compact();
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = Jwts.parser().verifyWith(Key).build().parseSignedClaims(token).getPayload();
+        return claims.get("roles", List.class); // Extract roles
     }
 
     public  String extractUsername(String token){

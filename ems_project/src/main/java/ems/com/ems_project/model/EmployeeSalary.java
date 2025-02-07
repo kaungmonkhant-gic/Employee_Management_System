@@ -13,7 +13,8 @@ import lombok.Setter;
 public class EmployeeSalary {
 
     @Id
-    @Column(name = "id",unique = true,nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id",nullable = false,unique = true)
     private Integer Id;
 
     @Column(name = "basic_salary", nullable = false)
@@ -26,7 +27,53 @@ public class EmployeeSalary {
     private Double transportation;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false,unique = true)
     //@JsonIgnore
     private Employee employee;
+
+    public Double getTotalSalary() {
+        return (basicSalary != null ? basicSalary : 0.0) +
+                (houseAllowance != null ? houseAllowance : 0.0) +
+                (transportation != null ? transportation : 0.0);
+    }
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
+
+    public Double getBasicSalary() {
+        return basicSalary;
+    }
+
+    public void setBasicSalary(Double basicSalary) {
+        this.basicSalary = basicSalary;
+    }
+
+    public Double getHouseAllowance() {
+        return houseAllowance;
+    }
+
+    public void setHouseAllowance(Double houseAllowance) {
+        this.houseAllowance = houseAllowance;
+    }
+
+    public Double getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 }
