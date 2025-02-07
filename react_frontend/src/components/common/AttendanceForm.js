@@ -46,7 +46,7 @@ function AttendanceForm() {
   // Fetch positions from backend
   // const fetchPositions = async () => {
   //   try {
-  //     const response = await axios.get("http://localhost:5000/positions");
+  //     const response = await axios.get("http://localhost:8081/positions");
   //     setPositions(response.data);
   //   } catch (error) {
   //     console.error("Error fetching positions:", error);
@@ -56,7 +56,7 @@ function AttendanceForm() {
   // Fetch departments from backend
   // const fetchDepartments = async () => {
   //   try {
-  //     const response = await axios.get("http://localhost:5000/departments");
+  //     const response = await axios.get("http://localhost:8081/departments");
   //     setDepartments(response.data);
   //   } catch (error) {
   //     console.error("Error fetching departments:", error);
@@ -77,10 +77,10 @@ function AttendanceForm() {
 
     try {
       if (isEditing) {
-        // await axios.put(`http://localhost:5000/attendance/${employeeId}`, formData);
+        // await axios.put(`http://localhost:8081/attendance/${employeeId}`, formData);
         alert("Changes saved successfully!");
       } else {
-        // await axios.post("http://localhost:5000/attendance", formData);
+        // await axios.post("http://localhost:8081/attendance", formData);
         alert("Attendance added successfully!");
       }
       navigate("/AttendanceRecord", { state: formData });
