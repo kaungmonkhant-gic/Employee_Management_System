@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ public class EmployeeServiceImp implements EmployeeService {
     private EmployeeLeaveRepository employeeLeaveRepository;
 
     @Autowired
-    private PasswordEncoderConfig passwordEncoderConfig; // Use PasswordEncoderConfig for encoding
+    private PasswordEncoderConfig passwordEncoderConfig;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -177,13 +179,12 @@ public class EmployeeServiceImp implements EmployeeService {
             Optional<Employee> userOptional = employeeRepository.findByEmail(loggedInUserId);
             if (userOptional.isPresent()) {
                 Employee employee = userOptional.get();
-//
-//                // Skip checking and updating the ID (as ID should not be changed)
-//                if (!employee.getEmail().equals(updatedProfile.getEmail())) {
-//                    reqRes.setStatusCode(400);
-//                    reqRes.setMessage("Employee email cannot be updated.");
-//                    return reqRes;
-//                }
+
+                if (employee.getResignDate() != null) {
+                    reqRes.setStatusCode(400);  // Bad Request
+                    reqRes.setMessage("Cannot update. Employee has already resigned on " + employee.getResignDate());
+                    return reqRes;
+                }
 
                 // Update fields only if they are provided in the request
                 if (updatedProfile.getName() != null) {
@@ -288,7 +289,7 @@ public class EmployeeServiceImp implements EmployeeService {
             System.out.println(department);
             System.out.println(registerDTO.getRoleId());
             System.out.println(registerDTO.getPositionId());
-            Optional<Positions> position = positionRepository.findById("POS00" + registerDTO.getPositionId());
+            Optional<Positions> position = positionRepository.findById(registerDTO.getPositionId());
             Optional<Roles> role = roleRepository.findById(registerDTO.getRoleId());
             System.out.println(position);
             System.out.println(role);
@@ -311,7 +312,6 @@ public class EmployeeServiceImp implements EmployeeService {
                 reqRes.setMessage("Role not found.");
                 return reqRes;
             }
-            System.out.println("!!!!2!!!!");
             // Create new Employee entity
             Employee employee = new Employee();
             employee.setId(registerDTO.getId());  // If ID is provided, use it; otherwise, auto-generate.
@@ -339,14 +339,13 @@ public class EmployeeServiceImp implements EmployeeService {
 //                return reqRes;
 //            }
 
-            System.out.println("!!!!3!!!!");
 
-            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode("123456");
+            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
             employee.setPassword(hashedPassword);
 
             // Save the employee
             Employee savedEmployee = employeeRepository.save(employee);
-            System.out.println("!!!!4!!!!");
+
 
             // Save EmployeeSalary entity
             EmployeeSalary employeeSalary = new EmployeeSalary();
@@ -355,16 +354,20 @@ public class EmployeeServiceImp implements EmployeeService {
             employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
             employeeSalary.setTransportation(registerDTO.getTransportation());
             employeeSalaryRepository.save(employeeSalary);
-            System.out.println("!!!!5!!!!");
+
 
             EmployeeLeave employeeLeave = new EmployeeLeave();
             employeeLeave.setEmployee(savedEmployee);
             employeeLeave.setAnnualLeave(registerDTO.getAnnualLeave());
             employeeLeave.setCasualLeave(registerDTO.getCasualLeave());
             employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
-            employeeLeave.setTotal(registerDTO.getTotalLeave());
+            // Calculate total leave in service layer
+            double totalLeave = registerDTO.getAnnualLeave()
+                    + registerDTO.getCasualLeave()
+                    + registerDTO.getMedicalLeave();
+            employeeLeave.setTotal(totalLeave);
             employeeLeaveRepository.save(employeeLeave);
-            System.out.println("!!!!6!!!!");
+
 
             // Set response details
             reqRes.setEmployee(savedEmployee);
@@ -393,6 +396,12 @@ public class EmployeeServiceImp implements EmployeeService {
 
         try {
             Employee employee = existingEmployee.get();
+
+            if (employee.getResignDate() != null) {
+                reqRes.setStatusCode(400);  // Bad Request
+                reqRes.setMessage("Cannot update. Employee has already resigned on " + employee.getResignDate());
+                return reqRes;
+            }
 
             // Update employee details
             if (employeeDTO.getEmail() != null && !employeeDTO.getEmail().isEmpty()) {
@@ -439,6 +448,11 @@ public class EmployeeServiceImp implements EmployeeService {
             if (employeeDTO.getRoleName() != null) {
                 roleRepository.findByRoleName(employeeDTO.getRoleName()).ifPresent(employee::setRole);
             }
+            // Hash and update the password if provided
+            if (employeeDTO.getPassword() != null && !employeeDTO.getPassword().isEmpty()) {
+                String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employeeDTO.getPassword());
+                employee.setPassword(hashedPassword);
+            }
 
             employeeRepository.save(employee);
 
@@ -469,9 +483,12 @@ public class EmployeeServiceImp implements EmployeeService {
             if (employeeDTO.getMedicalLeave() != null) {
                 employeeLeave.setMedicalLeave(employeeDTO.getMedicalLeave());
             }
-            if (employeeDTO.getTotalLeave() != null) {
-                employeeLeave.setTotal(employeeDTO.getTotalLeave());
-            }
+            // Calculate totalLeave dynamically
+            double totalLeave = (employeeLeave.getAnnualLeave() != null ? employeeLeave.getAnnualLeave() : 0.0) +
+                    (employeeLeave.getCasualLeave() != null ? employeeLeave.getCasualLeave() : 0.0) +
+                    (employeeLeave.getMedicalLeave() != null ? employeeLeave.getMedicalLeave() : 0.0);
+
+            employeeLeave.setTotal(totalLeave);
             employeeLeave.setEmployee(employee);
             employeeLeaveRepository.save(employeeLeave);
 
@@ -493,19 +510,32 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
 
-
-    // Delete employee
     @Override
     public ReqRes deleteEmployee(String Id) {
         ReqRes reqRes = new ReqRes();
-
         // Check if the employee exists
         Optional<Employee> existingEmployee = employeeRepository.findById(Id);
         if (existingEmployee.isPresent()) {
-            employeeRepository.delete(existingEmployee.get());
+            Employee employee = existingEmployee.get();
+            System.out.println("!!!!2!!!!");
+
+            // Check if employee is already resigned
+            if (employee.getResignDate() != null) {
+                reqRes.setStatusCode(400);  // Bad Request
+                reqRes.setMessage("Employee has already resigned on " + employee.getResignDate());
+                return reqRes;
+            }
+
+            // Set the resignDate (current date)
+            employee.setResignDate(new Date()); // Stores current date
+            employeeRepository.save(employee); // Update the employee record
+
+////            // Delete related records in leave and salary tables
+//           employeeLeaveRepository.deleteByEmployeeId(employee.getId());
+//           employeeSalaryRepository.deleteByEmployeeId(employee.getId());
 
             reqRes.setStatusCode(200);  // Success
-            reqRes.setMessage("Employee deleted successfully.");
+            reqRes.setMessage("Employee marked as resigned on " + employee.getResignDate());
         } else {
             reqRes.setStatusCode(404);  // Not Found
             reqRes.setMessage("Employee not found with ID: " + Id);

@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
 
                         // Salary management: Admin only
-                        .requestMatchers("/salary/**","/leave/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers("/departments/**","/salary/**","/leave/**").hasAuthority("ROLE_Admin")
 
                         // Attendance management: Admin & Manager
                         .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")

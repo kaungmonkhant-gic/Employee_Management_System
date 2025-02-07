@@ -2,6 +2,9 @@ package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.Positions;
+import ems.com.ems_project.validation.ValidEmail;
+import ems.com.ems_project.validation.ValidPassword;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
@@ -26,11 +29,11 @@ public class RegisterDTO {
     private String name;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Please provide a valid email address")
+    @ValidEmail
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @ValidPassword
     private String password;
 
     @NotBlank(message = "Phone number is required")

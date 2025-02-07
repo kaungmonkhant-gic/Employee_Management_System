@@ -32,6 +32,10 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
             Employee employee = employeeRepository.findByEmail(loginRequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            if (employee.getResignDate() != null) {
+                throw new RuntimeException("Employee has resigned and cannot log in.");
+            }
+
             if (passwordEncoderConfig.passwordEncoder().matches(loginRequest.getPassword(), employee.getPassword())) {
                 String token = generateToken(employee);
 

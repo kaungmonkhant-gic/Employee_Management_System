@@ -16,7 +16,7 @@ public class EmployeeLeaveController {
     @Autowired
     private EmployeeLeaveService leaveService;
 
-    @GetMapping("/{employeeId}")
+    @GetMapping("/{id}")
     public ResponseEntity<EmployeeLeave> getLeaveByEmployeeId(@PathVariable String employeeId) {
         EmployeeLeave leave = leaveService.getLeaveByEmployeeId(employeeId);
         return leave != null ? ResponseEntity.ok(leave) : ResponseEntity.notFound().build();
@@ -28,7 +28,7 @@ public class EmployeeLeaveController {
         return ResponseEntity.ok(savedLeave);
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<List<EmployeeLeave>> getAllLeaves() {
         return ResponseEntity.ok(leaveService.getAllLeaves());
     }

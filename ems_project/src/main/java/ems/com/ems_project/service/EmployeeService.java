@@ -25,6 +25,6 @@ public interface EmployeeService extends UserDetailsService {
     ReqRes updateEmployee(String Id, EmployeeDTO employeeDTO);
 
     // Delete an employee by ID
-    ReqRes deleteEmployee(String Id);
+    ReqRes deleteEmployee(String id);
 }
 
