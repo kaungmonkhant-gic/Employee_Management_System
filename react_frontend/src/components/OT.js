@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import overtimeController from "../Controller/overtimeController";
+//import overtimeController from "../Controller/overtimeController";
 const OT = () => {
   const [otRecords, setOtRecords] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
@@ -229,8 +229,6 @@ const OT = () => {
                 <tr>
                   <th>Employee Name</th>
                   <th>Employee ID</th>
-                  <th>Position</th>
-                  <th>Department</th>
                   <th>Date</th>
                   <th>Start Time</th>
                   <th>End Time</th>
@@ -243,8 +241,6 @@ const OT = () => {
                   <tr key={index}>
                     <td>{record.employeeName}</td>
                     <td>{record.employeeId}</td>
-                    <td>{record.position}</td>
-                    <td>{record.department}</td>
                     <td>{record.date}</td>
                     <td>{record.startTime}</td>
                     <td>{record.endTime}</td>

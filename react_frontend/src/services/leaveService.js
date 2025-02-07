@@ -17,15 +17,15 @@ const leaveService = {
             console.error("Error fetching leaves:", error);
             return [];
         }
-        try {
-            console.log("Service call to /admin/all");
-            const response = await apiClient.get("/employee/all");
-            console.log("Response:", response);
-            return response.data.employeeList;
-          } catch (error) {
-            console.error("Error in getEmployees:", error);
-            throw error;
-          }
+        // try {
+        //     console.log("Service call to /admin/all");
+        //     const response = await apiClient.get("/employee/all");
+        //     console.log("Response:", response);
+        //     return response.data.employeeList;
+        //   } catch (error) {
+        //     console.error("Error in getEmployees:", error);
+        //     throw error;
+        //   }
     },
 
 };
