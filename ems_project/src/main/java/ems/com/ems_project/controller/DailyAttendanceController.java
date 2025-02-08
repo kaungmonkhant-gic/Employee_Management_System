@@ -17,7 +17,7 @@ public class DailyAttendanceController {
     private DailyAttendanceService dailyAttendanceService;  // Correct service injection
 
     // Get all attendance records
-    @GetMapping("")
+    @GetMapping("/all")
     public ResponseEntity<List<EmpDailyAtts>> getAllAttendances() {
         List<EmpDailyAtts> attendanceList = dailyAttendanceService.getAllAttendances();
         return new ResponseEntity<>(attendanceList, HttpStatus.OK);
