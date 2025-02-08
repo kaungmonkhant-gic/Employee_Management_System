@@ -280,16 +280,16 @@ public class EmployeeServiceImp implements EmployeeService {
 
         try {
             // Fetch department, position, and role from repositories
-            System.out.println(registerDTO.getDepartmentId());
+//            System.out.println(registerDTO.getDepartmentId());
             Optional<Departments> department = departmentRepository.findById(registerDTO.getDepartmentId());
-            System.out.println(department);
-            System.out.println(registerDTO.getRoleId());
-            System.out.println(registerDTO.getPositionId());
+//            System.out.println(department);
+//            System.out.println(registerDTO.getRoleId());
+//            System.out.println(registerDTO.getPositionId());
             Optional<Positions> position = positionRepository.findById("POS00" + registerDTO.getPositionId());
             Optional<Roles> role = roleRepository.findById(registerDTO.getRoleId());
-            System.out.println(position);
-            System.out.println(role);
-            System.out.println("!!!!1!!!!");
+//            System.out.println(position);
+//            System.out.println(role);
+//            System.out.println("!!!!1!!!!");
             // Ensure that department, position, and role exist
             if (department.isEmpty()) {
                 reqRes.setStatusCode(400); // Bad Request
@@ -328,13 +328,6 @@ public class EmployeeServiceImp implements EmployeeService {
             employee.setRole(role.get());
             employee.setDepartment(department.get());
             employee.setPosition(position.get());
-
-            // Hash the password
-//            if (registerDTO.getPassword() == null || registerDTO.getPassword().isEmpty()) {
-//                reqRes.setStatusCode(400); // Bad Request
-//                reqRes.setMessage("Password is required.");
-//                return reqRes;
-//            }
 
             System.out.println("!!!!3!!!!");
 
