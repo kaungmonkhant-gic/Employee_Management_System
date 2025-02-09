@@ -46,7 +46,7 @@ public class EmployeeRegistrationService {
             // 1. Map and save Employee
             Employee employee = employeeMapper.toEmployee(registerDTO.getEmployee());
             // Encode the default password (or the one provided)
-            employee.setPassword(passwordEncoder.encode("123456"));
+            employee.setPassword(passwordEncoder.encode(registerDTO.getEmployee().getPassword()));
 
             // Fetch and set Department, Position, and Role
             Departments department = departmentRepository.findById(registerDTO.getEmployee().getDepartment().getId())

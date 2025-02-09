@@ -4,11 +4,7 @@ import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
 import ems.com.ems_project.model.EmployeeSalary;
 import jakarta.validation.Valid;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class EmployeeRegisterDTO {
     @Valid
     private Employee employee;
