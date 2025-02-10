@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalTime;
-import java.util.Date;
+import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -42,12 +42,91 @@ public class Ots {
     private String reason;
 
     @Column(name = "is_approved")
-    private Boolean isApproved;
+    private Boolean Approved;
 
     @Column(length = 10,name = "manager_id",nullable = false)
     private String managerId;
 
     @Column(name = "is_paid")
-    private Boolean isPaid;
-    
+    private Boolean Paid;
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public Date getDate() {
+        return Date;
+    }
+
+    public void setDate(Date date) {
+        Date = date;
+    }
+
+    public LocalTime getCheckInTime() {
+        return checkInTime;
+    }
+
+    public void setCheckInTime(LocalTime checkInTime) {
+        this.checkInTime = checkInTime;
+    }
+
+    public LocalTime getCheckOutTime() {
+        return checkOutTime;
+    }
+
+    public void setCheckOutTime(LocalTime checkOutTime) {
+        this.checkOutTime = checkOutTime;
+    }
+
+    public String getOtTime() {
+        return otTime;
+    }
+
+    public void setOtTime(String otTime) {
+        this.otTime = otTime;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Boolean getApproved() {
+        return Approved;
+    }
+
+    public void setApproved(Boolean approved) {
+        Approved = approved;
+    }
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
+
+    public Boolean getPaid() {
+        return Paid;
+    }
+
+    public void setPaid(Boolean paid) {
+        Paid = paid;
+    }
 }

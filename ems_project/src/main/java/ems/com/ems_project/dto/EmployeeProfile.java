@@ -1,6 +1,6 @@
 package ems.com.ems_project.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
