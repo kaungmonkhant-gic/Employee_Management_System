@@ -3,7 +3,7 @@ package ems.com.ems_project.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
