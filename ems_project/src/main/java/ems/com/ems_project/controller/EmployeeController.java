@@ -117,6 +117,11 @@ public class EmployeeController {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/generate-id")
+    public String generatedEmployeeId() {
+        return employeeService.generateEmployeeId();
+    }
 }
 
 

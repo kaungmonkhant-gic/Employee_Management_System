@@ -503,4 +503,21 @@ public class EmployeeServiceImp implements EmployeeService {
 
         return reqRes;
     }
+
+
+    public String generateEmployeeId() {
+        // Get the last Employee ID from the database
+        Optional<String> lastIdOptional = employeeRepository.findLastEmployeeId();
+
+        int newNumber = 1; // Default for first employee
+
+        if (lastIdOptional.isPresent()) {
+            String lastId = lastIdOptional.get();  // Example: "EMP001"
+            String numberPart = lastId.substring(3); // Extract "001"
+            newNumber = Integer.parseInt(numberPart) + 1; // Increment: 1 → 2
+        }
+
+        // Format new ID (e.g., EMP002, EMP010, EMP100)
+        return String.format("EMP%03d", newNumber);
+    }
 }
