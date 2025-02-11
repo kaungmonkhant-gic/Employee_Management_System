@@ -19,7 +19,7 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @GetMapping("")
-    public ResponseEntity<List<Departments>> getAllSalaries() {
+    public ResponseEntity<List<Departments>> getAlDepartments() {
         return ResponseEntity.ok(departmentService.getAllDepartments());
     }
 }
