@@ -20,6 +20,7 @@ import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
 import AddLeave from "./components/AddLeave";
+import DailyAttendance from "./components/DailyAttendance";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -51,12 +52,13 @@ root.render(
         >
         <Route path="employee" element={<Employee />} />
         <Route path="attendance" element={<Attendance />} />
+        <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
+        <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="leave" element={<Leave />} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
-        <Route path="attendance-record" element={<AttendanceRecord />} />
       </Route>
 
       <Route path="/employee-dashboard/*" element={<EmployeeDashboard />}>

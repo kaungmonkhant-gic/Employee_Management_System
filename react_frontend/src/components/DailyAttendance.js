@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DataTable from "./common/DataTable";
 import { FaClock, FaSignOutAlt, FaUserClock } from "react-icons/fa";
@@ -8,21 +8,8 @@ import AttendanceController from "../Controller/attendanceController";
 const currentDate = moment().format("YYYY-MM-DD");
 const currentTime = moment().format("HH:mm:ss");
 
-function AttendanceRecord() {
+function DailyAttendance() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
-
-  // Assume logged-in employee ID
-  const loggedInEmployeeId = "EMP001";
-
-  useEffect(() => {
-    // Fetch attendance records and filter by logged-in employee
-    AttendanceController.fetchAttendance().then(data => {
-      if (Array.isArray(data)) {
-        const filteredRecords = data.filter(record => record.employee_id === loggedInEmployeeId);
-        setAttendanceRecords(filteredRecords.map((record, index) => ({ ...record, id: index + 1 })));
-      }
-    });
-  }, []);
 
   const handleCheckIn = () => {
     const checkInTime = moment();
@@ -36,25 +23,26 @@ function AttendanceRecord() {
     if (checkInHour < 8 || (checkInHour === 8 && checkInMinute === 0)) {
       status = "On time";
     } else if (checkInHour < 12) {
+      // Late check-in before lunch break
       lateMinutes = checkInTime.diff(moment(`${currentDate} 08:00:00`), 'minutes');
       status = "Late Check-In";
     } else if (checkInHour >= 12 && checkInHour < 13) {
       status = "Afternoon Check-In";
     } else {
+      // Late afternoon check-in after 1 PM
       status = "Late Afternoon Check-In";
       lateMinutes = checkInTime.diff(moment(`${currentDate} 13:00:00`), 'minutes');
     }
 
     const newRecord = {
       id: attendanceRecords.length + 1,
-      employee_id: loggedInEmployeeId,
-      name: "Employee Name",
+      name: "Employee Name", // Replace with dynamic employee name if available
       Date: currentDate,
       start_time: formattedCheckInTime,
       late_min: lateMinutes,
       status: status,
-      manager_id: "MGR001",
-      is_approved: "Pending",
+      manager_id: "MGR001", // Example manager ID
+      is_approved: false,
       reason: ""
     };
 
@@ -70,31 +58,27 @@ function AttendanceRecord() {
     const formattedCheckOutTime = checkOutTime.format("HH:mm:ss");
 
     let status = "On time";
-    let overtimeMinutes = 0;
 
     if (checkOutHour >= 14 && checkOutHour < 16) {
       status = "Early Check-Out";
     } else if (checkOutHour < 17) {
       status = "Very Early Check-Out";
-    } else if (checkOutHour >= 17) {
-      overtimeMinutes = checkOutTime.diff(moment(`${currentDate} 17:00:00`), 'minutes');
-      status = `Overtime (${overtimeMinutes} mins)`;
     }
 
     setAttendanceRecords((prev) =>
       prev.map((record) =>
         record.id === recordId
-          ? { ...record, end_time: formattedCheckOutTime, status: status, overtime: overtimeMinutes }
+          ? { ...record, end_time: formattedCheckOutTime, status: status }
           : record
       )
     );
   };
 
-  const handleOvertimeRequest = (recordId, approvalStatus) => {
+  const handleOvertime = (recordId) => {
     setAttendanceRecords((prev) =>
       prev.map((record) =>
         record.id === recordId
-          ? { ...record, is_approved: approvalStatus }
+          ? { ...record, reason: "Worked extra hours for urgent task" }
           : record
       )
     );
@@ -109,7 +93,7 @@ function AttendanceRecord() {
     { field: "late_min", headerName: "Late (min)", minWidth: 100, flex: 0.7, cellClassName: "text-center" },
     { field: "status", headerName: "Status", minWidth: 150, flex: 1, cellClassName: "text-center" },
     { field: "manager_id", headerName: "Manager ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
-    { field: "is_approved", headerName: "Approval Status", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "is_approved", headerName: "Approved", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "reason", headerName: "Reason", minWidth: 200, flex: 1.5, cellClassName: "text-center" },
     {
       field: "actions",
@@ -122,11 +106,8 @@ function AttendanceRecord() {
           <button onClick={() => handleCheckOut(row.id)} className="btn btn-outline-success btn-sm">
             <FaSignOutAlt /> Check-Out
           </button>
-          <button onClick={() => handleOvertimeRequest(row.id, "Approved")} className="btn btn-outline-primary btn-sm">
-            Approve Overtime
-          </button>
-          <button onClick={() => handleOvertimeRequest(row.id, "Rejected")} className="btn btn-outline-danger btn-sm">
-            Reject Overtime
+          <button onClick={() => handleOvertime(row.id)} className="btn btn-outline-warning btn-sm">
+            <FaUserClock /> Overtime
           </button>
         </div>
       ),
@@ -140,7 +121,11 @@ function AttendanceRecord() {
         <FaClock /> Check-In
       </button>
       <DataTable
-        fetchData={() => attendanceRecords}
+        fetchData={() =>
+          AttendanceController.fetchAttendance().then(data =>
+            Array.isArray(data) ? data.map((record, index) => ({ ...record, id: index + 1 })) : []
+          )
+        }
         columns={columns}       
         keyField={"id"}
         responsive
@@ -154,4 +139,4 @@ function AttendanceRecord() {
   );
 }
 
-export default AttendanceRecord;
+export default DailyAttendance;

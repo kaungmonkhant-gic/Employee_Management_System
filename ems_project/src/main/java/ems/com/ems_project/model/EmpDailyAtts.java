@@ -1,5 +1,6 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -47,10 +48,12 @@ public class EmpDailyAtts {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "leave_id", referencedColumnName = "id")
+
     private Leave leave;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ot_id", referencedColumnName = "id")
+
     private Ots overtime;
 
     @OneToOne(cascade = CascadeType.ALL)

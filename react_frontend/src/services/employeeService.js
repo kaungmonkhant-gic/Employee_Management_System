@@ -72,4 +72,4 @@ const employeeService = {
   },
 };
 
-export default apiService;
+export default employeeService;

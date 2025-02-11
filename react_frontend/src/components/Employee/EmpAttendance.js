@@ -44,7 +44,7 @@ const EmpAttendance = () => {
           >
             Select Date:
           </label>
-          <input
+          <inputp
             type="date"
             id="date"
             className="form-control"

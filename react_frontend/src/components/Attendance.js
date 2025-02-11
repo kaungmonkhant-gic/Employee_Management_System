@@ -55,9 +55,11 @@ function Attendance() {
       record.employeeId === editingRecord.employeeId
         ? { ...record, status: isMarked ? "Present" : "Absent" }
         : record
+       
     );
     setAttendanceRecords(updatedRecords);
     setEditingRecord(null);
+
   };
 
   return (
