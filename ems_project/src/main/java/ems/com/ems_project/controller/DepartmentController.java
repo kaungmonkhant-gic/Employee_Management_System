@@ -1,7 +1,5 @@
 package ems.com.ems_project.controller;
-
 import ems.com.ems_project.model.Departments;
-import ems.com.ems_project.model.EmployeeSalary;
 import ems.com.ems_project.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

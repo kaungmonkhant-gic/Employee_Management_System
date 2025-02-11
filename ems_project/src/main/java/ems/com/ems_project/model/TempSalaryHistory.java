@@ -1,6 +1,6 @@
 package ems.com.ems_project.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 import jakarta.persistence.*;
 import lombok.Data;

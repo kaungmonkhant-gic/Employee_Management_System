@@ -1,9 +1,11 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ems.com.ems_project.validation.ValidEmail;
+import ems.com.ems_project.validation.ValidPhoneNumber;
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,10 +15,9 @@ public class EmployeeDTO {
 
     private String id;
     private String name;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dob;
-
+    private String password;
     private String nrc;
     private String gender;
     private String maritalStatus;
@@ -241,4 +242,11 @@ public class EmployeeDTO {
         this.totalLeave = totalLeave;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

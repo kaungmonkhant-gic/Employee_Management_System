@@ -1,8 +1,10 @@
 package ems.com.ems_project.dto;
 
-import java.sql.Date;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ems.com.ems_project.validation.ValidEmail;
+import ems.com.ems_project.validation.ValidPhoneNumber;
 
 public class EmployeeProfile {
 
@@ -15,7 +17,9 @@ public class EmployeeProfile {
     private String nrc;
     private String gender;
     private String maritalStatus;
+	@ValidPhoneNumber
     private String phone;
+	@ValidEmail
     private String email;
     private String address;
     private String education;

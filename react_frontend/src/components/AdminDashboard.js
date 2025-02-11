@@ -1,10 +1,13 @@
 import React from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showSubMenu, setShowSubMenu] = React.useState(false);
 
   const handleLogout = () => {
     navigate("/login");
@@ -36,14 +39,35 @@ function AdminDashboard() {
           <Link to="/admin-dashboard/employee" className="nav-link text-light">
             Employee
           </Link>
-          <Link
-            to="/admin-dashboard/attendance"
-            className="nav-link text-light"
-          >
-            Attendance
+          
+          <div className="nav-link text-light" 
+        onClick={() => setShowSubMenu(!showSubMenu)} 
+        style={{ cursor: "pointer" }}
+      >
+        Attendance
+        <i
+          className={`bi ms-2 ${
+            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+          }`}
+          style={{ color: "white" }}
+        />
+      </div>
+
+      {/* Dropdown Submenu */}
+      {showSubMenu && (
+        <div className="ms-3">
+          <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-light">
+            Daily Attendance
           </Link>
+          <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-light">
+            Attendance Record
+          </Link>
+        </div>
+      )}
+    
+          
           <Link to="/admin-dashboard/leave" className="nav-link text-light">
-            Leave 
+            Leave
           </Link>
           <Link to="/admin-dashboard/ot" className="nav-link text-light">
             OT (Overtime)

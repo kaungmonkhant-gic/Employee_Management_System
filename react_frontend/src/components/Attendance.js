@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AttendanceForm from "./common/AttendanceForm";
 
 // Sample data for employees (consider fetching from an API in a real scenario)
 const employeesData = [
@@ -54,9 +55,11 @@ function Attendance() {
       record.employeeId === editingRecord.employeeId
         ? { ...record, status: isMarked ? "Present" : "Absent" }
         : record
+       
     );
     setAttendanceRecords(updatedRecords);
     setEditingRecord(null);
+
   };
 
   return (
@@ -92,6 +95,9 @@ function Attendance() {
         </select>
       </div>
 
+      {/* <AttendanceForm employees={employeesData} markAttendance={markAttendance} /> */}
+      <AttendanceForm employees={employeesData} markAttendance={markAttendance} />  
+
       {/* Employee List */}
       <div className="mb-5">
         <h3>Employees</h3>
@@ -123,6 +129,7 @@ function Attendance() {
           </tbody>
         </table>
       </div>
+    
 
       {/* Attendance Records */}
       <div>

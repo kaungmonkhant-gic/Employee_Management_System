@@ -4,6 +4,7 @@ import profileController from "../Controller/profileController";
 
 const EmpProfile = () => {
   const initialDetails = {
+    employeeId: "",
     name: "",
     email: "",
     position: "",
@@ -22,17 +23,10 @@ const EmpProfile = () => {
 
   const [details, setDetails] = useState(initialDetails);
   const [isEditing, setIsEditing] = useState(false);
-  
 
   // Dropdown options
-  const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
-  const positions = [
-    "Intern",
-    "Junior Developer",
-    "Senior Developer",
-    "Manager",
-    "Director",
-  ];
+  const departments = ["HR", "designer", "Marketing", "Sales", "Finance"];
+  const positions = ["Intern", "Junior Developer", "Senior Developer", "Manager", "Director"];
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,7 +51,6 @@ const EmpProfile = () => {
             workExp: data.employeeProfile.workExp,
             joinDate: data.employeeProfile.joinDate,
           });
-          console.log("TEStung:" + setDetails);
         } else {
           console.error("Error fetching profile:", data.message);
         }
@@ -68,7 +61,6 @@ const EmpProfile = () => {
 
     fetchProfile();
   }, []);
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -101,7 +93,6 @@ const EmpProfile = () => {
     setIsEditing(!isEditing);
   };
 
-  
   return (
     <div className="container mt-5 vh-100" style={{ maxWidth: "600px" }}>
   <div

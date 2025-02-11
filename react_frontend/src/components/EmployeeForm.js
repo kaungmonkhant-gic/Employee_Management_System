@@ -138,6 +138,8 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
           <h3 className="m-0">{headerText}</h3>
         </div>
 
+        
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-3">
 

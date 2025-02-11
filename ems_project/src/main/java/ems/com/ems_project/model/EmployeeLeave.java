@@ -31,6 +31,13 @@ public class EmployeeLeave {
     //@JsonIgnore
     private Employee employee;
 
+
+    public void calculateTotalLeave() {
+        this.total = (annualLeave != null ? annualLeave : 0.0) +
+                (casualLeave != null ? casualLeave : 0.0) +
+                (medicalLeave != null ? medicalLeave : 0.0);
+    }
+
     public Integer getId() {
         return Id;
     }
@@ -78,6 +85,7 @@ public class EmployeeLeave {
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
+
 }
 
 
