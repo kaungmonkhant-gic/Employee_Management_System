@@ -25,7 +25,7 @@ const EmpProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Dropdown options
-  const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
+  const departments = ["HR", "designer", "Marketing", "Sales", "Finance"];
   const positions = ["Intern", "Junior Developer", "Senior Developer", "Manager", "Director"];
 
   useEffect(() => {
