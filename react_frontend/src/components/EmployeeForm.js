@@ -1,25 +1,18 @@
 import React, { useState, useEffect } from "react";
 import nrcData from "../Data/nrc.json";
 import employeeController from "../Controller/employeeController";
-import axios from "axios";
 
 function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
 
-  const API_BASE_URL = "http://localhost:8081"; // Replace with your actual API URL
-
   // State to store the list of departments fetched from the API
   const [departments, setDepartments] = useState([]);
+  const [positions, setPositions] = useState([]);
+  const [roles, setRoles] = useState([]);
 
   // State to track the selected department ID
   const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
-
-  // Create an axios instance with default configuration
-  const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const [selectedPositionId, setSelectedPositionId] = useState("");
+  const [selectedRoleId, setSelectedRoleId] = useState("");
 
   const [employeeData, setEmployeeData] = useState({
     name: "",
@@ -45,11 +38,10 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
     annualLeave: "",
     medicalLeave: "",
     casualLeave: "",
-    totalLeave: "4",
+    totalLeave: "",
   });
-  const positions = ["Senior Developer", "Junior Developer", "Fresher", "Intern", "Accountant"];
-  //const departments = ["IT", "Finance", "HR", "Maintenance", "Marketing"];
-  const roles = ["Admin", "Employee", "Manager"];
+  //const positions = ["Senior Developer", "Junior Developer", "Fresher", "Intern", "Accountant"];
+  //const roles = ["Admin", "Employee", "Manager"];
 
   useEffect(() => {
     if (!editingEmployee) return;
@@ -58,42 +50,75 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
       ...prev,
       ...editingEmployee,
       departmentId: editingEmployee.departmentId || "",
+      positionId: editingEmployee.positionId || "",
       roleId: editingEmployee.roleId || ""
     }));
   }, [editingEmployee]);
 
-  // Interceptor to include the Bearer token in requests
-  apiClient.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token"); // Retrieve the token from localStorage
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`; // Add the token to the headers
-      }
-      config.headers["Content-Type"] = "application/json"; // Ensure JSON request format
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
-
   useEffect(() => {
-    apiClient
-      .get("/departments") // Make sure this is the correct endpoint
-      .then((response) => {
-        setDepartments(response.data); // Assuming `response.data` contains the JSON data
-      })
-      .catch((error) => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await employeeController.fetchDepartments(); //  Wait for the response
+        console.log("Fetched departments:", response); //  Debugging log
+  
+        if (Array.isArray(response)) {  //  Ensure response itself is an array
+          setDepartments(response); //  Set data correctly
+        } else {
+          console.error("Unexpected response format:", response);
+          setDepartments([]); // Prevent errors
+        }
+      } catch (error) {
         console.error("Error fetching departments:", error);
-      });
+        setDepartments([]);
+      }
+    };
+    fetchDepartments(); //  Call the function
   }, []);
 
-  // Handle input changes for the form fields
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({ ...formData, [name]: value });
-  // };
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const response = await employeeController.fetchPositions(); // ✅ Wait for the response
+  
+        console.log("Fetched positions:", response); // ✅ Debugging log
+  
+        if (Array.isArray(response)) {  // ✅ Ensure response itself is an array
+          setPositions(response); // ✅ Set data correctly
+        } else {
+          console.error("Unexpected response format:", response);
+          setPositions([]); // Prevent errors
+        }
+      } catch (error) {
+        console.error("Error fetching positions:", error);
+        setPositions([]);
+      }
+    };
+  
+    fetchPositions(); // ✅ Call the function
+  }, []);
 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await employeeController.fetchRoles(); // ✅ Wait for the response
+  
+        console.log("Fetched roles:", response); // ✅ Debugging log
+  
+        if (Array.isArray(response)) {  // ✅ Ensure response itself is an array
+          setRoles(response); // ✅ Set data correctly
+        } else {
+          console.error("Unexpected response format:", response);
+          setRoles([]); // Prevent errors
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+        setRoles([]);
+      }
+    };
+  
+    fetchRoles(); // ✅ Call the function
+  }, []);
+  
   // Handle department selection change
   const handleDepartmentChange = (e) => {
     const selectedId = e.target.value;
@@ -104,9 +129,30 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
       departmentId: selectedId,
       [e.target.name]: e.target.value
     }));
-    //setFormData({ ...formData, departmentId: selectedId }); // Update form data with selected department ID
   };
+ // Handle position selection change
+ const handlePositionChange = (e) => {
+  const selectedId = e.target.value;
+  setSelectedPositionId(selectedId);
+  console.log("Selected Position ID:", selectedId);
+  setEmployeeData((employeeData) => ({
+    ...employeeData,
+    positionId: selectedId,
+    [e.target.name]: e.target.value
+  }));
+};
 
+ // Handle role selection change
+ const handleRoleChange = (e) => {
+  const selectedId = e.target.value;
+  setSelectedRoleId(selectedId);
+  console.log("Selected Role ID:", selectedId);
+  setEmployeeData((employeeData) => ({
+    ...employeeData,
+    roleId: selectedId,
+    [e.target.name]: e.target.value
+  }));
+};
   const handleChange = (e) => {
     setEmployeeData((employeeData) => ({
       ...employeeData,
@@ -137,6 +183,8 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
         <div className="card-header text-dark text-center rounded-3">
           <h3 className="m-0">{headerText}</h3>
         </div>
+
+        
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-3">
@@ -285,21 +333,24 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                 <input type="text" name="id" value={employeeData.id} onChange={handleChange} className="form-control form-control-lg" required />
               </div>
 
-              {/* Position Dropdown */}
               <div className="mb-2">
                 <label className="form-label fw-semibold">Position</label>
-                <select
-                  name="positionId"
-                  value={employeeData.positionId}
-                  onChange={handleChange}
+                  <select 
+                  value={selectedPositionId} 
+                  onChange={handlePositionChange} 
                   className="form-select form-select-lg"
-                  required
-                >
-                  <option value="">Select Position</option>
-                  {positions.map((position, index) => (
-                    <option key={index} value={index + 1}>{position}</option>
-                  ))}
-                </select>
+                  required>
+                    <option value="">-- Select Position --</option>
+                    {Array.isArray(positions) && positions.length > 0 ? (
+                      positions.map((pos) => (
+                        <option key={pos.id} value={pos.id}>
+                          {pos.positionName}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Loading...</option>
+                    )}
+                  </select>
               </div>
 
               {/* Department Dropdown */}
@@ -311,33 +362,41 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                   className="form-select form-select-lg"
                   required>
                     <option value="">-- Select Department --</option>
-                    {departments.map((dept) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.departmentName}
-                      </option>
-                    ))}
+                    {Array.isArray(departments) && departments.length > 0 ? (
+                      departments.map((dept) => (
+                        <option key={dept.id} value={dept.id}>
+                          {dept.departmentName}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Loading...</option>
+                    )}
                   </select>
               </div>
 
-              {/* Role Dropdown */}
               <div className="mb-2">
-                <label className="form-label fw-semibold">Role</label>
-                <select
-                  name="roleId"
-                  value={employeeData.roleId}
-                  onChange={handleChange}
+                <label  className="form-label fw-semibold">Role</label>
+                  <select 
+                  value={selectedRoleId} 
+                  onChange={handleRoleChange} 
                   className="form-select form-select-lg"
-                  required
-                >
-                  <option value="">Select Role</option>
-                  {roles.map((role, index) => (
-                    <option key={index} value={index + 1}>{role}</option>
-                  ))}
-                </select>
+                  required>
+                    <option value="">-- Select Role --</option>
+                    {Array.isArray(roles) && roles.length > 0 ? (
+                      roles.map((role) => (
+                        <option key={role.id} value={role.id}>
+                          {role.roleName}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Loading...</option>
+                    )}
+                  </select>
               </div>
               <div className="mb-2">
                 <label className="form-label fw-semibold">Work Experience</label>
-                <input type="text" name="workExp" value={employeeData.workExp} onChange={handleChange} className="form-control form-control-lg" />
+                <input type="text" name="workExp" value={employeeData.workExp} 
+                onChange={handleChange} className="form-control form-control-lg" placeholder="Work Experience..." />
               </div>
 
               <div className="mb-2">
@@ -362,6 +421,11 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                   onChange={handleChange}
                   className="form-control form-control-lg"
                 />
+              </div>
+              <div className="mb-2">
+                <label className="form-label fw-semibold">Password</label>
+                <input type="text" name="password" value={employeeData.password} onChange={handleChange}
+                 className="form-control form-control-lg" placeholder="Password..."/>
               </div>
             </div>
           </div>

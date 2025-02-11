@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import overtimeController from "../Controller/overtimeController";
+//import overtimeController from "../Controller/overtimeController";
 const OT = () => {
   const [otRecords, setOtRecords] = useState([]);
   const [employeeName, setEmployeeName] = useState("");

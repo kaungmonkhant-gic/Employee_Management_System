@@ -19,7 +19,7 @@ const employeeService = {
 
   getPositions: async () => {
     try {
-      const response = await apiClient.get("/dropdown");
+      const response = await apiClient.get("/positions");
       return response.data; // Assuming backend returns an array of positions
     } catch (error) {
       console.error("Error fetching positions:", error);
@@ -29,7 +29,7 @@ const employeeService = {
 
   getDepartments: async () => {
     try {
-      const response = await apiClient.get("/dropdown");
+      const response = await apiClient.get("/departments");
       return response.data; // Assuming backend returns an array of departments
     } catch (error) {
       console.error("Error fetching departments:", error);
@@ -39,7 +39,7 @@ const employeeService = {
 
   getRoles: async () => {
     try {
-      const response = await apiClient.get("/dropdown");
+      const response = await apiClient.get("/roles");
       return response.data; // Assuming backend returns an array of roles
     } catch (error) {
       console.error("Error fetching roles:", error);

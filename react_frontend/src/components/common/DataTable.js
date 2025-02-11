@@ -31,9 +31,11 @@ const DataTable = ({ fetchData, columns, keyField }) => {
             $("#datatable").DataTable({
                 fixedHeader: true,
                 scrollX: true, // Enable horizontal scrolling
+                lengthMenu: [5, 10, 15, 20], // Set rows per page options
+                pageLength: 5, // Default rows per page
             });
         };
-
+    
         if (!loading && !error) {
             initializeDataTable();
         }
