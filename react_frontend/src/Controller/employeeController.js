@@ -38,7 +38,7 @@ const employeeController = {
   // Fetch departments
   fetchDepartments: async () => {
     try {
-      return await employeeService.getDepartments();
+      return employeeService.getDepartments();
     } catch (error) {
       throw new Error("Failed to fetch departments. Please try again later.");
     }
