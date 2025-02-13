@@ -70,6 +70,35 @@ const employeeService = {
       throw error;
     }
   },
+  // Update an existing employee
+  updateEmployee: async (employeeId, employeeData) => {
+    try {
+      console.log(`Service call to update employee with ID: ${employeeId}`);
+      const response = await apiClient.put(`/employee/update/${employeeId}`, employeeData);
+      console.log("Employee updated successfully:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating employee:", error);
+      throw error;
+    }
+  },
+  
+
+  // Delete an employee
+  deleteEmployee: async (employeeId) => {
+    try {
+      console.log(`Sending DELETE request to /employee/delete/${employeeId}`); // Log the request URL
+      const response = await apiClient.delete(`/employee/delete/${employeeId}`);
+      console.log("Response from server:", response); // Log the response
+      return response.data;
+    } catch (error) {
+      console.error("Error in deleteEmployee service function:", error); // Log error details
+      throw error;
+    }
+  },
+  
+  
+  
 };
 
 export default employeeService;
