@@ -36,9 +36,37 @@ function AdminDashboard() {
           <Link to="/admin-dashboard" className="nav-link text-light">
             Dashboard
           </Link>
-          <Link to="/admin-dashboard/employee" className="nav-link text-light">
+          {/* <Link to="/admin-dashboard/employee" className="nav-link text-light">
             Employee
+          </Link> */}
+
+<div className="nav-link text-light" 
+        onClick={() => setShowSubMenu(!showSubMenu)} 
+        style={{ cursor: "pointer" }}
+      >
+        Employee
+        <i
+          className={`bi ms-2 ${
+            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+          }`}
+          style={{ color: "white" }}
+        />
+      </div>
+
+      {/* Dropdown Submenu */}
+      {showSubMenu && (
+        <div className="ms-3">
+          <Link to="/admin-dashboard/employee" className="nav-link text-light">
+            Employee List
           </Link>
+          <Link to="/admin-dashboard/leave" className="nav-link text-light">
+            Employee Leave
+          </Link>
+          <Link to="/admin-dashboard/salary" className="nav-link text-light">
+            Salary
+          </Link>
+        </div>
+      )}
           
           <div className="nav-link text-light" 
         onClick={() => setShowSubMenu(!showSubMenu)} 
@@ -66,9 +94,9 @@ function AdminDashboard() {
       )}
     
           
-          <Link to="/admin-dashboard/leave" className="nav-link text-light">
+          {/* <Link to="/admin-dashboard/leave" className="nav-link text-light">
             Leave
-          </Link>
+          </Link> */}
           <Link to="/admin-dashboard/ot" className="nav-link text-light">
             OT (Overtime)
           </Link>
