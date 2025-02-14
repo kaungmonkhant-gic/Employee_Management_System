@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employeeleaves")
+@RequestMapping("/leave")
 public class EmployeeLeaveController {
 
     @Autowired
     private EmployeeLeaveService employeeLeaveService;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<EmployeeLeaveDTO> getAllLeavesWithEmployeeName() {
         return employeeLeaveService.getAllLeavesWithEmployeeName();
     }

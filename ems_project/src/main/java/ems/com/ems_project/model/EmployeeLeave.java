@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "employee_leave")
+@Table(name = "employee_leaves")
 @Data
 public class EmployeeLeave {
 
@@ -25,7 +25,7 @@ public class EmployeeLeave {
     @Column(name = "total", nullable = false)
     private Double total = 0.0;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 
