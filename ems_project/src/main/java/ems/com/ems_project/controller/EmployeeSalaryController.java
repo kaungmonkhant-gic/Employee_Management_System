@@ -1,5 +1,7 @@
 package ems.com.ems_project.controller;
 
+import ems.com.ems_project.dto.EmployeeLeaveDTO;
+import ems.com.ems_project.dto.EmployeeSalaryDTO;
 import ems.com.ems_project.model.EmployeeSalary;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +18,9 @@ public class EmployeeSalaryController {
     @Autowired
     private EmployeeSalaryService salaryService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EmployeeSalary> getSalaryByEmployeeId(@PathVariable String employeeId) {
-        EmployeeSalary salary = salaryService.getSalaryByEmployeeId(employeeId);
-        return salary != null ? ResponseEntity.ok(salary) : ResponseEntity.notFound().build();
-    }
-
-    @PostMapping("/save")
-    public ResponseEntity<EmployeeSalary> saveOrUpdateSalary(@RequestBody EmployeeSalary salary) {
-        EmployeeSalary savedSalary = salaryService.saveOrUpdateSalary(salary);
-        return ResponseEntity.ok(savedSalary);
-    }
-
-    @GetMapping("")
-    public ResponseEntity<List<EmployeeSalary>> getAllSalaries() {
-        return ResponseEntity.ok(salaryService.getAllSalaries());
+    @GetMapping("/all")
+    public List<EmployeeSalaryDTO> getAllSalaries() {
+        return salaryService.getAllSalaries();
     }
 
 }

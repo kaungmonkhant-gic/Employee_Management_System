@@ -15,7 +15,7 @@ public class EmployeeSalary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false,unique = true)
-    private Integer Id;
+    private Integer id;
 
     @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;
@@ -38,11 +38,11 @@ public class EmployeeSalary {
     }
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        Id = id;
+        id = id;
     }
 
     public Double getBasicSalary() {
