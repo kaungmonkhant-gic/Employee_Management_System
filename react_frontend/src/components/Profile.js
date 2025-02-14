@@ -8,7 +8,7 @@ const EmpProfile = () => {
     email: "",
     position: "",
     department: "",
-    role:"",
+    role: "",
     id: "",
     dob: "",
     gender: "",
@@ -21,43 +21,64 @@ const EmpProfile = () => {
   };
 
   const [details, setDetails] = useState(initialDetails);
+  const [originalDetails, setOriginalDetails] = useState(initialDetails);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Dropdown data states
+  const [departments, setDepartments] = useState([]);
+  const [positions, setPositions] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const genders = ["Male", "Female", "Other"]; // Gender options
+
+  // Selected dropdown values
+  const [selectedPositionId, setSelectedPositionId] = useState(details.positionId);
+const [selectedDepartmentId, setSelectedDepartmentId] = useState(details.departmentId);
+const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
+
+  const [selectedGender, setSelectedGender] = useState("");
+
+
+  useEffect(() => {
+    if (details.position) setSelectedPositionId(details.positionId);
+    if (details.department) setSelectedDepartmentId(details.departmentId);
+    if (details.role) setSelectedRoleId(details.roleId);
+  }, [details]);
+
+  useEffect(() => {
+    setSelectedPositionId(details.positionId);
+    setSelectedDepartmentId(details.departmentId);
+    setSelectedRoleId(details.roleId);
+  }, [details]);
   
-
-  // Dropdown options
-  const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
-  const positions = [
-    "Intern",
-    "Junior Developer",
-    "Senior Developer",
-    "Manager",
-    "Director",
-  ];
-
+  
+  // Fetch profile data on component mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const data = await profileController.fetchEmpProfile();
-
         if (data.statusCode === 200) {
-          console.log("fetch data" + data);
+          const employeeProfile = data.employeeProfile;
           setDetails({
-            id: data.employeeProfile.id,
-            name: data.employeeProfile.name,
-            dob: data.employeeProfile.dob,
-            email: data.employeeProfile.email,
-            phone: data.employeeProfile.phone,
-            gender: data.employeeProfile.gender,
-            department: data.employeeProfile.departmentName,
-            position: data.employeeProfile.positionName,
-            role: data.employeeProfile.roleName,
-            address: data.employeeProfile.address,
-            maritalStatus: data.employeeProfile.maritalStatus,
-            education: data.employeeProfile.education,
-            workExp: data.employeeProfile.workExp,
-            joinDate: data.employeeProfile.joinDate,
+            id: employeeProfile.id,
+            name: employeeProfile.name,
+            dob: employeeProfile.dob,
+            email: employeeProfile.email,
+            phone: employeeProfile.phone,
+            gender: employeeProfile.gender,
+            department: employeeProfile.departmentName,
+            position: employeeProfile.positionName,
+            role: employeeProfile.roleName,
+            address: employeeProfile.address,
+            maritalStatus: employeeProfile.maritalStatus,
+            education: employeeProfile.education,
+            workExp: employeeProfile.workExp,
+            joinDate: employeeProfile.joinDate,
           });
-          console.log("TEStung:" + setDetails);
+          setOriginalDetails(employeeProfile);
+          setSelectedDepartmentId(employeeProfile.departmentId);
+          setSelectedPositionId(employeeProfile.positionId);
+          setSelectedRoleId(employeeProfile.roleId);
+          setSelectedGender(employeeProfile.gender);
         } else {
           console.error("Error fetching profile:", data.message);
         }
@@ -69,184 +90,411 @@ const EmpProfile = () => {
     fetchProfile();
   }, []);
 
+  // Fetch departments
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await profileController.fetchDepartments();
+        setDepartments(Array.isArray(response) ? response : []);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+        setDepartments([]);
+      }
+    };
+    fetchDepartments();
+  }, []);
 
+  // Fetch positions
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const response = await profileController.fetchPositions();
+        setPositions(Array.isArray(response) ? response : []);
+      } catch (error) {
+        console.error("Error fetching positions:", error);
+        setPositions([]);
+      }
+    };
+    fetchPositions();
+  }, []);
+
+  // Fetch roles
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await profileController.fetchRoles();
+        setRoles(Array.isArray(response) ? response : []);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+        setRoles([]);
+      }
+    };
+    fetchRoles();
+  }, []);
+
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
+    setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
 
-  const toggleEditing = async () => {
+  const handlePositionChange = (e) => setSelectedPositionId(e.target.value);
+  const handleDepartmentChange = (e) => setSelectedDepartmentId(e.target.value);
+  const handleRoleChange = (e) => setSelectedRoleId(e.target.value);
+  
+
+  // Handle gender selection
+  const handleGenderChange = (e) => {
+    const selectedGender = e.target.value;
+    setSelectedGender(selectedGender);
+    setDetails((prevDetails) => ({ ...prevDetails, gender: selectedGender }));
+  };
+
+  const handleSaveChanges = async () => {
+    const updatedProfile = {
+      ...details,
+      positionId: selectedPositionId,
+      departmentId: selectedDepartmentId,
+      roleId: selectedRoleId,
+    };
+  
+    try {
+      const response = await profileController.updateProfile(updatedProfile);
+      if (response.statusCode === 200) {
+        alert("Profile updated successfully!");
+        setIsEditing(false); // Exit editing mode
+      } else {
+        alert("Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating the profile.");
+    }
+  };
+  
+  
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submitting profile update with data:", details);
+  
     if (isEditing) {
       try {
-        const response = await fetch("/api/user/profile", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(details),
-        });
-
-        if (!response.ok) {
-          console.error("Failed to update profile:", response.statusText);
+        // Include id and other necessary fields
+        const updatedProfile = {
+          id: details.id,
+          name: details.name,
+          dob: details.dob,
+          phone: details.phone,
+          gender: selectedGender,
+          address: details.address,
+          maritalStatus: details.maritalStatus,
+          education: details.education,
+          workExp: details.workExp,
+          departmentName: details.department,
+          positionName: details.position,
+          roleName: details.role,
+        };
+  
+        // Log the updated profile object before sending the request
+        console.log("Updated profile object to send:", updatedProfile);
+  
+        const response = await profileController.updateProfile(updatedProfile);
+  
+        if (response.statusCode === 200) {
+          alert("Profile updated successfully!");
+          setOriginalDetails(updatedProfile);
+          setIsEditing(false);
+        } else {
+          alert("Failed to update profile.");
         }
       } catch (error) {
         console.error("Error updating profile:", error);
+        alert("An error occurred while updating the profile.");
       }
+    } else {
+      setIsEditing(true);
     }
-
-    setIsEditing(!isEditing);
+  };
+  
+  
+  // Handle edit cancellation
+  const handleCancelEdit = () => {
+    setDetails(originalDetails);
+    setIsEditing(false);
   };
 
-  
   return (
-    <div className="container mt-5 vh-100" style={{ maxWidth: "600px" }}>
-  <div
-    className="card shadow-sm border-0"
-    style={{
-      borderRadius: "12px",
-      background: "linear-gradient(to bottom, #E3EAF4, #D9E2EC)",
-    }}
-  >
-    {/* Header Section */}
-    <div
-      className="card-header d-flex align-items-center"
-      style={{
-        backgroundColor: "#D9E2EC",
-        color: "#4A5D73",
-        borderTopLeftRadius: "12px",
-        borderTopRightRadius: "12px",
-        fontWeight: "600",
-      }}
+    <div className="container mt-5">
+  <div className="card shadow-lg p-4">
+    <h2 className="text-center mb-4">Employee Profile</h2>
+    <form onSubmit={handleSubmit}>
+      <div className="row">
+        
+        {/* Full Name */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Full Name</label>
+          <input
+            type="text"
+            name="name"
+            value={details.name}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Email */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={details.email}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled
+          />
+        </div>
+
+        {/* Date of Birth */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Date of Birth</label>
+          <input
+            type="date"
+            name="dob"
+            value={details.dob}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Phone */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value={details.phone}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Gender */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Gender</label>
+          {!isEditing ? (
+            <input
+              type="text"
+              value={details.gender}
+              className="form-control"
+              disabled
+            />
+          ) : (
+            <select
+              value={selectedGender}
+              onChange={handleGenderChange}
+              className="form-control"
+              required
+            >
+              <option value="">-- Select Gender --</option>
+              {genders.map((gender) => (
+                <option key={gender} value={gender}>
+                  {gender}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {/* Address */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Address</label>
+          <input
+            type="text"
+            name="address"
+            value={details.address}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Marital Status */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Marital Status</label>
+          {!isEditing ? (
+            <input
+              type="text"
+              value={details.maritalStatus}
+              className="form-control"
+              disabled
+            />
+          ) : (
+            <select
+              name="maritalStatus"
+              value={details.maritalStatus}
+              onChange={handleInputChange}
+              className="form-control"
+              required
+            >
+              <option value="">-- Select Marital Status --</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Divorced">Divorced</option>
+            </select>
+          )}
+        </div>
+
+        {/* Education */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Education</label>
+          <input
+            type="text"
+            name="education"
+            value={details.education}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Work Experience */}
+        <div className="col-md-6 mb-4">
+          <label className="form-label fw-bold">Work Experience</label>
+          <input
+            type="text"
+            name="workExp"
+            value={details.workExp}
+            onChange={handleInputChange}
+            className="form-control"
+            disabled={!isEditing}
+          />
+        </div>
+
+       {/* Position */}
+<div className="col-md-6 mb-4">
+  <label className="form-label fw-bold">Position</label>
+  {!isEditing ? (
+    <input
+      type="text"
+      value={details.position}
+      className="form-control"
+      disabled
+    />
+  ) : (
+    <select
+      value={selectedPositionId}
+      onChange={handlePositionChange}
+      className="form-control"
+      required
     >
-      <div className="d-flex flex-column align-items-center text-center w-100">
-        <h3 className="mb-1">{details.name || "Your Name"}</h3>
-        <p className="mb-0">{details.position || "Position"}</p>
-        <p className="mb-0">{details.department || "Department"}</p>
-      </div>
-    </div>
-
-    {/* Body Section */}
-    <div className="card-body">
-      <h5
-        className="text-center mb-4"
-        style={{ color: "#4A5D73", fontWeight: "bold" }}
-      >
-        Profile Details
-      </h5>
-      <table className="table table-hover">
-        <tbody>
-          {Object.keys(initialDetails).map((key) => (
-            <tr key={key}>
-              <th
-                style={{
-                  backgroundColor: "#D0DAE9",
-                  color: "#4A5D73",
-                  width: "30%",
-                }}
-              >
-                {key.charAt(0).toUpperCase() + key.slice(1)}:
-              </th>
-              <td>
-                {isEditing ? (
-                  key === "dob" ? (
-                    <input
-                      type="date"
-                      name={key}
-                      value={details[key]}
-                      onChange={handleInputChange}
-                      className="form-control form-control-sm"
-                    />
-                  ) : key === "department" ? (
-                    <select
-                      name={key}
-                      value={details[key]}
-                      onChange={handleInputChange}
-                      className="form-control form-control-sm"
-                    >
-                      <option value="">Select Department</option>
-                      {departments.map((dept) => (
-                        <option key={dept} value={dept}>
-                          {dept}
-                        </option>
-                      ))}
-                    </select>
-                  ) : key === "position" ? (
-                    <select
-                      name={key}
-                      value={details[key]}
-                      onChange={handleInputChange}
-                      className="form-control form-control-sm"
-                    >
-                      <option value="">Select Position</option>
-                      {positions.map((pos) => (
-                        <option key={pos} value={pos}>
-                          {pos}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      name={key}
-                      value={details[key]}
-                      onChange={handleInputChange}
-                      className="form-control form-control-sm"
-                    />
-                  )
-                ) : (
-                  details[key] || "Not Provided"
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-
-    {/* Footer Section */}
-    <div
-      className="card-footer text-center d-flex justify-content-center gap-2"
-      style={{
-        backgroundColor: "#D9E2EC",
-        borderBottomLeftRadius: "12px",
-        borderBottomRightRadius: "12px",
-      }}
-    >
-      {/* Save / Edit Button */}
-      <button
-        className={`btn ${isEditing ? "btn-success" : "btn-primary"} px-4 py-2`}
-        onClick={toggleEditing}
-        style={{
-          backgroundColor: isEditing ? "#9BAEC8" : "#748DA6",
-          borderColor: "transparent",
-          color: "#FFF",
-        }}
-      >
-        {isEditing ? "Save Changes" : "Edit Profile"}
-      </button>
-
-      {/* Cancel Button (Only when editing) */}
-      {isEditing && (
-        <button
-          className="btn btn-secondary px-4 py-2 ms-2"
-          onClick={() => setIsEditing(false)}
-          style={{
-            backgroundColor: "#A8B8C8",
-            borderColor: "transparent",
-            color: "#4A5D73",
-          }}
-        >
-          Cancel
-        </button>
+      <option value="">-- Select Position --</option>
+      {positions.length > 0 ? (
+        positions.map((pos) => (
+          <option key={pos.id} value={pos.id}>
+            {pos.positionName}
+          </option>
+        ))
+      ) : (
+        <option disabled>Loading...</option>
       )}
-    </div>
+    </select>
+  )}
+</div>
+
+{/* Department */}
+<div className="col-md-6 mb-4">
+  <label className="form-label fw-bold">Department</label>
+  {!isEditing ? (
+    <input
+      type="text"
+      value={details.department}
+      className="form-control"
+      disabled
+    />
+  ) : (
+    <select
+      value={selectedDepartmentId}
+      onChange={handleDepartmentChange}
+      className="form-control"
+      required
+    >
+      <option value="">-- Select Department --</option>
+      {departments.length > 0 ? (
+        departments.map((dept) => (
+          <option key={dept.id} value={dept.id}>
+            {dept.departmentName}
+          </option>
+        ))
+      ) : (
+        <option disabled>Loading...</option>
+      )}
+    </select>
+  )}
+</div>
+
+{/* Role */}
+<div className="col-md-6 mb-4">
+  <label className="form-label fw-bold">Role</label>
+  {!isEditing ? (
+    <input
+      type="text"
+      value={details.role}
+      className="form-control"
+      disabled
+    />
+  ) : (
+    <select
+      value={selectedRoleId}
+      onChange={handleRoleChange}
+      className="form-control"
+      required
+    >
+      <option value="">-- Select Role --</option>
+      {roles.length > 0 ? (
+        roles.map((role) => (
+          <option key={role.id} value={role.id}>
+            {role.roleName}
+          </option>
+        ))
+      ) : (
+        <option disabled>Loading...</option>
+      )}
+    </select>
+  )}
+</div>
+
+
+<div className="text-center mt-4">
+  <button
+    type="button"
+    className={`btn ${isEditing ? "btn-success" : "btn-primary"} me-2`}
+    onClick={isEditing ? handleSaveChanges : () => setIsEditing(true)}
+  >
+    {isEditing ? "Save Changes" : "Edit Profile"}
+  </button>
+  {isEditing && (
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={() => setIsEditing(false)}
+    >
+      Cancel
+    </button>
+  )}
+</div>
+
+      </div>
+    </form>
   </div>
 </div>
 
- );
-}
+  );
+};
+
 export default EmpProfile;

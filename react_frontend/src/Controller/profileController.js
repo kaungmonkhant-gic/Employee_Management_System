@@ -4,7 +4,6 @@ const profileController = {
   fetchEmpProfile: async () => {
     try {
       const profile = await profileService.getProfile();
-      console.log("Profile:", profile);
 
       return profile;
     } catch (error) {
@@ -21,6 +20,7 @@ const profileController = {
       throw new Error("Failed to update profile. Please try again later.");
     }
   },
+  
     // Fetch positions
     fetchPositions: async () => {
       try {

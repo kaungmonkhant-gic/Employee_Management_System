@@ -1,12 +1,5 @@
+import apiClient from "../components/api/apiclient";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:8081"; // Replace with your API base URL
-
-// Create an axios instance with default configuration
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-});
-
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token"); // Retrieve the token from localStorage
@@ -38,17 +31,33 @@ const profileService = {
   },
 
  // Update employee profile
- updateProfile: async (updatedDetails) => {
-  try {
-    console.log("Service call to /profile/update");
-    const response = await apiClient.put("/profile/update", updatedDetails);
-    console.log("Update Response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Error in updateProfile:", error);
-    throw error;
-  }
-},
+//  updateProfile: async (updatedDetails) => {
+//   try {
+//     console.log("Service call to /profile/update");
+//     const response = await apiClient.put("/profile/update", updatedDetails);
+//     console.log("Update Response:", response.data);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error in updateProfile:", error);
+//     throw error;
+//   }
+// },
+
+
+  updateProfile: async (updatedProfile) => {
+    try {
+      console.log("Sending PUT request to /api/employee/profile/update");
+      console.log("Updated profile data:", updatedProfile);
+
+      const response = await apiClient.put("/employee/profile/update", updatedProfile);
+
+      console.log("Profile updated successfully:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error in updateProfile:", error);
+      throw new Error("Failed to update profile.");
+    }
+  },
 getEmployees: async () => {
   try {
     console.log("Service call to /admin/all");
