@@ -37,9 +37,9 @@ public class Roles {
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Employee> employees = new ArrayList<>();
+//    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Employee> employees = new ArrayList<>();
 
 }
 

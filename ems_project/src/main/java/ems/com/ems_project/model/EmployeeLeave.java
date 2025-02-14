@@ -4,46 +4,41 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "employee_leaves")
+@Table(name = "employee_leave")
 @Data
 public class EmployeeLeave {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",nullable = false,unique = true)
-    private Integer Id;
+    @Column(name = "id", nullable = false, unique = true)
+    private Integer id;
 
     @Column(name = "annual_leave", nullable = false)
-    private Double annualLeave;
+    private Double annualLeave = 0.0;
 
-    @Column(name = "casual_leave")
-    private Double casualLeave;
-    
+    @Column(name = "casual_leave", nullable = false)
+    private Double casualLeave = 0.0;
+
     @Column(name = "medical_leave", nullable = false)
-    private Double medicalLeave;
+    private Double medicalLeave = 0.0;
 
-    
     @Column(name = "total", nullable = false)
-    private Double total;
+    private Double total = 0.0;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
-    //@JsonIgnore
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 
-
     public void calculateTotalLeave() {
-        this.total = (annualLeave != null ? annualLeave : 0.0) +
-                (casualLeave != null ? casualLeave : 0.0) +
-                (medicalLeave != null ? medicalLeave : 0.0);
+        this.total = annualLeave + casualLeave + medicalLeave;
     }
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        Id = id;
+        this.id = id;
     }
 
     public Double getAnnualLeave() {
@@ -85,7 +80,4 @@ public class EmployeeLeave {
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
-
 }
-
-

@@ -39,7 +39,7 @@ public class Positions {
         this.positionName = positionName;
     }
 
-    @OneToMany(mappedBy = "position", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Employee> employees = new ArrayList<>();
+//    @OneToMany(mappedBy = "position", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Employee> employees = new ArrayList<>();
 }

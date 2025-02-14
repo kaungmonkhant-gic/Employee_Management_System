@@ -1,8 +1,6 @@
 package ems.com.ems_project.dto;
 
-import ems.com.ems_project.model.EmpDailyAtts;
-import ems.com.ems_project.model.Leave;
-import ems.com.ems_project.model.Ots;
+import ems.com.ems_project.model.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,12 +20,12 @@ public class AttendanceDTO {
     private Integer lateMin;
     private Boolean isLeave;
     private Boolean leaveEarly;
-    private String leaveType;
+    private LeaveType leaveType;
     private Boolean halfLeave;
     private Date startDate;
     private Date endDate;
     private String leaveReason;
-    private Boolean leaveApproved;
+    private LeaveStatus leaveStatus;
     private String managerName;
     private String otTime;
     private String otReason;
@@ -49,7 +47,7 @@ public class AttendanceDTO {
         this.startDate = leave.getStartDate();
         this.endDate = leave.getEndDate();
         this.leaveReason = leave.getReason();
-        this.leaveApproved = leave.getApproved();
+        this.leaveStatus = leave.getStatus();
         this.otTime = ot.getOtTime();
         this.otReason = ot.getReason();
         this.otApproved = ot.getApproved();
@@ -121,11 +119,11 @@ public class AttendanceDTO {
         this.leaveEarly = leaveEarly;
     }
 
-    public String getLeaveType() {
+    public LeaveType getLeaveType() {
         return leaveType;
     }
 
-    public void setLeaveType(String leaveType) {
+    public void setLeaveType(LeaveType leaveType) {
         this.leaveType = leaveType;
     }
 
@@ -161,12 +159,12 @@ public class AttendanceDTO {
         this.leaveReason = leaveReason;
     }
 
-    public Boolean getLeaveApproved() {
-        return leaveApproved;
+    public LeaveStatus getLeaveStatus() {
+        return leaveStatus;
     }
 
-    public void setLeaveApproved(Boolean leaveApproved) {
-        this.leaveApproved = leaveApproved;
+    public void setLeaveStatus(LeaveStatus leaveStatus) {
+        this.leaveStatus = leaveStatus;
     }
 
     public String getManagerName() {

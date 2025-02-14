@@ -17,15 +17,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Leave {
 
     @Id
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
+    private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "leave_type", nullable = false)
-    private String leaveType;
+    private LeaveType leaveType;  // Uses enum instead of String
 
     @Column(name = "half_leave")
     private Boolean halfLeave;
-
 
     @Column(name = "start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -38,29 +39,31 @@ public class Leave {
     @Column(name = "reason")
     private String reason;
 
-    @Column(length = 10,name = "manager_id",nullable = false)
-    private String managerId;
+    @ManyToOne
+    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
+    private Employee manager;  // References Employee instead of String
 
-    @Column(name = "is_approved")
-    private Boolean Approved;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private LeaveStatus status = LeaveStatus.PENDING;  // Default status is PENDING
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        Id = id;
+        this.id = id;
     }
 
-    public String getLeaveType() {
+    public LeaveType getLeaveType() {
         return leaveType;
     }
 
-    public void setLeaveType(String leaveType) {
+    public void setLeaveType(LeaveType leaveType) {
         this.leaveType = leaveType;
     }
 
@@ -96,20 +99,20 @@ public class Leave {
         this.reason = reason;
     }
 
-    public String getManagerId() {
-        return managerId;
+    public Employee getManager() {
+        return manager;
     }
 
-    public void setManagerId(String managerId) {
-        this.managerId = managerId;
+    public void setManager(Employee manager) {
+        this.manager = manager;
     }
 
-    public Boolean getApproved() {
-        return Approved;
+    public LeaveStatus getStatus() {
+        return status;
     }
 
-    public void setApproved(Boolean approved) {
-        Approved = approved;
+    public void setStatus(LeaveStatus status) {
+        this.status = status;
     }
 
     public Employee getEmployee() {

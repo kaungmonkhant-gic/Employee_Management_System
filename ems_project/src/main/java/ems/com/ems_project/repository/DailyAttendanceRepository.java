@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, Integer> {
     List<EmpDailyAtts> findAll();
+
+    List<EmpDailyAtts> findByEmployeeId(String employeeId);
 }

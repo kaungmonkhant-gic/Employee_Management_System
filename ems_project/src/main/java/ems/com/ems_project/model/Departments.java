@@ -37,9 +37,9 @@ public class Departments {
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
     }
-
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Employee> employees = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Employee> employees = new ArrayList<>();
 }
 

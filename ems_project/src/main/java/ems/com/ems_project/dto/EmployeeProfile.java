@@ -5,6 +5,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.validation.ValidEmail;
 import ems.com.ems_project.validation.ValidPhoneNumber;
+import jakarta.validation.constraints.Email;
 
 public class EmployeeProfile {
 
@@ -19,7 +20,7 @@ public class EmployeeProfile {
     private String maritalStatus;
 	@ValidPhoneNumber
     private String phone;
-	@ValidEmail
+	@Email
     private String email;
     private String address;
     private String education;
