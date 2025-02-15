@@ -21,6 +21,10 @@ import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
+import ManagerDashboard from "./components/Manager/ManagerDashboard";
+import ManagerProfile from "./components/Manager/ManagerProfile";
+import OvertimeHistory from "./components/Manager/OvertimeHistory";
+import OvertimeRequest from "./components/Manager/OvertimeRequest";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -67,6 +71,12 @@ root.render(
         <Route path="attendance-list" element={<EmpAttendanceList />} />
         <Route path="salary" element={<Salary />} />
         <Route path="tasks" element={<Tasks />} />
+      </Route>
+
+      <Route path="/manager-dashboard/*" element={<ManagerDashboard />}>
+        <Route path="profile" element={<ManagerProfile />} />
+        <Route path="overtime-history" element={<OvertimeHistory />} />
+        <Route path="overtime-request" element={<OvertimeRequest />} />
       </Route>
     </Routes>
   </BrowserRouter>
