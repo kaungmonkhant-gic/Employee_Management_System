@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import profileController from "../Employee/Controller/profileController";
+import profileController from "../Manager/Controller/profileController";
 
-const EmpProfile = () => {
+const ManagerProfile = () => {
   const initialDetails = {
     name: "",
     email: "",
@@ -39,9 +39,9 @@ const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
 
 
   useEffect(() => {
-    if (details.positionId) setSelectedPositionId(details.positionId);
-    if (details.departmentId) setSelectedDepartmentId(details.departmentId);
-    if (details.roleId) setSelectedRoleId(details.roleId);
+    if (details.position) setSelectedPositionId(details.positionId);
+    if (details.department) setSelectedDepartmentId(details.departmentId);
+    if (details.role) setSelectedRoleId(details.roleId);
   }, [details]);
 
   useEffect(() => {
@@ -226,7 +226,7 @@ const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
   };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: "600px" }}>
+    <div className="container mt-5">
   <div className="card shadow-lg p-4">
     <h2 className="text-center mb-4">Employee Profile</h2>
     <form onSubmit={handleSubmit}>
@@ -497,4 +497,4 @@ const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
   );
 };
 
-export default EmpProfile;
+export default ManagerProfile;

@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 
-function EmployeeDashboard() {
+function ManagerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showSubMenu, setShowSubMenu] = React.useState(false);
@@ -30,15 +30,15 @@ function EmployeeDashboard() {
           overflowY: "auto", // Allow vertical scrolling within sidebar if needed
         }}
       >
-        <h2 className="text-center mb-4">Employee Dashboard</h2>
+        <h2 className="text-center mb-4">Manager Dashboard</h2>
         <nav className="nav flex-column">
 
-          <Link to="/employee-dashboard" className="nav-link text-light">
+          <Link to="/manager-dashboard" className="nav-link text-light">
             Dashboard
           </Link>
+          
 
-
-         <div className="nav-link text-light" 
+<div className="nav-link text-light" 
         onClick={() => setShowSubMenu(!showSubMenu)} 
         style={{ cursor: "pointer" }}
       >
@@ -49,34 +49,46 @@ function EmployeeDashboard() {
           }`}
           style={{ color: "white" }}
         />
-      </div> 
+      </div>
 
-       {/* Dropdown Submenu  */}
-       {showSubMenu && (
+      {/* Dropdown Submenu */}
+      {showSubMenu && (
         <div className="ms-3">
-          <Link to="/employee-dashboard/overtime/otrequest" className="nav-link text-light">
-            Overtime Request
+          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
+            Overtime Approval
           </Link>
-          <Link to="/employee-dashboard/overtime/otrecord" className="nav-link text-light">
-            Overtime Record
+          <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
+            Overtime History
+          </Link>
+          
+        </div>
+      )}
+          
+          {/* <div className="nav-link text-light" 
+        onClick={() => setShowSubMenu(!showSubMenu)} 
+        style={{ cursor: "pointer" }}
+      >
+        Attendance
+        <i
+          className={`bi ms-2 ${
+            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+          }`}
+          style={{ color: "white" }}
+        />
+      </div> */}
+
+      {/* Dropdown Submenu */}
+      {/* {showSubMenu && (
+        <div className="ms-3">
+          <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-light">
+            Daily Attendance
+          </Link>
+          <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-light">
+            Attendance Record
           </Link>
         </div>
-      )} 
-      
-       
-               
-                <Link to="/employee-dashboard/profile" className="nav-link text-light">
-                  Profile
-                </Link>
-                <Link to="/employee-dashboard/attendance" className="nav-link text-light">
-                  Attendance
-                </Link>
-                <Link to="/employee-dashboard/profile" className="nav-link text-light">
-                  Profile
-                </Link>
-                <Link to="/employee-dashboard/payroll" className="nav-link text-light">
-                  Payroll
-                </Link>
+      )}
+      */}
           
           <button onClick={handleLogout} className="btn btn-danger mt-4">
             Logout
@@ -91,9 +103,9 @@ function EmployeeDashboard() {
           overflowY: "auto", // Allow vertical scrolling within the content area if needed
         }}
       >
-        {location.pathname === "/employee-dashboard" && (
+        {location.pathname === "/manager-dashboard" && (
           <header className="bg-light p-3 border-bottom">
-            <h1>Welcome to the Employee Dashboard</h1>
+            <h1>Welcome to the Manager Dashboard</h1>
           </header>
         )}
         <div className="p-4">
@@ -104,4 +116,4 @@ function EmployeeDashboard() {
   );
 }
 
-export default EmployeeDashboard;
+export default ManagerDashboard;

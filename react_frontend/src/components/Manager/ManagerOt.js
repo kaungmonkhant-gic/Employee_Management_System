@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const OvertimeAdminDashboard = () => {
+const ManagerOt = () => {
   const [overtimeRequests, setOvertimeRequests] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState("All");
 
@@ -20,6 +20,15 @@ const OvertimeAdminDashboard = () => {
     setOvertimeRequests(requests);
   };
 
+  // Update status to "Recommended Approval" or "Recommended Rejection"
+  const recommendApproval = (id) => {
+    updateRequestStatus(id, "Recommended Approval");
+  };
+
+  const recommendRejection = (id) => {
+    updateRequestStatus(id, "Recommended Rejection");
+  };
+
   const updateRequestStatus = (id, status) => {
     setOvertimeRequests((prevRequests) =>
       prevRequests.map((request) =>
@@ -28,6 +37,7 @@ const OvertimeAdminDashboard = () => {
     );
   };
 
+  // Filter overtime requests
   const filteredRequests =
     filteredStatus === "All"
       ? overtimeRequests
@@ -35,7 +45,7 @@ const OvertimeAdminDashboard = () => {
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Overtime Management - Admin Dashboard</h1>
+      <h1 className="mb-4">Overtime Management - Manager Dashboard</h1>
 
       {/* Metrics Section */}
       <div className="row mb-4">
@@ -60,9 +70,10 @@ const OvertimeAdminDashboard = () => {
         <div className="col-md-4">
           <div className="card text-center">
             <div className="card-body">
-              <h5 className="card-title">Approved Requests</h5>
+              <h5 className="card-title">Recommended Approval</h5>
               <p className="card-text display-6">
-                {overtimeRequests.filter((req) => req.status === "Approved").length}
+                {overtimeRequests.filter((req) => req.status === "Recommended Approval")
+                  .length}
               </p>
             </div>
           </div>
@@ -82,8 +93,8 @@ const OvertimeAdminDashboard = () => {
         >
           <option value="All">All</option>
           <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
+          <option value="Recommended Approval">Recommended Approval</option>
+          <option value="Recommended Rejection">Recommended Rejection</option>
         </select>
       </div>
 
@@ -114,9 +125,11 @@ const OvertimeAdminDashboard = () => {
                       className={`badge ${
                         request.status === "Pending"
                           ? "bg-warning"
-                          : request.status === "Approved"
+                          : request.status === "Recommended Approval"
                           ? "bg-success"
-                          : "bg-danger"
+                          : request.status === "Recommended Rejection"
+                          ? "bg-danger"
+                          : "bg-secondary"
                       }`}
                     >
                       {request.status}
@@ -127,15 +140,15 @@ const OvertimeAdminDashboard = () => {
                       <>
                         <button
                           className="btn btn-success btn-sm me-2"
-                          onClick={() => updateRequestStatus(request.id, "Approved")}
+                          onClick={() => recommendApproval(request.id)}
                         >
-                          Approve
+                          Recommend Approval
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
-                          onClick={() => updateRequestStatus(request.id, "Rejected")}
+                          onClick={() => recommendRejection(request.id)}
                         >
-                          Reject
+                          Recommend Rejection
                         </button>
                       </>
                     )}
@@ -150,4 +163,4 @@ const OvertimeAdminDashboard = () => {
   );
 };
 
-export default OvertimeAdminDashboard;
+export default ManagerOt;
