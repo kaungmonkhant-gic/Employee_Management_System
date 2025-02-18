@@ -23,24 +23,26 @@ function AdminDashboard() {
     >
       {/* Sidebar */}
       <div
-        className="d-flex flex-column bg-dark text-light p-3"
+        className="d-flex flex-column text-dark p-3"
         style={{
           width: "250px",
           minHeight: "100vh", // Ensure the sidebar covers full height
-          overflowY: "auto", // Allow vertical scrolling within sidebar if needed
+          overflowY: "auto", 
+          backgroundColor:"rgb(144, 198, 242)", // Set a background color 
+          // Allow vertical scrolling within sidebar if needed
         }}
       >
         <h2 className="text-center mb-4">Admin Dashboard</h2>
         <nav className="nav flex-column">
 
-          <Link to="/admin-dashboard" className="nav-link text-light">
+          <Link to="/admin-dashboard" className="nav-link text-dark">
             Dashboard
           </Link>
-          <Link to="/admin-dashboard/employee" className="nav-link text-light">
+          <Link to="/admin-dashboard/employee" className="nav-link text-dark">
             Employee
           </Link>
           
-          <div className="nav-link text-light" 
+          <div className="nav-link text-dark" 
         onClick={() => setShowSubMenu(!showSubMenu)} 
         style={{ cursor: "pointer" }}
       >
@@ -56,29 +58,29 @@ function AdminDashboard() {
       {/* Dropdown Submenu */}
       {showSubMenu && (
         <div className="ms-3">
-          <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-light">
+          <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-dark">
             Daily Attendance
           </Link>
-          <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-light">
+          <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-dark">
             Attendance Record
           </Link>
         </div>
       )}
     
           
-          <Link to="/admin-dashboard/leave" className="nav-link text-light">
+          <Link to="/admin-dashboard/leave" className="nav-link text-dark">
             Leave
           </Link>
-          <Link to="/admin-dashboard/ot" className="nav-link text-light">
+          <Link to="/admin-dashboard/ot" className="nav-link text-dark">
             OT (Overtime)
           </Link>
-          <Link to="/admin-dashboard/profile" className="nav-link text-light">
+          <Link to="/admin-dashboard/profile" className="nav-link text-dark">
             Profile
           </Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link text-light">
+          <Link to="/admin-dashboard/payroll" className="nav-link text-dark">
             Payroll
           </Link>
-          <button onClick={handleLogout} className="btn btn-danger mt-4">
+          <button onClick={handleLogout} className="btn btn-secondary mt-4">
             Logout
           </button>
         </nav>
