@@ -1,5 +1,6 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -17,12 +18,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Leave {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
-    private Integer id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "leave_type", nullable = false)
+    @Column(name = "leave_type")
     private LeaveType leaveType;  // Uses enum instead of String
 
     @Column(name = "half_leave")
@@ -41,6 +41,7 @@ public class Leave {
 
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private Employee manager;  // References Employee instead of String
 
     @Enumerated(EnumType.STRING)
@@ -49,13 +50,14 @@ public class Leave {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private Employee employee;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

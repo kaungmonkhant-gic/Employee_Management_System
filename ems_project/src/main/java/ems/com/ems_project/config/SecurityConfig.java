@@ -56,7 +56,10 @@ public class SecurityConfig {
 
                         // Attendance management: Admin & Manager
                         .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
-                        .requestMatchers(HttpMethod.POST, "/attendance/mark").hasAuthority("ROLE_Employee")
+                        .requestMatchers("/attendance/checkin","/attendance/checkout").hasAuthority("ROLE_Employee")
+
+                        // OT management: Admin & Manager
+                        .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager", "ROLE_Employee")
 
                         // Leave management: Manager only
                         .requestMatchers("/leave/**").hasAuthority("ROLE_Manager")

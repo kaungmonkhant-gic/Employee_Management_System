@@ -13,9 +13,8 @@ import lombok.Setter;
 public class EmployeeSalary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",nullable = false,unique = true)
-    private Integer id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;
@@ -37,12 +36,12 @@ public class EmployeeSalary {
                 (transportation != null ? transportation : 0.0);
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        id = id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Double getBasicSalary() {

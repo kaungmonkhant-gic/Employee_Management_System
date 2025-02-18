@@ -40,7 +40,7 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
                 String token = generateToken(employee);
 
                 // Fetch the role using role_id from the Employee table
-                Integer roleId = employee.getRoleId();
+                String roleId = employee.getRoleId();
                 Roles role = roleRepository.findById(roleId)
                         .orElseThrow(() -> new RuntimeException("Role not found"));
 

@@ -12,8 +12,8 @@ import java.sql.Date;
 @Data
 public class AttendanceDTO {
 
-    private Integer id;
-    private Date Date;
+    private String id;
+    private Date date;
     private LocalTime checkInTime;
     private LocalTime checkOutTime;
     private String lunchBreak;
@@ -33,15 +33,20 @@ public class AttendanceDTO {
     private Boolean otPaid;
     private String employeeName;
 
+    // No-argument constructor for ModelMapper
+    public AttendanceDTO() {
+    }
+
     public AttendanceDTO(EmpDailyAtts attendance, Leave leave, Ots ot, String employeeName){
         this.id = attendance.getId();
-        this.Date = attendance.getDate();
+        this.date = attendance.getDate();
         this.checkInTime = attendance.getCheckInTime();
         this.checkOutTime = attendance.getCheckOutTime();
         this.lunchBreak = attendance.getLunchBreak();
         this.lateMin = attendance.getLateMin();
         this.isLeave = attendance.getIsLeave();
         this.leaveEarly = attendance.getLeaveEarly();
+        // Handle null values safely to avoid NullPointerException
         this.leaveType = leave.getLeaveType();
         this.halfLeave = leave.getHalfLeave();
         this.startDate = leave.getStartDate();
@@ -52,29 +57,34 @@ public class AttendanceDTO {
         this.otReason = ot.getReason();
         this.otApproved = ot.getApproved();
         this.otPaid = ot.getPaid();
+
         this.employeeName = employeeName;
     }
 
-    public Integer getId() {
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     public Date getDate() {
-        return Date;
+        return date;
     }
 
+    // Setter for date
     public void setDate(Date date) {
-        Date = date;
+        this.date = date;
     }
 
+    // Getter for checkInTime that defaults to current time if it's null
     public LocalTime getCheckInTime() {
-        return checkInTime;
+        return (checkInTime != null) ? checkInTime : LocalTime.now();
     }
 
+    // Setter for checkInTime
     public void setCheckInTime(LocalTime checkInTime) {
         this.checkInTime = checkInTime;
     }

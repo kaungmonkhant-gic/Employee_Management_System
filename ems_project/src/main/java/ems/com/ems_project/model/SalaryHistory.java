@@ -15,9 +15,8 @@ import lombok.Setter;
 public class SalaryHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;

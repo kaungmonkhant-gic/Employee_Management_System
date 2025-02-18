@@ -1,4 +1,5 @@
 package ems.com.ems_project.service.impl;
+import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.EmployeeDTO;
@@ -16,9 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +32,11 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Autowired
     private  EmployeeSalaryRepository employeeSalaryRepository;
+
+    @Autowired
+    private EmployeeSalaryService employeeSalaryService;
+    @Autowired
+    private EmployeeLeaveService employeeLeaveService;
 
     @Autowired
     private EmployeeLeaveRepository employeeLeaveRepository;
@@ -50,6 +55,8 @@ public class EmployeeServiceImp implements EmployeeService {
     private PositionsRepository positionRepository;
     @Autowired
     private EmployeeSalaryService salaryService;
+    @Autowired
+    private GenerateId generateId;
 
     @Override
     public ReqRes getProfile(String email) {
@@ -311,7 +318,7 @@ public class EmployeeServiceImp implements EmployeeService {
             }
             // Create new Employee entity
             Employee employee = new Employee();
-            employee.setId(registerDTO.getId());  // If ID is provided, use it; otherwise, auto-generate.
+            employee.setId(generateEmployeeId());  // If ID is provided, use it; otherwise, auto-generate.
             employee.setEmail(registerDTO.getEmail());
             employee.setName(registerDTO.getName());
             employee.setPhone(registerDTO.getPhone());
@@ -345,25 +352,8 @@ public class EmployeeServiceImp implements EmployeeService {
 
 
             // Save EmployeeSalary entity
-            EmployeeSalary employeeSalary = new EmployeeSalary();
-            employeeSalary.setEmployee(savedEmployee);
-            employeeSalary.setBasicSalary(registerDTO.getBasicSalary());
-            employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
-            employeeSalary.setTransportation(registerDTO.getTransportation());
-            employeeSalaryRepository.save(employeeSalary);
-
-
-            EmployeeLeave employeeLeave = new EmployeeLeave();
-            employeeLeave.setEmployee(savedEmployee);
-            employeeLeave.setAnnualLeave(registerDTO.getAnnualLeave());
-            employeeLeave.setCasualLeave(registerDTO.getCasualLeave());
-            employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
-            // Calculate total leave in service layer
-            double totalLeave = registerDTO.getAnnualLeave()
-                    + registerDTO.getCasualLeave()
-                    + registerDTO.getMedicalLeave();
-            employeeLeave.setTotal(totalLeave);
-            employeeLeaveRepository.save(employeeLeave);
+            employeeSalaryService.createEmployeeSalary(savedEmployee, registerDTO);
+            employeeLeaveService.createEmployeeLeave(savedEmployee, registerDTO);
 
 
             // Set response details
@@ -508,6 +498,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
 
     @Override
+    @Transactional
     public ReqRes deleteEmployee(String Id) {
         ReqRes reqRes = new ReqRes();
         // Check if the employee exists
@@ -527,10 +518,6 @@ public class EmployeeServiceImp implements EmployeeService {
             employee.setResignDate(new Date()); // Stores current date
             employeeRepository.save(employee);
 
-////            // Delete related records in leave and salary tables
-//           employeeLeaveRepository.deleteByEmployeeId(employee.getId());
-//           employeeSalaryRepository.deleteByEmployeeId(employee.getId());
-
             reqRes.setStatusCode(200);  // Success
             reqRes.setMessage("Employee marked as resigned on " + employee.getResignDate());
         } else {
@@ -545,15 +532,11 @@ public class EmployeeServiceImp implements EmployeeService {
         // Get the last Employee ID from the database
         Optional<String> lastIdOptional = employeeRepository.findLastEmployeeId();
 
-        int newNumber = 1; // Default for first employee
+        String lastId = lastIdOptional.orElse(null); // If no ID exists, use null
 
-        if (lastIdOptional.isPresent()) {
-            String lastId = lastIdOptional.get();  // Example: "EMP001"
-            String numberPart = lastId.substring(3); // Extract "001"
-            newNumber = Integer.parseInt(numberPart) + 1; // Increment: 1 → 2
-        }
+        String prefix = "EMP";
 
-        // Format new ID (e.g., EMP002, EMP010, EMP100)
-        return String.format("EMP%03d", newNumber);
+        // Generate the new Employee ID using the GenerateId class
+        return generateId.generateId(lastId,prefix);
     }
 }

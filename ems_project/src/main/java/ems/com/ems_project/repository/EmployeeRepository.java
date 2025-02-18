@@ -25,9 +25,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	@Query(value = "SELECT id FROM employees ORDER BY id DESC LIMIT 1", nativeQuery = true)
 	Optional<String> findLastEmployeeId();
 
-
-//	@Query("SELECT MAX(e.id) FROM Employee e")
-//	Integer getMaxId();
 }
 
 

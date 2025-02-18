@@ -3,7 +3,7 @@ import ems.com.ems_project.model.EmployeeSalary;
 
 public class EmployeeSalaryDTO {
 
-    private Integer id;
+    private String id;
     private String EmployeeId;
     private Double basicSalary;
     private Double houseAllowance;
@@ -21,11 +21,11 @@ public class EmployeeSalaryDTO {
         this.employeeName = employeeName;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
