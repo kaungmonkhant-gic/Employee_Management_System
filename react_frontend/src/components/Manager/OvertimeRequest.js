@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const OvertimeRequest = () => {
+const OvertimeDailyRequests = () => {
   const [dailyRequests, setDailyRequests] = useState([]);
 
   useEffect(() => {
@@ -98,4 +98,4 @@ const OvertimeRequest = () => {
   );
 };
 
-export default OvertimeRequest;
+export default OvertimeDailyRequests;

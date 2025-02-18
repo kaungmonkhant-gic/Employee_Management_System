@@ -36,9 +36,7 @@ function ManagerDashboard() {
           <Link to="/manager-dashboard" className="nav-link text-light">
             Dashboard
           </Link>
-          {/* <Link to="/admin-dashboard/employee" className="nav-link text-light">
-            Employee
-          </Link> */}
+          
 
 <div className="nav-link text-light" 
         onClick={() => setShowSubMenu(!showSubMenu)} 

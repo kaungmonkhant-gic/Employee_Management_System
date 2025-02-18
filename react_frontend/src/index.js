@@ -14,6 +14,9 @@ import Tasks from "./components/Employee/Tasks";
 import Salary from "./components/Employee/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
+import EmpOt from "./components/Employee/EmpOt";
+import EmpOtRequest from "./components/Employee/EmpOtRequest";
+import EmpOtRecord from "./components/Employee/EmpOtRecord";
 import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
@@ -69,6 +72,9 @@ root.render(
         <Route path="profile" element={<EmpProfile />} />
         <Route path="attendance" element={<EmpAttendance />} />
         <Route path="attendance-list" element={<EmpAttendanceList />} />
+        <Route path="overtime" element={<EmpOt />} />
+        <Route path="overtime/otrequest" element={<EmpOtRequest />} />
+        <Route path="overtime/otrecord" element={<EmpOtRecord />} />
         <Route path="salary" element={<Salary />} />
         <Route path="tasks" element={<Tasks />} />
       </Route>
