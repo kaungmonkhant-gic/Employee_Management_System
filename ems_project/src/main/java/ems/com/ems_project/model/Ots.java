@@ -1,10 +1,12 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.sql.Date;
 
@@ -18,11 +20,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Ots {
 
     @Id
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
-
-    @Column(length = 10,name = "employee_id",nullable = false)
-    private String employeeId;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "date")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -34,7 +33,6 @@ public class Ots {
     @Column(name = "end_time")
     private LocalTime checkOutTime;
 
-
     @Column(name = "ot_time")
     private String otTime;
 
@@ -42,29 +40,50 @@ public class Ots {
     private String reason;
 
     @Column(name = "is_approved")
-    private Boolean Approved;
-
-    @Column(length = 10,name = "manager_id",nullable = false)
-    private String managerId;
+    private Boolean Approved = false; // Default to false
 
     @Column(name = "is_paid")
-    private Boolean Paid;
+    private Boolean Paid = false;
 
-    public Integer getId() {
-        return Id;
+    @ManyToOne
+    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Employee manager;
+    @ManyToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Employee employee;
+
+
+    // Method to calculate overtime duration as a string (e.g., "2 hours 30 minutes")
+    @PrePersist
+    @PreUpdate
+    private void calculateOvertime() {
+        if (checkInTime != null && checkOutTime != null) {
+            this.otTime = calculateOvertimeString(checkInTime, checkOutTime);
+        }
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    // Helper method to format overtime duration as string
+    private String calculateOvertimeString(LocalTime checkInTime, LocalTime checkOutTime) {
+        Duration duration = Duration.between(checkInTime, checkOutTime);
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+
+        // Return the overtime duration as a formatted string
+        return String.format("%d hours %d minutes", hours, minutes);
     }
 
-    public String getEmployeeId() {
-        return employeeId;
+
+    public String getId() {
+        return id;
     }
 
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
+    public void setId(String id) {
+        this.id = id;
     }
+
+
 
     public Date getDate() {
         return Date;
@@ -114,13 +133,6 @@ public class Ots {
         Approved = approved;
     }
 
-    public String getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(String managerId) {
-        this.managerId = managerId;
-    }
 
     public Boolean getPaid() {
         return Paid;
@@ -128,5 +140,21 @@ public class Ots {
 
     public void setPaid(Boolean paid) {
         Paid = paid;
+    }
+
+    public Employee getManager() {
+        return manager;
+    }
+
+    public void setManager(Employee manager) {
+        this.manager = manager;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 }

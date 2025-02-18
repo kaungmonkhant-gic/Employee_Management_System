@@ -14,9 +14,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div
-      className="d-flex min-vh-100"
-      style={{
+    <div className="d-flex min-vh-100" style={{
         overflowY: "hidden", // Prevent vertical scroll on the main layout
         height: "100vh", // Make sure the container takes full height of the viewport
       }}
@@ -38,51 +36,76 @@ function AdminDashboard() {
           <Link to="/admin-dashboard" className="nav-link text-dark">
             Dashboard
           </Link>
-          <Link to="/admin-dashboard/employee" className="nav-link text-dark">
-            Employee
-          </Link>
-          
-          <div className="nav-link text-dark" 
-        onClick={() => setShowSubMenu(!showSubMenu)} 
-        style={{ cursor: "pointer" }}
-      >
-        Attendance
-        <i
-          className={`bi ms-2 ${
-            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-          }`}
-          style={{ color: "white" }}
-        />
-      </div>
 
-      {/* Dropdown Submenu */}
-      {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-dark">
-            Daily Attendance
-          </Link>
-          <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-dark">
-            Attendance Record
-          </Link>
+         <div className="nav-link text-dark" 
+              onClick={() => setShowSubMenu(!showSubMenu)} 
+              style={{ cursor: "pointer" }}>
+              Employee
+                   <i
+                    className={`bi ms-2 ${
+                      showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+                    }`}
+                    style={{ color: "white" }}
+                  />
+         </div>
+
+          {/* Dropdown Submenu */}
+          {showSubMenu && (
+            <div className="ms-3">
+              <Link to="/admin-dashboard/employee" className="nav-link text-dark">
+                Employee List
+              </Link>
+              <Link to="/admin-dashboard/leave" className="nav-link text-light">
+                Employee Leave
+              </Link>
+              <Link to="/admin-dashboard/salary" className="nav-link text-light">
+                Salary
+              </Link>
+            </div>
+          )}
+          <div>    
+          <div className="nav-link text-dark" 
+            onClick={() => setShowSubMenu(!showSubMenu)} 
+            style={{ cursor: "pointer" }}
+          >
+            Attendance
+            <i
+              className={`bi ms-2 ${
+                showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+              }`}
+              style={{ color: "white" }}
+            />
+          </div>
+
+          {/* Dropdown Submenu */}
+          {showSubMenu && (
+            <div className="ms-3">
+              <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-dark">
+                Daily Attendance
+              </Link>
+              <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-dark">
+                Attendance Record
+              </Link>
+            </div>
+          )}
+        
         </div>
-      )}
-    
           
           <Link to="/admin-dashboard/leave" className="nav-link text-dark">
             Leave
           </Link>
           <Link to="/admin-dashboard/ot" className="nav-link text-dark">
-            OT (Overtime)
-          </Link>
-          <Link to="/admin-dashboard/profile" className="nav-link text-dark">
-            Profile
-          </Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link text-dark">
-            Payroll
-          </Link>
-          <button onClick={handleLogout} className="btn btn-secondary mt-4">
-            Logout
-          </button>
+                OT (Overtime)
+              </Link>
+              <Link to="/admin-dashboard/profile" className="nav-link text-dark">
+                Profile
+              </Link>
+              <Link to="/admin-dashboard/payroll" className="nav-link text-dark">
+                Payroll
+              </Link>
+              <button onClick={handleLogout} className="btn btn-secondary mt-4">
+                Logout
+              </button>
         </nav>
       </div>
 
@@ -105,5 +128,4 @@ function AdminDashboard() {
     </div>
   );
 }
-
 export default AdminDashboard;

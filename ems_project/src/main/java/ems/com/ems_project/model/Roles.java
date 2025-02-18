@@ -16,18 +16,18 @@ import java.util.List;
 public class Roles {
 
     @Id
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
     @Column(name = "role_name", nullable = false,unique =true)
     private String roleName;
 
-    public Integer getId() {
-        return Id;
+    public String getId() {
+        return id;
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getRoleName() {

@@ -14,6 +14,9 @@ import Tasks from "./components/Employee/Tasks";
 import Salary from "./components/Employee/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
+import EmpOt from "./components/Employee/EmpOt";
+import EmpOtRequest from "./components/Employee/EmpOtRequest";
+import EmpOtRecord from "./components/Employee/EmpOtRecord";
 import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
@@ -21,6 +24,11 @@ import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
+import ManagerDashboard from "./components/Manager/ManagerDashboard";
+import ManagerProfile from "./components/Manager/ManagerProfile";
+import OvertimeHistory from "./components/Manager/OvertimeHistory";
+import OvertimeRequest from "./components/Manager/OvertimeRequest";
+import ManagerOtApproval from "./components/Manager/OvertimeRequest";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -66,8 +74,17 @@ root.render(
         <Route path="profile" element={<EmpProfile />} />
         <Route path="attendance" element={<EmpAttendance />} />
         <Route path="attendance-list" element={<EmpAttendanceList />} />
+        <Route path="overtime" element={<EmpOt />} />
+        <Route path="overtime/otrequest" element={<EmpOtRequest />} />
+        <Route path="overtime/otrecord" element={<EmpOtRecord />} />
         <Route path="salary" element={<Salary />} />
         <Route path="tasks" element={<Tasks />} />
+      </Route>
+
+      <Route path="/manager-dashboard/*" element={<ManagerDashboard />}>
+        <Route path="profile" element={<ManagerProfile />} />
+        <Route path="overtime-history" element={<OvertimeHistory />} />
+        <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
       </Route>
     </Routes>
   </BrowserRouter>

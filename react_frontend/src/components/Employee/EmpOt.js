@@ -1,256 +1,191 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const EmpOt = () => {
-  const [otRecords, setOtRecords] = useState([]);
-  const [employeeName, setEmployeeName] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const [position, setPosition] = useState("");
-  const [department, setDepartment] = useState("");
+const EmployeeOvertime = () => {
+  // State for overtime form inputs
   const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [error, setError] = useState("");
+  const [hours, setHours] = useState("");
+  const [reason, setReason] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const calculateOTHours = (start, end) => {
-    const startDate = new Date(`1970-01-01T${start}`);
-    const endDate = new Date(`1970-01-01T${end}`);
-    const diff = (endDate - startDate) / (1000 * 60 * 60);
-    return diff > 0 ? diff : 0;
+  // State for overtime records
+  const [overtimeRecords, setOvertimeRecords] = useState([]);
+
+  useEffect(() => {
+    fetchEmployeeOvertimeRecords();
+  }, []);
+
+  // Sample data fetching (replace with actual API call)
+  const fetchEmployeeOvertimeRecords = () => {
+    const records = [
+      {
+        id: 1,
+        date: "2025-02-10",
+        hours: 3,
+        reason: "Project deadline",
+        status: "Approved",
+      },
+      {
+        id: 2,
+        date: "2025-02-12",
+        hours: 2,
+        reason: "Team meeting preparation",
+        status: "Pending",
+      },
+      {
+        id: 3,
+        date: "2025-02-08",
+        hours: 4,
+        reason: "System upgrade",
+        status: "Rejected",
+      },
+    ];
+    setOvertimeRecords(records);
   };
 
-  const calculateOTPay = (position, hours, date) => {
-    const dayOfWeek = new Date(date).getDay();
-    const isWeekendOrHoliday = dayOfWeek === 0 || dayOfWeek === 6;
-    const oneDaySalary = 1000;
-    let otRate = 0;
-
-    if (position === "Officer") {
-      otRate = isWeekendOrHoliday ? 0.2 : 0.1;
-    } else if (position === "Senior Officer") {
-      otRate = isWeekendOrHoliday ? 0.3 : 0.2;
-    } else if (position === "Manager") {
-      otRate = isWeekendOrHoliday ? 0.4 : 0.3;
-    }
-
-    return hours * otRate * oneDaySalary;
-  };
-
-  const handleAddRecord = (e) => {
+  // Handle form submission
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const otHours = calculateOTHours(startTime, endTime);
-    if (otHours < 1) {
-      setError("OT hours must be at least 1 hour.");
+    if (!date || !hours || !reason) {
+      alert("All fields are required!");
       return;
     }
 
-    if (
-      employeeName &&
-      employeeId &&
-      position &&
-      department &&
-      date &&
-      startTime &&
-      endTime
-    ) {
-      const otPay = calculateOTPay(position, otHours, date);
-      const newRecord = {
-        employeeName,
-        employeeId,
-        position,
-        department,
-        date,
-        startTime,
-        endTime,
-        otHours,
-        otPay,
-      };
+    // Simulate API call (replace with actual API integration)
+    const newRecord = {
+      id: overtimeRecords.length + 1,
+      date,
+      hours,
+      reason,
+      status: "Pending",
+    };
 
-      setOtRecords([...otRecords, newRecord]);
-      setEmployeeName("");
-      setEmployeeId("");
-      setPosition("");
-      setDepartment("");
-      setDate("");
-      setStartTime("");
-      setEndTime("");
-      setError("");
-    }
+    // Add new record to the list
+    setOvertimeRecords([...overtimeRecords, newRecord]);
+
+    // Show success message and clear the form
+    setSuccessMessage("Your overtime request has been submitted successfully!");
+    setDate("");
+    setHours("");
+    setReason("");
   };
 
   return (
-    <div className="container my-5">
-      <header className="mb-4">
-        <h1 className="text-center text-secondary">Overtime Dashboard</h1>
-      </header>
+    <div className="container mt-4">
+      <h1 className="mb-4">Employee Overtime Management</h1>
 
-      <main>
-        {/* Form Section */}
-        <section className="mb-5">
-          <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">
-              <h2 className="h5 mb-0">Log Overtime</h2>
+      {/* Overtime Request Form */}
+      <div className="card mb-4">
+        <div className="card-header">
+          <h2 className="card-title mb-0">Submit Overtime Request</h2>
+        </div>
+        <div className="card-body">
+          {successMessage && (
+            <div className="alert alert-success" role="alert">
+              {successMessage}
             </div>
-            <div className="card-body">
-              {error && <div className="alert alert-danger">{error}</div>}
-              <form onSubmit={handleAddRecord}>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="employeeName" className="form-label">
-                      Employee Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="employeeName"
-                      value={employeeName}
-                      onChange={(e) => setEmployeeName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="employeeId" className="form-label">
-                      Employee ID
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="employeeId"
-                      value={employeeId}
-                      onChange={(e) => setEmployeeId(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="position" className="form-label">
-                      Position
-                    </label>
-                    <select
-                      id="position"
-                      className="form-select"
-                      value={position}
-                      onChange={(e) => setPosition(e.target.value)}
-                      required
-                    >
-                      <option value="">Select Position</option>
-                      <option value="Officer">Officer</option>
-                      <option value="Senior Officer">Senior Officer</option>
-                      <option value="Manager">Manager</option>
-                    </select>
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="department" className="form-label">
-                      Department
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="department"
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="date" className="form-label">
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="startTime" className="form-label">
-                      Start Time
-                    </label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      id="startTime"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="endTime" className="form-label">
-                      End Time
-                    </label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      id="endTime"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="text-center">
-                  <button type="submit" className="btn btn-primary">
-                    Add Record
-                  </button>
-                </div>
-              </form>
+          )}
+          <form onSubmit={handleSubmit}>
+            {/* Date Input */}
+            <div className="mb-3">
+              <label htmlFor="date" className="form-label">
+                Date of Overtime
+              </label>
+              <input
+                type="date"
+                id="date"
+                className="form-control"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
             </div>
-          </div>
-        </section>
 
-        {/* Records Section */}
-        <section>
-          <h2 className="mb-3">Overtime Records</h2>
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover shadow-sm">
+            {/* Hours Input */}
+            <div className="mb-3">
+              <label htmlFor="hours" className="form-label">
+                Overtime Hours
+              </label>
+              <input
+                type="number"
+                id="hours"
+                className="form-control"
+                min="1"
+                value={hours}
+                onChange={(e) => setHours(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* Reason Input */}
+            <div className="mb-3">
+              <label htmlFor="reason" className="form-label">
+                Reason for Overtime
+              </label>
+              <textarea
+                id="reason"
+                className="form-control"
+                rows="4"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                required
+              ></textarea>
+            </div>
+
+            {/* Submit Button */}
+            <button type="submit" className="btn btn-primary">
+              Submit Request
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Overtime Records Section */}
+      <div className="card">
+        <div className="card-header">
+          <h2 className="card-title mb-0">My Overtime Records</h2>
+        </div>
+        <div className="card-body">
+          {overtimeRecords.length > 0 ? (
+            <table className="table table-bordered table-hover">
               <thead className="table-light">
                 <tr>
-                  <th>Employee Name</th>
-                  <th>Employee ID</th>
-                  <th>Position</th>
-                  <th>Department</th>
                   <th>Date</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
-                  <th>OT Hours</th>
-                  <th>OT Pay</th>
+                  <th>Hours</th>
+                  <th>Reason</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {otRecords.map((record, index) => (
-                  <tr key={index}>
-                    <td>{record.employeeName}</td>
-                    <td>{record.employeeId}</td>
-                    <td>{record.position}</td>
-                    <td>{record.department}</td>
+                {overtimeRecords.map((record) => (
+                  <tr key={record.id}>
                     <td>{record.date}</td>
-                    <td>{record.startTime}</td>
-                    <td>{record.endTime}</td>
-                    <td>{record.otHours.toFixed(1)}</td>
-                    <td>${record.otPay.toFixed(2)}</td>
-                  </tr>
-                ))}
-                {otRecords.length === 0 && (
-                  <tr>
-                    <td colSpan="9" className="text-center">
-                      No overtime records found.
+                    <td>{record.hours}</td>
+                    <td>{record.reason}</td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          record.status === "Pending"
+                            ? "bg-warning"
+                            : record.status === "Approved"
+                            ? "bg-success"
+                            : "bg-danger"
+                        }`}
+                      >
+                        {record.status}
+                      </span>
                     </td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
-          </div>
-        </section>
-      </main>
+          ) : (
+            <p>No overtime records found.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
-export default EmpOt;
+
+export default EmployeeOvertime;

@@ -11,7 +11,7 @@ const leaveService = {
             // setTimeout(() => resolve([{ id: 1, name: "John Doe", leaveType: "Vacation" }]), 1000)
             // );
             // return Array.isArray(response) ? response : [];
-            const response = await apiClient.get("/employeeleaves"); // Replace "/leaves" with your actual endpoint
+            const response = await apiClient.get("/leave/all"); // Replace "/leaves" with your actual endpoint
             return Array.isArray(response.data) ? response.data : [];
         } catch (error) {
             console.error("Error fetching leaves:", error);

@@ -33,9 +33,9 @@ function Employee() {
       { field: "basicSalary", headerName: "Basic Salary", minWidth: 150, flex: 1, cellClassName: "text-center" },
       { field: "houseAllowance", headerName: "House Allowance", minWidth: 150, flex: 1, cellClassName: "text-center" },
       { field: "transportation", headerName: "Transportation", minWidth: 150, flex: 1, cellClassName: "text-center" },
-      { field: "annualLeave", headerName: "Annual Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
-      { field: "casualLeave", headerName: "Casual Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
-      { field: "medicalLeave", headerName: "Medical Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      //{ field: "annualLeave", headerName: "Annual Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      //{ field: "casualLeave", headerName: "Casual Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
+      //{ field: "medicalLeave", headerName: "Medical Leave", minWidth: 130, flex: 1, cellClassName: "text-center" },
       { field: "joinDate", headerName: "Join Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
       {
         field: "resignDate",
@@ -76,20 +76,47 @@ function Employee() {
     setIsRegisterScreen(true);
   };
 
-  const handleDelete = (employee) => {
-    setEmployees((prev) => prev.filter((e) => e.number !== employee.number));
-  };
-
-  const handleSubmit = (employeeData) => {
-    if (editingEmployee) {
-      setEmployees((prev) =>
-        prev.map((emp) => (emp.number === editingEmployee.number ? employeeData : emp))
-      );
-    } else {
-      setEmployees((prev) => [...prev, { ...employeeData, number: prev.length + 1 }]);
+  const handleDelete = async (employee) => {
+    try {
+      await employeeController.deleteEmployee(employee.id); // Call the delete API
+      setEmployees((prev) => prev.filter((e) => e.id !== employee.id)); // Remove the deleted employee from state
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      alert("Failed to delete employee.");
     }
-    setIsRegisterScreen(false);
   };
+  
+
+  const handleSubmit = async (employeeData) => {
+    if (editingEmployee) {
+      console.log("Editing employee:", employeeData);
+      try {
+        // Call API to update employee
+        const updatedEmployee = await employeeController.updateEmployee(editingEmployee.id, employeeData);
+        console.log("Employee updated successfully:", updatedEmployee);
+        // Update local state
+        setEmployees((prev) =>
+          prev.map((emp) => (emp.number === editingEmployee.number ? updatedEmployee : emp))
+        );
+  
+        // Close the form
+        setIsRegisterScreen(false);
+      } catch (error) {
+        console.error("Error updating employee:", error);
+        alert("Failed to update employee.");
+      }
+    } else {
+      try {
+        // Add a new employee
+        setEmployees((prev) => [...prev, { ...employeeData, number: prev.length + 1 }]);
+        setIsRegisterScreen(false);
+      } catch (error) {
+        console.error("Error adding employee:", error);
+        alert("Failed to add new employee.");
+      }
+    }
+  };
+  
 
      return (
     <div className="container mt-5 vh-100">

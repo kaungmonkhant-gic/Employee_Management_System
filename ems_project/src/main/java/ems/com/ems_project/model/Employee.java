@@ -299,11 +299,11 @@ public class Employee implements UserDetails {
     }
 
 
-    public Integer getRoleId() {
+    public String getRoleId() {
         return role != null ? role.getId() : null;
     }
 
-    public void setRoleId(Integer roleId) {
+    public void setRoleId(String roleId) {
         if (role == null) {
             role = new Roles();
         }

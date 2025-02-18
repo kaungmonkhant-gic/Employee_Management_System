@@ -9,20 +9,19 @@ import lombok.Data;
 public class EmployeeLeave {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    private Integer id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
-    @Column(name = "annual_leave", nullable = false)
+    @Column(name = "annual_leave")
     private Double annualLeave = 0.0;
 
-    @Column(name = "casual_leave", nullable = false)
+    @Column(name = "casual_leave")
     private Double casualLeave = 0.0;
 
-    @Column(name = "medical_leave", nullable = false)
+    @Column(name = "medical_leave")
     private Double medicalLeave = 0.0;
 
-    @Column(name = "total", nullable = false)
+    @Column(name = "total")
     private Double total = 0.0;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -33,11 +32,11 @@ public class EmployeeLeave {
         this.total = annualLeave + casualLeave + medicalLeave;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -64,25 +64,27 @@ const employeeController = {
         throw new Error("Failed to register employee. Please try again later.");
     }
   },
-// Edit an existing employee
-updateEmployee: async (employeeId, employeeData) => {
-  try {
-    const updatedEmployee = await employeeService.updateEmployee(employeeId, employeeData);
-    return updatedEmployee;
-  } catch (error) {
-    throw new Error("Failed to update employee. Please try again later.");
+  updateEmployee: async (employeeId, employeeData) => {
+    try {
+      console.log(`Sending update request for employee ID: ${employeeId}`, employeeData);
+      const updatedEmployee = await employeeService.updateEmployee(employeeId, employeeData);
+      console.log("Update response received:", updatedEmployee);
+      return updatedEmployee;
+    } catch (error) {
+      console.error("Error in updateEmployee controller function:", error);
+      throw error;
+    }
+  },
+  
+  
+  deleteEmployee: async (employeeId) => {
+    try {
+      await employeeService.deleteEmployee(employeeId);
+    } catch (error) {
+      throw new Error("Failed to delete employee. Please try again later.");
+    }
   }
-},
-
-// Delete an employee
-deleteEmployee: async (employeeId) => {
-  try {
-    await employeeService.deleteEmployee(employeeId);
-  } catch (error) {
-    throw new Error("Failed to delete employee. Please try again later.");
-  }
-}
-
+  
  
 };
 

@@ -17,14 +17,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class EmpDailyAtts {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private Integer Id;
+    @Column(length = 10, nullable = false, unique = true)
+    private String id;
 
 
-    @Column(name = "date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date Date;
+    @Column(name = "date",nullable = false)
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date date;
 
     @Column(name = "check_in_time")
     private LocalTime checkInTime;
@@ -58,20 +57,21 @@ public class EmpDailyAtts {
     @JsonIgnore
     private Employee employee;
 
-    public Integer getId() {
-        return Id;
+    public String getId() {
+        return id;
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(String id) {
+        this.id = id;
     }
+
 
     public Date getDate() {
-        return Date;
+        return date;
     }
 
     public void setDate(Date date) {
-        Date = date;
+        this.date = date;
     }
 
     public LocalTime getCheckInTime() {

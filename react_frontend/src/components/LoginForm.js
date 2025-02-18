@@ -30,24 +30,38 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
-
+  
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
+  
     setErrors({}); // Clear errors if validation passes
-
+  
     try {
       const userData = await UserService.login(username, password);
       console.log(userData);
-
-      if (userData.token) {
+  
+      if (userData.token && userData.roleName) {
         localStorage.setItem("token", userData.token);
-        localStorage.setItem("role", userData.role);
-        navigate("/admin-dashboard");
+        localStorage.setItem("roleName", userData.roleName);
+  
+        // Navigate based on the role
+        switch (userData.roleName.toLowerCase()) {
+          case "admin":
+            navigate("/admin-dashboard");
+            break;
+          case "employee":
+            navigate("/employee-dashboard");
+            break;
+          case "manager":
+            navigate("/manager-dashboard");
+            break;
+          default:
+            setError("Unknown role. Please contact support.");
+        }
       } else {
-        setError(userData.message);
+        setError(userData.message || "Login failed. Please try again.");
       }
     } catch (error) {
       console.log(error);
@@ -55,7 +69,7 @@ function LoginForm() {
       setTimeout(() => setError(""), 5000);
     }
   };
-
+  
   return (
     <div
       style={{

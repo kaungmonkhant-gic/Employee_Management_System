@@ -70,33 +70,32 @@ const employeeService = {
       throw error;
     }
   },
-  // Update an existing employee
+  // Update Employee
   updateEmployee: async (employeeId, employeeData) => {
     try {
-      console.log(`Service call to update employee with ID: ${employeeId}`);
+      console.log(`Sending PUT request to /employee/update/${employeeId} with data:`, employeeData);
       const response = await apiClient.put(`/employee/update/${employeeId}`, employeeData);
-      console.log("Employee updated successfully:", response.data);
+      console.log("Response from server:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error updating employee:", error);
+      console.error("Error updating employee in service function:", error);
       throw error;
     }
   },
   
 
-  // Delete an employee
-  deleteEmployee: async (employeeId) => {
-    try {
-      console.log(`Sending DELETE request to /employee/delete/${employeeId}`); // Log the request URL
-      const response = await apiClient.delete(`/employee/delete/${employeeId}`);
-      console.log("Response from server:", response); // Log the response
-      return response.data;
-    } catch (error) {
-      console.error("Error in deleteEmployee service function:", error); // Log error details
-      throw error;
-    }
-  },
-  
+// Delete Employee
+deleteEmployee: async (employeeId) => {
+  try {
+    console.log(`Sending DELETE request to /employee/delete/${employeeId}`);
+    const response = await apiClient.delete(`/employee/delete/${employeeId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting employee:", error);
+    throw error;
+  }
+}
+
   
   
 };

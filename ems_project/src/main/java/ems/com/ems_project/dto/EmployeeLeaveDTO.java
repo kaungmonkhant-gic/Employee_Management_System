@@ -4,7 +4,7 @@ import ems.com.ems_project.model.EmployeeLeave;
 
 public class EmployeeLeaveDTO {
 
-    private Integer Id;
+    private String id;
     private String EmployeeId;
     private Double annualLeave;
     private Double casualLeave;
@@ -13,7 +13,7 @@ public class EmployeeLeaveDTO {
     private String employeeName;
 
     public EmployeeLeaveDTO(EmployeeLeave employeeLeave, String employeeName) {
-        this.Id = employeeLeave.getId();
+        this.id = employeeLeave.getId();
         this.EmployeeId = employeeLeave.getEmployee().getId();
         this.annualLeave = employeeLeave.getAnnualLeave();
         this.casualLeave = employeeLeave.getCasualLeave();
@@ -24,8 +24,13 @@ public class EmployeeLeaveDTO {
 
     // Constructor, Getters, and Setters
 
-    public Integer getId() {
-        return Id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Double getAnnualLeave() {
