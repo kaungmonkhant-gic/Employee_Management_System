@@ -54,8 +54,8 @@ function ManagerDashboard() {
       {/* Dropdown Submenu */}
       {showSubMenu && (
         <div className="ms-3">
-          <Link to="/manager-dashboard/overtime-request" className="nav-link text-light">
-            Overtime Request
+          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
+            Overtime Approval
           </Link>
           <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
             Overtime History

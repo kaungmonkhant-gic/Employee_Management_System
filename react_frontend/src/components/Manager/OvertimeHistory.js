@@ -1,70 +1,82 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import DataTable from "../common/DataTable";
 
-const OvertimeHistory = () => {
-  const [overtimeRecords, setOvertimeRecords] = useState([]);
+const ManagerOtHistory = () => {
+  const [overtimeRequests, setOvertimeRequests] = useState([]);
+  const [approvedRequests, setApprovedRequests] = useState([]);
+  const [declinedRequests, setDeclinedRequests] = useState([]);
 
   useEffect(() => {
-    fetchOvertimeRecords();
+    fetch("/api/overtime/all")
+      .then((response) => response.json())
+      .then((data) => {
+        setOvertimeRequests(data);
+        filterRequests(data);
+      })
+      .catch((error) => console.error("Error fetching overtime requests:", error));
   }, []);
 
-  // Sample data fetching (replace with actual API call)
-  const fetchOvertimeRecords = () => {
-    const records = [
-      { id: 1, employee: "John Doe", date: "2025-02-10", hours: 3, status: "Approved" },
-      { id: 2, employee: "Jane Smith", date: "2025-02-05", hours: 5, status: "Rejected" },
-      { id: 3, employee: "Michael Brown", date: "2025-02-08", hours: 2, status: "Recommended Approval" },
-      { id: 4, employee: "Emma Wilson", date: "2025-02-11", hours: 4, status: "Pending" },
-    ];
-    setOvertimeRecords(records);
+  const filterRequests = (data) => {
+    setApprovedRequests(data.filter((request) => request.status === "Approved"));
+    setDeclinedRequests(data.filter((request) => request.status === "Rejected"));
   };
+
+  const columns = [
+    {
+      name: "Employee",
+      selector: (row) => row.employeeName,
+      sortable: true,
+    },
+    {
+      name: "Date",
+      selector: (row) => row.date,
+      sortable: true,
+    },
+    {
+      name: "Start Time",
+      selector: (row) => row.startTime,
+    },
+    {
+      name: "End Time",
+      selector: (row) => row.endTime,
+    },
+    {
+      name: "Duration",
+      selector: (row) => row.duration,
+      sortable: true,
+    },
+    {
+      name: "Reason",
+      selector: (row) => row.reason,
+    },
+  ];
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Overtime Records</h1>
-      <div className="card">
-        <div className="card-header">
-          <h2 className="card-title mb-0">All Overtime Records</h2>
-        </div>
-        <div className="card-body">
-          <table className="table table-bordered table-hover">
-            <thead className="table-light">
-              <tr>
-                <th>Employee</th>
-                <th>Date</th>
-                <th>Hours</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {overtimeRecords.map((record) => (
-                <tr key={record.id}>
-                  <td>{record.employee}</td>
-                  <td>{record.date}</td>
-                  <td>{record.hours}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        record.status === "Pending"
-                          ? "bg-warning"
-                          : record.status === "Approved"
-                          ? "bg-success"
-                          : record.status === "Rejected"
-                          ? "bg-danger"
-                          : "bg-secondary"
-                      }`}
-                    >
-                      {record.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <h2>Overtime History</h2>
+
+      <h3 className="mt-4">Approved Overtime Requests</h3>
+      <DataTable
+        columns={columns}
+        data={approvedRequests}
+        pagination
+        highlightOnHover
+        striped
+        noDataComponent="No approved overtime requests found"
+      />
+
+      <h3 className="mt-4">Declined Overtime Requests</h3>
+      <DataTable
+        columns={columns}
+        data={declinedRequests}
+        pagination
+        highlightOnHover
+        striped
+        noDataComponent="No declined overtime requests found"
+      />
     </div>
   );
 };
 
-export default OvertimeHistory;
+export default ManagerOtHistory;
