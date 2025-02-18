@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import DataTable from "./common/DataTable"; // Assuming DataTable is in the same folder
+import DailyAttendanceService from "../services/dailyAttendanceService.js";
+import DataTable from "./common/DataTable"; 
 import { Button } from "react-bootstrap";
 
 const Attendance = () => {
@@ -10,19 +10,9 @@ const Attendance = () => {
   const [checkInTime, setCheckInTime] = useState(null);
 
   // Fetch attendance records from backend
-  const fetchAttendance = async () => {
-    try {
-      const response = await axios.get("/api/attendance");
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching attendance:", error);
-      return [];
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchAttendance();
+      const data = await DailyAttendanceService.getAllAttendance();
       setAttendanceData(data);
     };
     fetchData();
@@ -30,7 +20,7 @@ const Attendance = () => {
 
   // Handle Check-in
   const handleCheckIn = async () => {
-    if (isCheckingIn) return; // Prevent duplicate clicks
+    if (isCheckingIn) return;
     setIsCheckingIn(true);
 
     const now = new Date();
@@ -42,19 +32,19 @@ const Attendance = () => {
     const lateMinutes = now > checkInLimit ? Math.round((now - checkInLimit) / 60000) : 0;
 
     try {
-      // Sending check-in request to backend
-      const response = await axios.post("/api/attendance/checkin", {
-        checkInTime: formattedTime,
-        lateMinutes,
-      });
+      console.log("Attempting Check-in:", { formattedTime, lateMinutes });
 
-      setAttendanceData([...attendanceData, response.data.record]);
+      const newAttendance = await DailyAttendanceService.checkIn(formattedTime, lateMinutes);
+
+      console.log("Check-in Successful:", newAttendance);
+
+      setAttendanceData([...attendanceData, newAttendance]);
       setIsCheckedIn(true);
       setCheckInTime(formattedTime);
     } catch (error) {
-      console.error("Check-in failed:", error);
+      console.error("Check-in failed:", error.response?.data || error.message);
     } finally {
-      setIsCheckingIn(false); // Ensure button is re-enabled on failure
+      setIsCheckingIn(false);
     }
   };
 
@@ -64,14 +54,11 @@ const Attendance = () => {
     const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
 
     try {
-      const response = await axios.post("/api/attendance/checkout", {
-        checkOutTime: formattedTime,
-      });
-
-      setAttendanceData([...attendanceData, response.data.record]);
+      const updatedAttendance = await DailyAttendanceService.checkOut(formattedTime);
+      setAttendanceData([...attendanceData, updatedAttendance]);
       setIsCheckedIn(false);
     } catch (error) {
-      console.error("Check-out failed:", error);
+      console.error("Check-out failed:", error.response?.data || error.message);
     }
   };
 
@@ -91,21 +78,17 @@ const Attendance = () => {
       <h2>Daily Attendance</h2>
 
       {!isCheckedIn ? (
-        <button
-          className="btn btn-primary"
-          onClick={handleCheckIn}
-          disabled={isCheckingIn} // Disable while processing
-        >
+        <Button variant="primary" onClick={handleCheckIn} disabled={isCheckingIn}>
           {isCheckingIn ? "Checking in..." : "Check In"}
-        </button>
+        </Button>
       ) : (
-        <button className="btn btn-danger" onClick={handleCheckOut}>
+        <Button variant="danger" onClick={handleCheckOut}>
           Check Out
-        </button>
+        </Button>
       )}
 
       <div className="mt-3">
-        <DataTable fetchData={fetchAttendance} columns={columns} keyField="id" />
+        <DataTable fetchData={DailyAttendanceService.getAllAttendance} columns={columns} keyField="id" />
       </div>
     </div>
   );
