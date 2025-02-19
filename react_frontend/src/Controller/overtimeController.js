@@ -1,9 +1,9 @@
 import overtimeService from "../services/overtimeService";
 
 const overtimeController = {
-  fetchOvertimeRecords: async () => {
+  fetchOvertimeRequests: async () => {
     try {
-      const records = await overtimeService.getOvertimeRecords();
+      const records = await overtimeService.fetchOvertimeRequests();
       return records;
     } catch (error) {
       throw new Error("Failed to fetch overtime records. Please try again later.");
@@ -12,7 +12,7 @@ const overtimeController = {
 
   addOvertimeRecord: async (overtimeData) => {
     try {
-      const newRecord = await overtimeService.createOvertimeRecord(overtimeData);
+      const newRecord = await overtimeService.addOvertimeRecord(overtimeData);
       return newRecord;
     } catch (error) {
       throw new Error("Failed to add overtime record. Please try again later.");

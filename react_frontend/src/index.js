@@ -27,8 +27,8 @@ import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
 import OvertimeHistory from "./components/Manager/OvertimeHistory";
-import OvertimeRequest from "./components/Manager/OvertimeRequest";
 import ManagerOtApproval from "./components/Manager/OvertimeRequest";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -38,7 +38,7 @@ function PrivateRoute({ children }) {
 }
 
 root.render(
-  <BrowserRouter>
+  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
@@ -60,8 +60,8 @@ root.render(
         >
         <Route path="employee" element={<Employee />} />
         <Route path="attendance" element={<Attendance />} />
-        <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
+        <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
         <Route path="leave" element={<Leave />} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
