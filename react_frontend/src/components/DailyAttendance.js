@@ -1,142 +1,97 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import DataTable from "./common/DataTable";
-import { FaClock, FaSignOutAlt, FaUserClock } from "react-icons/fa";
-import moment from "moment";
-import AttendanceController from "../Controller/attendanceController";
+import React, { useEffect, useState } from "react";
+import DailyAttendanceService from "../services/dailyAttendanceService.js";
+import DataTable from "./common/DataTable"; 
+import { Button } from "react-bootstrap";
 
-const currentDate = moment().format("YYYY-MM-DD");
-const currentTime = moment().format("HH:mm:ss");
+const Attendance = () => {
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [isCheckedIn, setIsCheckedIn] = useState(false);
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [checkInTime, setCheckInTime] = useState(null);
 
-function DailyAttendance() {
-  const [attendanceRecords, setAttendanceRecords] = useState([]);
-
-  const handleCheckIn = () => {
-    const checkInTime = moment();
-    const checkInHour = checkInTime.hour();
-    const checkInMinute = checkInTime.minute();
-    const formattedCheckInTime = checkInTime.format("HH:mm:ss");
-
-    let lateMinutes = 0;
-    let status = "";
-
-    if (checkInHour < 8 || (checkInHour === 8 && checkInMinute === 0)) {
-      status = "On time";
-    } else if (checkInHour < 12) {
-      // Late check-in before lunch break
-      lateMinutes = checkInTime.diff(moment(`${currentDate} 08:00:00`), 'minutes');
-      status = "Late Check-In";
-    } else if (checkInHour >= 12 && checkInHour < 13) {
-      status = "Afternoon Check-In";
-    } else {
-      // Late afternoon check-in after 1 PM
-      status = "Late Afternoon Check-In";
-      lateMinutes = checkInTime.diff(moment(`${currentDate} 13:00:00`), 'minutes');
-    }
-
-    const newRecord = {
-      id: attendanceRecords.length + 1,
-      name: "Employee Name", // Replace with dynamic employee name if available
-      Date: currentDate,
-      start_time: formattedCheckInTime,
-      late_min: lateMinutes,
-      status: status,
-      manager_id: "MGR001", // Example manager ID
-      is_approved: false,
-      reason: ""
+  // Fetch attendance records from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await DailyAttendanceService.getAllAttendance();
+      setAttendanceData(data);
     };
+    fetchData();
+  }, []);
 
-    console.log("Check-In time: ", formattedCheckInTime);
-    console.log("Status: ", status, ", Late Minutes: ", lateMinutes);
+  // Handle Check-in
+  const handleCheckIn = async () => {
+    if (isCheckingIn) return;
+    setIsCheckingIn(true);
 
-    setAttendanceRecords((prev) => [...prev, newRecord]);
-  };
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
 
-  const handleCheckOut = (recordId) => {
-    const checkOutTime = moment();
-    const checkOutHour = checkOutTime.hour();
-    const formattedCheckOutTime = checkOutTime.format("HH:mm:ss");
+    // Determine late minutes
+    const checkInLimit = new Date();
+    checkInLimit.setHours(7, 45, 0, 0);
+    const lateMinutes = now > checkInLimit ? Math.round((now - checkInLimit) / 60000) : 0;
 
-    let status = "On time";
+    try {
+      console.log("Attempting Check-in:", { formattedTime, lateMinutes });
 
-    if (checkOutHour >= 14 && checkOutHour < 16) {
-      status = "Early Check-Out";
-    } else if (checkOutHour < 17) {
-      status = "Very Early Check-Out";
+      const newAttendance = await DailyAttendanceService.checkIn(formattedTime, lateMinutes);
+
+      console.log("Check-in Successful:", newAttendance);
+
+      setAttendanceData([...attendanceData, newAttendance]);
+      setIsCheckedIn(true);
+      setCheckInTime(formattedTime);
+    } catch (error) {
+      console.error("Check-in failed:", error.response?.data || error.message);
+    } finally {
+      setIsCheckingIn(false);
     }
-
-    setAttendanceRecords((prev) =>
-      prev.map((record) =>
-        record.id === recordId
-          ? { ...record, end_time: formattedCheckOutTime, status: status }
-          : record
-      )
-    );
   };
 
-  const handleOvertime = (recordId) => {
-    setAttendanceRecords((prev) =>
-      prev.map((record) =>
-        record.id === recordId
-          ? { ...record, reason: "Worked extra hours for urgent task" }
-          : record
-      )
-    );
+  // Handle Check-out
+  const handleCheckOut = async () => {
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
+
+    try {
+      const updatedAttendance = await DailyAttendanceService.checkOut(formattedTime);
+      setAttendanceData([...attendanceData, updatedAttendance]);
+      setIsCheckedIn(false);
+    } catch (error) {
+      console.error("Check-out failed:", error.response?.data || error.message);
+    }
   };
 
+  // Define columns for DataTable
   const columns = [
-    { field: "id", headerName: "ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "name", headerName: "Employee Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
-    { field: "Date", headerName: "Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
-    { field: "start_time", headerName: "Start Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
-    { field: "end_time", headerName: "End Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
-    { field: "late_min", headerName: "Late (min)", minWidth: 100, flex: 0.7, cellClassName: "text-center" },
-    { field: "status", headerName: "Status", minWidth: 150, flex: 1, cellClassName: "text-center" },
-    { field: "manager_id", headerName: "Manager ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
-    { field: "is_approved", headerName: "Approved", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "reason", headerName: "Reason", minWidth: 200, flex: 1.5, cellClassName: "text-center" },
-    {
-      field: "actions",
-      headerName: "Actions",
-      minWidth: 200,
-      flex: 1,
-      cellClassName: "text-center",
-      render: (row) => (
-        <div className="d-flex justify-content-center gap-2">
-          <button onClick={() => handleCheckOut(row.id)} className="btn btn-outline-success btn-sm">
-            <FaSignOutAlt /> Check-Out
-          </button>
-          <button onClick={() => handleOvertime(row.id)} className="btn btn-outline-warning btn-sm">
-            <FaUserClock /> Overtime
-          </button>
-        </div>
-      ),
-    },
+    { field: "id", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "date", headerName: "Date", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "employeeName", headerName: "Employee Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "checkInTime", headerName: "Check-In Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "checkOutTime", headerName: "Check-Out Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "lateMinutes", headerName: "Late Minutes", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (
-    <div className="container mt-5 vh-100">
-      <h2 className="text-center mb-4">Daily Attendance</h2>
-      <button className="btn btn-primary mb-4" onClick={handleCheckIn}>
-        <FaClock /> Check-In
-      </button>
-      <DataTable
-        fetchData={() =>
-          AttendanceController.fetchAttendance().then(data =>
-            Array.isArray(data) ? data.map((record, index) => ({ ...record, id: index + 1 })) : []
-          )
-        }
-        columns={columns}       
-        keyField={"id"}
-        responsive
-        fixedHeader
-        fixedHeaderScrollHeight="400px"
-        noDataComponent="No attendance records found"
-        highlightOnHover
-        pagination
-      />
+    <div className="container mt-4">
+      <h2>Daily Attendance</h2>
+
+      {!isCheckedIn ? (
+        <Button variant="primary" onClick={handleCheckIn} disabled={isCheckingIn}>
+          {isCheckingIn ? "Checking in..." : "Check In"}
+        </Button>
+      ) : (
+        <Button variant="danger" onClick={handleCheckOut}>
+          Check Out
+        </Button>
+      )}
+
+      <div className="mt-3">
+        <DataTable fetchData={DailyAttendanceService.getAllAttendance} columns={columns} keyField="id" />
+      </div>
     </div>
   );
-}
+};
 
-export default DailyAttendance;
+export default Attendance;

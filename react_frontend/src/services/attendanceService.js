@@ -6,7 +6,7 @@ const attendanceService = {
 
      fetchAttendance : async () => {
         try {
-            const response = await apiClient.get("/attendance"); // Replace "/leaves" with your actual endpoint
+            const response = await apiClient.get("/attendance");
             console.log("Attendance Records:", response.data);
             return Array.isArray(response.data) ? response.data : [];
         } catch (error) {
