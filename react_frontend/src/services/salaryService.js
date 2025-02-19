@@ -2,10 +2,10 @@ import apiClient from "../components/api/apiclient";
 
 const salaryService = {
 
-     fetchLeaves : async () => {
+     fetchSalaries : async () => {
         try {
         
-            const response = await apiClient.get("/salary/all"); // Replace "/leaves" with your actual endpoint
+            const response = await apiClient.get("/salary/all"); 
             return Array.isArray(response.data) ? response.data : [];
         } catch (error) {
             console.error("Error fetching salaries:", error);
