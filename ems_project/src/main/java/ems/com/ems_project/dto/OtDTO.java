@@ -12,24 +12,26 @@ public class OtDTO {
     private String id;
     private String employeeName;
     private Date date;
-    private LocalTime checkInTime;
-    private LocalTime checkOutTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String otTime;
     private String reason;
-    private Boolean isApproved;
+    private RequestStatus otStatus = RequestStatus.PENDING;
     private String managerName;
     private Boolean isPaid;
 
 
     public OtDTO(Ots ot, Employee employee, Employee manager) {
-        this.id = ot.getId();
-        this.date = ot.getDate();
-        this.checkInTime = ot.getCheckInTime();
-        this.checkOutTime = ot.getCheckOutTime();
-        this.otTime = ot.getOtTime();
-        this.reason = ot.getReason();
-        this.isApproved = ot.getApproved();
-        this.isPaid = ot.getPaid();
+        if (ot != null) {
+            this.id = ot.getId(); // Only set ID if ot is not null
+            this.date = ot.getDate();
+            this.startTime = ot.getStartTime();
+            this.endTime = ot.getEndTime();
+            this.otTime = ot.getOtTime();
+            this.reason = ot.getReason();
+            this.otStatus = ot.getStatus();
+            this.isPaid = ot.getPaid();
+        }
         this.employeeName = employee != null ? employee.getName() : null;
         this.managerName = manager != null ? manager.getName() : null;
     }
@@ -51,20 +53,20 @@ public class OtDTO {
         this.date = date;
     }
 
-    public LocalTime getCheckInTime() {
-        return checkInTime;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setCheckInTime(LocalTime checkInTime) {
-        this.checkInTime = checkInTime;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalTime getCheckOutTime() {
-        return checkOutTime;
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
-    public void setCheckOutTime(LocalTime checkOutTime) {
-        this.checkOutTime = checkOutTime;
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getOtTime() {
@@ -83,12 +85,12 @@ public class OtDTO {
         this.reason = reason;
     }
 
-    public Boolean getIsApproved() {
-        return isApproved;
+    public RequestStatus getOtStatus() {
+        return otStatus;
     }
 
-    public void setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
+    public void setOtStatus(RequestStatus otStatus) {
+        this.otStatus = otStatus;
     }
 
     public Boolean getIsPaid() {

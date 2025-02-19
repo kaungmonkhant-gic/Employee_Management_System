@@ -28,10 +28,10 @@ public class Ots {
     private Date Date;
 
     @Column(name = "start_time")
-    private LocalTime checkInTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time")
-    private LocalTime checkOutTime;
+    private LocalTime endTime;
 
     @Column(name = "ot_time")
     private String otTime;
@@ -39,14 +39,15 @@ public class Ots {
     @Column(name = "reason")
     private String reason;
 
-    @Column(name = "is_approved")
-    private Boolean Approved = false; // Default to false
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private RequestStatus status = RequestStatus.PENDING; // Default to false
 
     @Column(name = "is_paid")
     private Boolean Paid = false;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "manager_id", referencedColumnName = "id")
     @JsonIgnore
     private Employee manager;
     @ManyToOne
@@ -59,8 +60,8 @@ public class Ots {
     @PrePersist
     @PreUpdate
     private void calculateOvertime() {
-        if (checkInTime != null && checkOutTime != null) {
-            this.otTime = calculateOvertimeString(checkInTime, checkOutTime);
+        if (startTime != null && endTime != null) {
+            this.otTime = calculateOvertimeString(startTime, endTime);
         }
     }
 
@@ -93,20 +94,20 @@ public class Ots {
         Date = date;
     }
 
-    public LocalTime getCheckInTime() {
-        return checkInTime;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setCheckInTime(LocalTime checkInTime) {
-        this.checkInTime = checkInTime;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalTime getCheckOutTime() {
-        return checkOutTime;
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
-    public void setCheckOutTime(LocalTime checkOutTime) {
-        this.checkOutTime = checkOutTime;
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getOtTime() {
@@ -125,14 +126,13 @@ public class Ots {
         this.reason = reason;
     }
 
-    public Boolean getApproved() {
-        return Approved;
+    public RequestStatus getStatus() {
+        return status;
     }
 
-    public void setApproved(Boolean approved) {
-        Approved = approved;
+    public void setStatus(RequestStatus status) {
+        this.status = status;
     }
-
 
     public Boolean getPaid() {
         return Paid;

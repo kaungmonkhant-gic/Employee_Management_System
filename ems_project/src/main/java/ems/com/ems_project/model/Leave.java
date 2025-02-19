@@ -46,7 +46,7 @@ public class Leave {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private LeaveStatus status = LeaveStatus.PENDING;  // Default status is PENDING
+    private RequestStatus status = RequestStatus.PENDING; // Default status is PENDING
 
     @ManyToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
@@ -109,11 +109,11 @@ public class Leave {
         this.manager = manager;
     }
 
-    public LeaveStatus getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(LeaveStatus status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 
