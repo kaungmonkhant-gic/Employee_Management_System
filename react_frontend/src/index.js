@@ -27,7 +27,6 @@ import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
 import OvertimeHistory from "./components/Manager/OvertimeHistory";
-import OvertimeRequest from "./components/Manager/OvertimeRequest";
 import ManagerOtApproval from "./components/Manager/OvertimeRequest";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -38,7 +37,7 @@ function PrivateRoute({ children }) {
 }
 
 root.render(
-  <BrowserRouter>
+  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
