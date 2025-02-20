@@ -25,11 +25,11 @@ public class AttendanceDTO {
     private Date startDate;
     private Date endDate;
     private String leaveReason;
-    private LeaveStatus leaveStatus;
+    private RequestStatus leaveStatus = RequestStatus.PENDING;
     private String managerName;
     private String otTime;
     private String otReason;
-    private Boolean otApproved;
+    private RequestStatus otStatus;
     private Boolean otPaid;
     private String employeeName;
 
@@ -55,7 +55,7 @@ public class AttendanceDTO {
         this.leaveStatus = leave.getStatus();
         this.otTime = ot.getOtTime();
         this.otReason = ot.getReason();
-        this.otApproved = ot.getApproved();
+        this.otStatus = ot.getStatus();
         this.otPaid = ot.getPaid();
 
         this.employeeName = employeeName;
@@ -169,11 +169,11 @@ public class AttendanceDTO {
         this.leaveReason = leaveReason;
     }
 
-    public LeaveStatus getLeaveStatus() {
+    public RequestStatus getLeaveStatus() {
         return leaveStatus;
     }
 
-    public void setLeaveStatus(LeaveStatus leaveStatus) {
+    public void setLeaveStatus(RequestStatus leaveStatus) {
         this.leaveStatus = leaveStatus;
     }
 
@@ -201,12 +201,12 @@ public class AttendanceDTO {
         this.otReason = otReason;
     }
 
-    public Boolean getOtApproved() {
-        return otApproved;
+    public RequestStatus getOtStatus() {
+        return otStatus;
     }
 
-    public void setOtApproved(Boolean otApproved) {
-        this.otApproved = otApproved;
+    public void setOtStatus(RequestStatus otStatus) {
+        this.otStatus = otStatus;
     }
 
     public Boolean getOtPaid() {
