@@ -25,9 +25,6 @@ public class Leave {
     @Column(name = "leave_type")
     private LeaveType leaveType;  // Uses enum instead of String
 
-    @Column(name = "half_leave")
-    private Boolean halfLeave = false;
-
     @Column(name = "start_date")
     @JsonFormat(pattern = "MM-dd-yyyy")
     private Date startDate;
@@ -70,14 +67,6 @@ public class Leave {
 
     public void setLeaveType(LeaveType leaveType) {
         this.leaveType = leaveType;
-    }
-
-    public Boolean getHalfLeave() {
-        return halfLeave;
-    }
-
-    public void setHalfLeave(Boolean halfLeave) {
-        this.halfLeave = halfLeave;
     }
 
     public Date getStartDate() {

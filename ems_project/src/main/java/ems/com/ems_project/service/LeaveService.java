@@ -1,7 +1,6 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.LeaveDTO;
-import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.repository.EmployeeRepository;
@@ -45,12 +44,11 @@ public class LeaveService {
         // Assign the employee's manager (if they have one)
         Employee manager = employee.getManager();
 
-        // Generate OT ID
-        String otId = generateLeaveId();  // This will generate the new OT ID
+        String leaveId = generateLeaveId();  // This will generate the new OT ID
 
-        //  Create and save OT request
+        //  Create and save Leave request
         Leave leave = new Leave();
-        leave.setId(otId); // Set the generated OT ID
+        leave.setId(leaveId); // Set the generated leave ID
         leave.setEmployee(employee);// Automatically set logged-in employee
         leave.setManager(manager);
         leave.setStartDate(requestDTO.getStartDate());
@@ -59,7 +57,6 @@ public class LeaveService {
         leave.setReason(requestDTO.getReason());
         leave.setStatus(requestDTO.getStatus());
         leave.setLeaveType(requestDTO.getLeaveType());
-        leave.setHalfLeave(requestDTO.getHalfLeave());
         // Save OT object to the repository
         Leave savedLeave = leaveRepository.save(leave);
 

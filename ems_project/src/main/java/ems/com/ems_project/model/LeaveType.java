@@ -7,7 +7,7 @@ public enum LeaveType {
     ANNUAL("Annual Leave"),
     CASUAL("Casual Leave"),
     MEDICAL("Medical Leave"),
-    UNPAID("Unpaid Leave");
+    UNPAID("Half Leave");
 
     private final String displayName;
 

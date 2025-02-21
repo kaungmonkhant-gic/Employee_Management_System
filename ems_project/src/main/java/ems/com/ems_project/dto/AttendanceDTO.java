@@ -50,7 +50,6 @@ public class AttendanceDTO {
         // Check if leave is null before accessing its fields
         if (leave != null) {
             this.leaveType = leave.getLeaveType();
-            this.halfLeave = leave.getHalfLeave();
             this.startDate = leave.getStartDate();
             this.endDate = leave.getEndDate();
             this.leaveReason = leave.getReason();

@@ -18,7 +18,7 @@ public class LeaveController {
 
     // Get all OT records with employee and manager names
     @GetMapping("/all")
-    public List<LeaveDTO> getAllOt() {
+    public List<LeaveDTO> getAllLeave() {
         return leaveService.getAllLeave();
     }
 
@@ -29,15 +29,12 @@ public class LeaveController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<LeaveDTO> submitL(@RequestBody LeaveDTO leaveDTO) {
+    public ResponseEntity<LeaveDTO> submitLeaveRequest(@RequestBody LeaveDTO leaveDTO) {
         try {
-            // Call the service to submit the OT request and get the saved OT
-            LeaveDTO createdLeaveDTO = leaveService.submitLeaveRequest(leaveDTO);  // Assuming service now returns OtDTO
+            LeaveDTO createdLeaveDTO = leaveService.submitLeaveRequest(leaveDTO);
 
-            // Return success response with created OT DTO
             return new ResponseEntity<>(createdLeaveDTO, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            // Return error response if employee not found or any other error
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
