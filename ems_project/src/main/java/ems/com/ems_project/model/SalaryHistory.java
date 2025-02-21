@@ -42,9 +42,99 @@ public class SalaryHistory {
     @Column(name = "date", nullable = false)
     private Date date;
 
-    @Column(name = "paid_by",nullable = false)
-    private Integer paid_by;
-    
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;  // Foreign Key to Employee
 
+    @ManyToOne
+    @JoinColumn(name = "paid_by", nullable = false)
+    private Employee manager;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Double getBasicSalary() {
+        return basicSalary;
+    }
+
+    public void setBasicSalary(Double basicSalary) {
+        this.basicSalary = basicSalary;
+    }
+
+    public Double getHouseAllowance() {
+        return houseAllowance;
+    }
+
+    public void setHouseAllowance(Double houseAllowance) {
+        this.houseAllowance = houseAllowance;
+    }
+
+    public Double getOtFee() {
+        return otFee;
+    }
+
+    public void setOtFee(Double otFee) {
+        this.otFee = otFee;
+    }
+
+    public Double getLateOver() {
+        return lateOver;
+    }
+
+    public void setLateOver(Double lateOver) {
+        this.lateOver = lateOver;
+    }
+
+    public Double getLeaveOver() {
+        return leaveOver;
+    }
+
+    public void setLeaveOver(Double leaveOver) {
+        this.leaveOver = leaveOver;
+    }
+
+    public Double getManualAdjustment() {
+        return manualAdjustment;
+    }
+
+    public void setManualAdjustment(Double manualAdjustment) {
+        this.manualAdjustment = manualAdjustment;
+    }
+
+    public Double getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(Double bonus) {
+        this.bonus = bonus;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    public Employee getManager() {
+        return manager;
+    }
+
+    public void setManager(Employee manager) {
+        this.manager = manager;
+    }
 }

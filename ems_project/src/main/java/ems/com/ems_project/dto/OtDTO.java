@@ -32,8 +32,12 @@ public class OtDTO {
             this.otStatus = ot.getStatus();
             this.isPaid = ot.getPaid();
         }
+        // Get employee name from Employee
         this.employeeName = employee != null ? employee.getName() : null;
-        this.managerName = manager != null ? manager.getName() : null;
+
+        // Get manager name from employee (self-referencing)
+        this.managerName = (manager != null) ? manager.getName() : null;
+
     }
 
     // Getters and Setters
@@ -116,6 +120,5 @@ public class OtDTO {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
-
 }
 

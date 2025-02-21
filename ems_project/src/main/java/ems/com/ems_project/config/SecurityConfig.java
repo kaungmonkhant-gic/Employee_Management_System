@@ -62,7 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager", "ROLE_Employee")
 
                         // Leave management: Manager only
-                        .requestMatchers("/leave/**").hasAuthority("ROLE_Manager")
+                        .requestMatchers("/leave/**","/empleave/**").hasAnyAuthority("ROLE_Manager", "ROLE_Admin", "ROLE_Employee")
 
                         // Default: All other requests need authentication
                         .anyRequest().authenticated()

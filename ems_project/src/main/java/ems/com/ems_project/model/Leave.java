@@ -36,11 +36,14 @@ public class Leave {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
+    @Column(name = "total_days")
+    private Double totalDays;
+
     @Column(name = "reason")
     private String reason;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "manager_id")
     @JsonIgnore
     private Employee manager;  // References Employee instead of String
 
@@ -123,5 +126,13 @@ public class Leave {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public Double getTotalDays() {
+        return totalDays;
+    }
+
+    public void setTotalDays(Double totalDays) {
+        this.totalDays = totalDays;
     }
 }

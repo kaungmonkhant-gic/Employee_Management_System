@@ -1,11 +1,10 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
-import ems.com.ems_project.dto.OtDTO;
+import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.Ots;
-import ems.com.ems_project.model.RequestStatus;
+import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.repository.EmployeeRepository;
-import ems.com.ems_project.repository.OtRepository;
+import ems.com.ems_project.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,23 +15,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class OtService {
+public class LeaveService {
 
     @Autowired
-    private OtRepository otRepository;
+    private LeaveRepository leaveRepository;
     @Autowired
     private GenerateId generateId;
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    // Method to get all OT records with employee and manager names
-    public List<OtDTO> getAllOt() {
-        return otRepository.findAll().stream()
-                .map(ot -> new OtDTO(ot, ot.getEmployee(), ot.getManager()))  // Pass Employee and Manager to DTO constructor
+    // Method to get all Leave records with employee and manager
+    public List<LeaveDTO> getAllLeave() {
+        return leaveRepository.findAll().stream()
+                .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))  // Pass Employee and Manager to DTO constructor
                 .collect(Collectors.toList()); // Collect the list of DTOs
     }
 
-    public OtDTO submitOTRequest(OtDTO requestDTO) {
+    public LeaveDTO submitLeaveRequest(LeaveDTO requestDTO) {
 
         //  Get the logged-in username (email) from JWT token
         String loggedInUsername = getLoggedInUsername();
@@ -46,24 +45,23 @@ public class OtService {
         Employee manager = employee.getManager();
 
         // Generate OT ID
-        String otId = generateOtId();  // This will generate the new OT ID
+        String leaveId = generateLeaveId();  // This will generate the new OT ID
 
         //  Create and save OT request
-        Ots ot = new Ots();
-        ot.setId(otId); // Set the generated OT ID
-        ot.setEmployee(employee);// Automatically set logged-in employee
-        ot.setManager(manager);
-        ot.setDate(requestDTO.getDate());
-        ot.setStartTime(requestDTO.getStartTime());
-        ot.setEndTime(requestDTO.getEndTime());
-        ot.setOtTime(requestDTO.getOtTime());
-        ot.setReason(requestDTO.getReason());
-        ot.setStatus(requestDTO.getOtStatus());
-        // Save OT object to the repository
-        Ots savedOt = otRepository.save(ot);
+        Leave leave = new Leave();
+        leave.setId(leaveId); // Set the generated OT ID
+        leave.setEmployee(employee);
+        leave.setManager(manager);// Automatically set logged-in employee
+        leave.setStartDate(requestDTO.getStartDate());
+        leave.setEndDate(requestDTO.getEndDate());
+        leave.setHalfLeave(requestDTO.getHalfLeave());
+        leave.setReason(requestDTO.getReason());
+        leave.setStatus(requestDTO.getStatus());
+
+        Leave savedLeave =leaveRepository.save(leave);
 
         // Return an OtDTO response including employeeName and managerName
-        return new OtDTO(savedOt, employee, manager);
+        return new LeaveDTO(savedLeave, employee, manager);
     }
 
     // Helper method to get logged-in username (email) from JWT
@@ -76,17 +74,17 @@ public class OtService {
         }
     }
 
-
-
-    public String generateOtId() {
+    public String generateLeaveId() {
         // Get the last Attendance ID from the database
-        Optional<String> lastIdOptional = otRepository.findLastOtId();
+        Optional<String> lastIdOptional = leaveRepository.findLastLeaveId();
 
         String lastId = lastIdOptional.orElse(null); // If no ID exists, use null
 
-        String prefix = "Ot";
+        String prefix = "LEA";
 
         // Generate the new Attendance ID using the GenerateId class
         return generateId.generateId(lastId,prefix);
     }
 }
+
+

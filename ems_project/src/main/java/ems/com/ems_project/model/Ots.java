@@ -47,9 +47,10 @@ public class Ots {
     private Boolean Paid = false;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @JoinColumn(name = "manager_id")
     @JsonIgnore
     private Employee manager;
+
     @ManyToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
