@@ -55,8 +55,8 @@ public class SecurityConfig {
                         .requestMatchers("/departments/**","/salary/**","/leave/**").hasAuthority("ROLE_Admin")
 
                         // Attendance management: Admin & Manager
-                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
-                        .requestMatchers("/attendance/checkin","/attendance/checkout").hasAuthority("ROLE_Employee")
+                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager", "ROLE_Employee")
+
 
                         // OT management: Admin & Manager
                         .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager", "ROLE_Employee")
