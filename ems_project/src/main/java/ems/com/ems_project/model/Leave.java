@@ -26,14 +26,14 @@ public class Leave {
     private LeaveType leaveType;  // Uses enum instead of String
 
     @Column(name = "half_leave")
-    private Boolean halfLeave;
+    private Boolean halfLeave = false;
 
     @Column(name = "start_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date startDate;
 
     @Column(name = "end_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date endDate;
 
     @Column(name = "total_days")

@@ -29,11 +29,12 @@ public class Ots {
     @JsonFormat(pattern = "MM-dd-yyyy")
     private Date Date;
 
-    @Column(name = "start_time")
+   @Column(name = "start_time")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;
 
     @Column(name = "end_time")
+//    @JsonFormat(pattern = "hh:mm a", shape = JsonFormat.Shape.STRING)
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime endTime;
 
@@ -48,7 +49,7 @@ public class Ots {
     private RequestStatus status = RequestStatus.PENDING; // Default to false
 
     @Column(name = "is_paid")
-    private Boolean Paid = false;
+    private Boolean paid = false;
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
@@ -121,11 +122,11 @@ public class Ots {
     }
 
     public Boolean getPaid() {
-        return Paid;
+        return paid;
     }
 
     public void setPaid(Boolean paid) {
-        Paid = paid;
+        paid = paid;
     }
 
     public Employee getManager() {

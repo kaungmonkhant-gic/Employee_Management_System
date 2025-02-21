@@ -1,5 +1,6 @@
 package ems.com.ems_project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.LeaveType;
@@ -13,8 +14,11 @@ public class LeaveDTO {
     private String id;
     private LeaveType leaveType;
     private Boolean halfLeave;
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date startDate;
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date endDate;
+    private Double totalDays;
     private String reason;
     private RequestStatus status = RequestStatus.PENDING;
     private String employeeName;
@@ -26,6 +30,7 @@ public class LeaveDTO {
         this.halfLeave = leave.getHalfLeave();
         this.startDate = leave.getStartDate();
         this.endDate = leave.getEndDate();
+        this.totalDays = leave.getTotalDays();
         this.reason = leave.getReason();
         this.status = leave.getStatus();
 
@@ -107,5 +112,13 @@ public class LeaveDTO {
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public Double getTotalDays() {
+        return totalDays;
+    }
+
+    public void setTotalDays(Double totalDays) {
+        this.totalDays = totalDays;
     }
 }

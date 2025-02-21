@@ -3,25 +3,36 @@ package ems.com.ems_project.common;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import jakarta.persistence.Column;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+
 
 public class LocalTimeDeserializer extends JsonDeserializer<LocalTime> {
 
-    private static final DateTimeFormatter FORMATTER_12H = DateTimeFormatter.ofPattern("h:mm a");
-    private static final DateTimeFormatter FORMATTER_24H = DateTimeFormatter.ofPattern("HH:mm:ss");
-
     @Override
-    public LocalTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        String timeString = p.getText();
+    public LocalTime deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+        String timeString = jsonParser.getText().trim();
+
+        // We will try different formats to ensure compatibility
+        DateTimeFormatter formatter12 = DateTimeFormatter.ofPattern("h:mm a");  // e.g., "9:00 AM"
+        DateTimeFormatter formatter24 = DateTimeFormatter.ofPattern("H:mm");    // e.g., "09:00"
+
         try {
-            return LocalTime.parse(timeString, FORMATTER_12H); // Try 12-hour format
-        } catch (DateTimeParseException e) {
-            return LocalTime.parse(timeString, FORMATTER_24H); // Try 24-hour format
+            // First try parsing with 12-hour format (with AM/PM)
+            return LocalTime.parse(timeString, formatter12);
+        } catch (Exception e) {
+            // If it fails, try parsing with 24-hour format
+            return LocalTime.parse(timeString, formatter24);
         }
     }
 }
+
+
+
+
 
 

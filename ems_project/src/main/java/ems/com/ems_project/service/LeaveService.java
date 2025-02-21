@@ -1,6 +1,7 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.LeaveDTO;
+import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.repository.EmployeeRepository;
@@ -45,20 +46,22 @@ public class LeaveService {
         Employee manager = employee.getManager();
 
         // Generate OT ID
-        String leaveId = generateLeaveId();  // This will generate the new OT ID
+        String otId = generateLeaveId();  // This will generate the new OT ID
 
         //  Create and save OT request
         Leave leave = new Leave();
-        leave.setId(leaveId); // Set the generated OT ID
-        leave.setEmployee(employee);
-        leave.setManager(manager);// Automatically set logged-in employee
+        leave.setId(otId); // Set the generated OT ID
+        leave.setEmployee(employee);// Automatically set logged-in employee
+        leave.setManager(manager);
         leave.setStartDate(requestDTO.getStartDate());
         leave.setEndDate(requestDTO.getEndDate());
-        leave.setHalfLeave(requestDTO.getHalfLeave());
+        leave.setTotalDays(requestDTO.getTotalDays());
         leave.setReason(requestDTO.getReason());
         leave.setStatus(requestDTO.getStatus());
-
-        Leave savedLeave =leaveRepository.save(leave);
+        leave.setLeaveType(requestDTO.getLeaveType());
+        leave.setHalfLeave(requestDTO.getHalfLeave());
+        // Save OT object to the repository
+        Leave savedLeave = leaveRepository.save(leave);
 
         // Return an OtDTO response including employeeName and managerName
         return new LeaveDTO(savedLeave, employee, manager);

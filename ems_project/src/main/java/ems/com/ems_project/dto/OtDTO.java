@@ -8,15 +8,17 @@ import lombok.Setter;
 import java.time.LocalTime;
 import java.sql.Date;
 import ems.com.ems_project.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Getter
 @Setter
 public class OtDTO {
 
     private String id;
     private String employeeName;
-    @JsonFormat(pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-")
     private Date date;
-    @JsonDeserialize(using = LocalTimeDeserializer.class)
+   @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime endTime;
@@ -38,10 +40,8 @@ public class OtDTO {
             this.otStatus = ot.getStatus();
             this.isPaid = ot.getPaid();
         }
-        // Get employee name from Employee
-        this.employeeName = employee != null ? employee.getName() : null;
-
-        // Get manager name from employee (self-referencing)
+        // Extract employee name and manager name if available
+        this.employeeName = (employee != null) ? employee.getName() : null;
         this.managerName = (manager != null) ? manager.getName() : null;
 
     }
