@@ -1,22 +1,98 @@
-/* Apply gradient background */
 .app-container {
   background: linear-gradient(to bottom right, #eaf3fa, #d4e4f2);
 }
 
-/* Professional button styling */
-.custom-btn {
-  background-color: #4a90e2;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 30px;
-  font-size: 1.2rem;
-  font-weight: 500;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
+/* Card container styling for a larger layout */
+.card-container {
+  padding: 50px 60px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+  animation: fadeIn 1.5s ease-out;
 }
 
-.custom-btn:hover {
-  background-color: #357ac8;
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+/* Animation for welcome line - fade in from left */
+.welcome-line {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #343a40;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeInLeft 1.5s ease-out;
 }
+
+/* Animation for employee management system - fade in from right */
+.employee-system-line {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #007bff;
+  animation: fadeInRight 1.5s ease-out;
+  margin-top: 10px;
+}
+
+/* Fade-in from left animation */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Fade-in from right animation */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.pulse-button {
+  background-color: #1d4ed8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.pulse-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(30, 64, 175, 0.3);
+}
+
+.pulse-button:hover::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: pulse 0.8s forwards ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
