@@ -18,19 +18,19 @@ function Leave() {
   ]);
 
 
-  // Function to handle button click
-  const handleButtonClick = () => {
-    navigate("/admin-dashboard/addleave"); // Navigate to the "/details" route
-  };
+  // // Function to handle button click
+  // const handleButtonClick = () => {
+  //   navigate("/admin-dashboard/addleave"); // Navigate to the "/details" route
+  // };
   
 
   return (
     <div className="container mt-5 vh-100">
 
       <h2 className="text-center mb-4">Leave Management</h2>
-      <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
+      {/* <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
             Add Leave
-          </button>
+          </button> */}
       <DataTable
           fetchData={leaveController.fetchLeaveData}
           columns={columns}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import overtimeController from "../Controller/overtimeController";
 
-const OvertimeAdminDashboard = () => {
+const OT = () => {
   const [filteredStatus, setFilteredStatus] = useState("All");
   const [overtimeRecords, setOvertimeRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,10 +78,7 @@ const OvertimeAdminDashboard = () => {
       </div>
 
       {/* Overtime Requests Table */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="card-title mb-0">Overtime Requests</h2>
-        </div>
+      
         <div className="card-body">
           {isLoading ? (
             <div className="d-flex justify-content-center my-4">
@@ -92,76 +89,74 @@ const OvertimeAdminDashboard = () => {
           ) : filteredRecords.length === 0 ? (
             <div className="alert alert-warning">No overtime records available.</div>
           ) : (
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Employee Name</th>
-                  <th>Manager Name</th>
-                  <th>Date</th>
-                  <th>Check-In Time</th>
-                  <th>Check-Out Time</th>
-                  <th>Overtime Hours</th>
-                  <th>Reason</th>
-                  <th>Approved</th>
-                  <th>Paid</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRecords.map((record) => (
-                  <tr key={record.id}>
-                    <td>{record.employeeName || "N/A"}</td>
-                    <td>{record.managerName || "N/A"}</td>
-                    <td>{record.date || "N/A"}</td>
-                    <td>{record.checkInTime || "N/A"}</td>
-                    <td>{record.checkOutTime || "N/A"}</td>
-                    <td>{record.otTime || "N/A"}</td>
-                    <td>{record.reason || "N/A"}</td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          record.isApproved ? "bg-success" : "bg-danger"
-                        }`}
-                      >
-                        {record.isApproved ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          record.isPaid ? "bg-success" : "bg-danger"
-                        }`}
-                      >
-                        {record.isPaid ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td>
-                      {!record.isApproved && (
-                        <>
-                          <button
-                            className="btn btn-success btn-sm me-2"
-                            onClick={() => updateRequestStatus(record.id, "Approved")}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => updateRequestStatus(record.id, "Rejected")}
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
-                    </td>
+            <div className="table-responsive">
+              <table className="table table-striped">
+              <thead className="table-primary">
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Manager Name</th>
+                    <th>Date</th>
+                    <th>Check-In Time</th>
+                    <th>Check-Out Time</th>
+                    <th>Overtime Hours</th>
+                    <th>Reason</th>
+                    <th>Approved</th>
+                    <th>Paid</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredRecords.map((record) => (
+                    <tr key={record.id}>
+                      <td>{record.employeeName || "N/A"}</td>
+                      <td>{record.managerName || "N/A"}</td>
+                      <td>{record.date || "N/A"}</td>
+                      <td>{record.checkInTime || "N/A"}</td>
+                      <td>{record.checkOutTime || "N/A"}</td>
+                      <td>{record.otTime || "N/A"}</td>
+                      <td>{record.reason || "N/A"}</td>
+                      <td>
+                        <span
+                          className={`badge ${record.isApproved ? "bg-success" : "bg-danger"}`}
+                        >
+                          {record.isApproved ? "Yes" : "No"}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${record.isPaid ? "bg-success" : "bg-danger"}`}
+                        >
+                          {record.isPaid ? "Yes" : "No"}
+                        </span>
+                      </td>
+                      <td>
+                        {!record.isApproved && (
+                          <>
+                            <button
+                              className="btn btn-success btn-sm me-2"
+                              onClick={() => updateRequestStatus(record.id, "Approved")}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => updateRequestStatus(record.id, "Rejected")}
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
-    </div>
+   
   );
 };
 
-export default OvertimeAdminDashboard;
+export default OT;

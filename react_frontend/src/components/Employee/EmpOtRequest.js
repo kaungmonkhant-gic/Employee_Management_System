@@ -17,7 +17,7 @@ const EmpOtRequestForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Submit to API
-    fetch("/api/overtime", {
+    fetch("/ot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
