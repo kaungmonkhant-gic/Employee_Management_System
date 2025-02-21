@@ -1,5 +1,8 @@
 package ems.com.ems_project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import ems.com.ems_project.common.LocalTimeDeserializer;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalTime;
@@ -11,8 +14,11 @@ public class OtDTO {
 
     private String id;
     private String employeeName;
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date date;
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime endTime;
     private String otTime;
     private String reason;

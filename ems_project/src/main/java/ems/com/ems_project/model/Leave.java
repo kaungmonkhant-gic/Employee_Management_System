@@ -48,11 +48,11 @@ public class Leave {
     private Employee manager;  // References Employee instead of String
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private RequestStatus status = RequestStatus.PENDING; // Default status is PENDING
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
     @JsonIgnore
     private Employee employee;
 
