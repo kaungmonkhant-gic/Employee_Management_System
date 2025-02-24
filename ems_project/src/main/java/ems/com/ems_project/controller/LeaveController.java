@@ -22,6 +22,12 @@ public class LeaveController {
         return leaveService.getAllLeave();
     }
 
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<List<LeaveDTO>> getLeaveByEmployeeId(@PathVariable String employeeId) {
+        List<LeaveDTO> leaveDTO = leaveService.getLeaveByEmployeeId(employeeId);
+        return ResponseEntity.ok(leaveDTO);
+    }
+
     // Generate a new OT ID
     @GetMapping("/generate-id")
     public String generateLeaveId() {
@@ -37,5 +43,17 @@ public class LeaveController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PutMapping("/approve/{leaveId}")
+    public ResponseEntity<LeaveDTO> approveLeave(@PathVariable String leaveId) {
+        LeaveDTO updatedLeave = leaveService.approveLeaveRequest(leaveId);
+        return ResponseEntity.ok(updatedLeave);
+    }
+
+    @PutMapping("/reject/{leaveId}")
+    public ResponseEntity<LeaveDTO> rejectLeave(@PathVariable String leaveId) {
+        LeaveDTO updatedLeave = leaveService.rejectLeaveRequest(leaveId);
+        return ResponseEntity.ok(updatedLeave);
     }
 }
