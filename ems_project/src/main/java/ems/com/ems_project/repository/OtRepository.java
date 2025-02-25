@@ -12,8 +12,6 @@ import java.util.Optional;
 public interface OtRepository extends JpaRepository<Ots, String> {
     @Query(value = "SELECT id FROM ots ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastOtId();
-
-    List<Ots> findByEmployeeId(String employeeId);
 //
 //    List<Ots> findByIsApproved(Boolean Approved);
 }

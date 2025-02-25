@@ -19,27 +19,10 @@ public class OtController {
     public List<OtDTO> getAllOt() {
         return otService.getAllOt();
     }
-    @GetMapping("/{employeeId}")
-    public ResponseEntity<List<OtDTO>> getOTByEmployeeId(@PathVariable String employeeId) {
-        List<OtDTO> otDTO = otService.getOTByEmployeeId(employeeId);
-        return ResponseEntity.ok(otDTO);
-    }
 
     // Generate a new OT ID
     @GetMapping("/generate-id")
     public String generateOtId() {
         return otService.generateOtId();
-    }
-    @PutMapping("/approve/{otId}")
-    public ResponseEntity<OtDTO> approveOTRequest(@PathVariable String otId) {
-        OtDTO updatedOtDTO = otService.approveOTRequest(otId);
-        return ResponseEntity.ok(updatedOtDTO);
-    }
-
-    // Endpoint to reject an OT request
-    @PutMapping("/reject/{otId}")
-    public ResponseEntity<OtDTO> rejectOTRequest(@PathVariable String otId) {
-        OtDTO updatedOtDTO = otService.rejectOTRequest(otId);
-        return ResponseEntity.ok(updatedOtDTO);
     }
 }
