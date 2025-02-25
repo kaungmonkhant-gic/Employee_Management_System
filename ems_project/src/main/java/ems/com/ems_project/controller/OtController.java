@@ -1,7 +1,6 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.OtDTO;
-import ems.com.ems_project.model.Ots;
 import ems.com.ems_project.service.OtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,11 @@ public class OtController {
     public List<OtDTO> getAllOt() {
         return otService.getAllOt();
     }
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<List<OtDTO>> getOTByEmployeeId(@PathVariable String employeeId) {
+        List<OtDTO> otDTO = otService.getOTByEmployeeId(employeeId);
+        return ResponseEntity.ok(otDTO);
+    }
 
     // Generate a new OT ID
     @GetMapping("/generate-id")
@@ -40,5 +44,17 @@ public class OtController {
             // Return error response if employee not found or any other error
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+    @PutMapping("/approve/{otId}")
+    public ResponseEntity<OtDTO> approveOTRequest(@PathVariable String otId) {
+        OtDTO updatedOtDTO = otService.approveOTRequest(otId);
+        return ResponseEntity.ok(updatedOtDTO);
+    }
+
+    // Endpoint to reject an OT request
+    @PutMapping("/reject/{otId}")
+    public ResponseEntity<OtDTO> rejectOTRequest(@PathVariable String otId) {
+        OtDTO updatedOtDTO = otService.rejectOTRequest(otId);
+        return ResponseEntity.ok(updatedOtDTO);
     }
 }
