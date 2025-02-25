@@ -14,6 +14,7 @@ import Tasks from "./components/Employee/Tasks";
 import Salary from "./components/Employee/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
+import EmpLeave from "./components/Employee/EmpLeaveRequest"
 import EmpOt from "./components/Employee/EmpOt";
 import EmpOtRequest from "./components/Employee/EmpOtRequest";
 import EmpOtRecord from "./components/Employee/EmpOtRecord";
@@ -22,13 +23,15 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
+import ViewSalary from "./components/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
 import OvertimeHistory from "./components/Manager/OvertimeHistory";
-import OvertimeRequest from "./components/Manager/OvertimeRequest";
-import ManagerOtApproval from "./components/Manager/OvertimeRequest";
+import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
+
+
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -39,7 +42,7 @@ function PrivateRoute({ children }) {
 }
 
 root.render(
-  <BrowserRouter>
+  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
@@ -63,6 +66,7 @@ root.render(
         <Route path="attendance" element={<Attendance />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
+        <Route path="salary" element={<ViewSalary />} />
         <Route path="leave" element={<Leave />} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
@@ -74,6 +78,7 @@ root.render(
         <Route path="profile" element={<EmpProfile />} />
         <Route path="attendance" element={<EmpAttendance />} />
         <Route path="attendance-list" element={<EmpAttendanceList />} />
+        <Route path="leave" element={<EmpLeave />}/>
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />
