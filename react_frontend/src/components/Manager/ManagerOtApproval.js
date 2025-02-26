@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import otcontroller from "./Controller/otcontroller";
+import otcontroller from "../Manager/Controller/otcontroller";
 
 const ManagerOtApproval = () => {
   const [filteredStatus, setFilteredStatus] = useState("All");
@@ -11,7 +11,23 @@ const ManagerOtApproval = () => {
   const fetchOvertimeRequests = async () => {
     try {
       setIsLoading(true);
-      const response = await otcontroller.fetchOvertimeRequests();
+
+      // Get the token from localStorage
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Authentication token missing!");
+      }
+
+      console.log("Fetching overtime records...");
+
+      // Pass the token to the controller function
+      const response = await otcontroller.fetchOvertimeRequests(token);
+
+      // Check if the response is an array
+      if (!Array.isArray(response)) {
+        throw new Error("Invalid API Response: Expected an array");
+      }
+
       console.log("Fetched Overtime Requests:", response);
       setOvertimeRecords(response);
     } catch (error) {
@@ -22,19 +38,23 @@ const ManagerOtApproval = () => {
   };
 
   useEffect(() => {
-    fetch("/api/overtime/all")
-      .then((response) => response.json())
-      .then((data) => setOvertimeRecords(data))
-      .catch((error) => console.error("Error fetching overtime requests:", error));
+    fetchOvertimeRequests();
   }, []);
 
-  // Approve request
+  // Approve request and update state
   const approveRequest = async (id) => {
     try {
-      await otcontroller.approveRequest(id);
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Authentication token missing!");
+      }
+
+      await otcontroller.approveRequest(id, token);
+
+      // Update state without re-fetching from API
       setOvertimeRecords((prevRecords) =>
         prevRecords.map((record) =>
-          record.id === id ? { ...record, status: "Approved" } : record
+          record.id === id ? { ...record, isApproved: true, status: "Approved" } : record
         )
       );
     } catch (error) {
@@ -42,13 +62,20 @@ const ManagerOtApproval = () => {
     }
   };
 
-  // Reject request
+  // Reject request and update state
   const rejectRequest = async (id) => {
     try {
-      await otcontroller.rejectRequest(id);
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Authentication token missing!");
+      }
+
+      await otcontroller.rejectRequest(id, token);
+
+      // Update state without re-fetching from API
       setOvertimeRecords((prevRecords) =>
         prevRecords.map((record) =>
-          record.id === id ? { ...record, status: "Rejected" } : record
+          record.id === id ? { ...record, isApproved: false, status: "Rejected" } : record
         )
       );
     } catch (error) {
@@ -62,12 +89,14 @@ const ManagerOtApproval = () => {
       ? overtimeRecords
       : overtimeRecords.filter(
           (record) =>
-            record.status?.toLowerCase() === filteredStatus.toLowerCase()
+            (filteredStatus === "Approved" && record.status === "Approved") ||
+            (filteredStatus === "Pending" && record.status === "Pending") ||
+            (filteredStatus === "Rejected" && record.status === "Rejected")
         );
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Overtime Management - Manager Dashboard</h1>
+      <h1 className="mb-4">Overtime Management - Admin Dashboard</h1>
 
       {/* Status Filter */}
       <div className="mb-4">
@@ -110,55 +139,60 @@ const ManagerOtApproval = () => {
                   <th>Overtime Hours</th>
                   <th>Reason</th>
                   <th>Status</th>
+                  <th>Paid</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredRecords.map((record) => {
-                  console.log("Rendering record:", record); // Debugging: Check record structure
-                  return (
-                    <tr key={record.id}>
-                      <td>{record.employeeName || "N/A"}</td>
-                      <td>{record.managerName || "N/A"}</td>
-                      <td>{record.date || "N/A"}</td>
-                      <td>{record.checkInTime || "N/A"}</td>
-                      <td>{record.checkOutTime || "N/A"}</td>
-                      <td>{record.otTime || "N/A"}</td>
-                      <td>{record.reason || "N/A"}</td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            record.status?.toLowerCase() === "approved"
-                              ? "bg-success"
-                              : record.status?.toLowerCase() === "rejected"
-                              ? "bg-danger"
-                              : "bg-warning"
-                          }`}
-                        >
-                          {record.status || "Pending"}
-                        </span>
-                      </td>
-                      <td>
-                        {record.status?.toLowerCase() === "pending" && (
-                          <>
-                            <button
-                              className="btn btn-success btn-sm me-2"
-                              onClick={() => approveRequest(record.id)}
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => rejectRequest(record.id)}
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {filteredRecords.map((record) => (
+                  <tr key={record.id}>
+                    <td>{record.employeeName || "N/A"}</td>
+                    <td>{record.managerName || "N/A"}</td>
+                    <td>{record.date || "N/A"}</td>
+                    <td>{record.checkInTime || "N/A"}</td>
+                    <td>{record.checkOutTime || "N/A"}</td>
+                    <td>{record.otTime || "N/A"}</td>
+                    <td>{record.reason || "N/A"}</td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          record.status === "Approved"
+                            ? "bg-success"
+                            : record.status === "Rejected"
+                            ? "bg-danger"
+                            : "bg-warning"
+                        }`}
+                      >
+                        {record.status || "Pending"}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${record.isPaid ? "bg-success" : "bg-danger"}`}
+                      >
+                        {record.isPaid ? "Yes" : "No"}
+                      </span>
+                    </td>
+                    <td>
+                      {record.status === "Pending" && (
+                        <>
+                          <button
+                            className="btn btn-success btn-sm me-2"
+                            onClick={() => approveRequest(record.id)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => rejectRequest(record.id)}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
