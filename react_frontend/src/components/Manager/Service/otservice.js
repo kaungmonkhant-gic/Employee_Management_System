@@ -2,10 +2,14 @@ import apiClient from "../../api/apiclient";
 
 const managerOTService = {
   // Fetch all overtime records
-  fetchOvertimeRequests: async () => {
+  fetchOvertimeRequests: async (token) => {
     try {
       console.log("Fetching overtime records...");
-      const response = await apiClient.get("/ot/all");
+      const response = await apiClient.get("/ot/all", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to the headers
+        },
+      });
       console.log("Overtime Records:", response.data);
       return response.data;
     } catch (error) {
@@ -14,11 +18,19 @@ const managerOTService = {
     }
   },
 
-    // Approve an overtime request
-  approveOvertimeRequest: async (id) => {
+  // Approve an overtime request
+  approveOvertimeRequest: async (id, token) => {
     try {
       console.log(`Approving request ID: ${id}`);
-      const response = await apiClient.put(`/ot/update/${id}`, { status: "Approved" });
+      const response = await apiClient.put(
+        `/ot/approve/${id}`,
+        { status: "Approved" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to the headers
+          },
+        }
+      );
       console.log("Approved Overtime Request:", response.data);
       return response.data;
     } catch (error) {
@@ -28,10 +40,18 @@ const managerOTService = {
   },
 
   // Reject an overtime request
-  rejectOvertimeRequest: async (id) => {
+  rejectOvertimeRequest: async (id, token) => {
     try {
       console.log(`Rejecting request ID: ${id}`);
-      const response = await apiClient.put(`/ot/update/${id}`, { status: "Rejected" });
+      const response = await apiClient.put(
+        `/ot/reject/${id}`,
+        { status: "Rejected" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to the headers
+          },
+        }
+      );
       console.log("Rejected Overtime Request:", response.data);
       return response.data;
     } catch (error) {
@@ -41,10 +61,14 @@ const managerOTService = {
   },
 
   // Add a new overtime record
-  // addOvertimeRecord: async (record) => {
+  // addOvertimeRecord: async (record, token) => {
   //   try {
   //     console.log("Adding overtime record:", record);
-  //     const response = await apiClient.post("/overtime", record);
+  //     const response = await apiClient.post("/overtime", record, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`, // Add token to the headers
+  //       },
+  //     });
   //     console.log("Added Overtime Record:", response.data);
   //     return response.data;
   //   } catch (error) {
@@ -54,4 +78,4 @@ const managerOTService = {
   // },
 };
 
-export default managerOTService
+export default managerOTService;

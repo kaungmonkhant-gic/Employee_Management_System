@@ -11,24 +11,8 @@ const ManagerOtApproval = () => {
   const fetchOvertimeRequests = async () => {
     try {
       setIsLoading(true);
-
-      // Get the token from localStorage
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        throw new Error("Authentication token missing!");
-      }
-
-      console.log("Fetching overtime records...");
-
-      // Pass the token to the controller function
-      const response = await otcontroller.fetchOvertimeRequests(token);
-
-      // Check if the response is an array
-      if (!Array.isArray(response)) {
-        throw new Error("Invalid API Response: Expected an array");
-      }
-
-      console.log("Fetched Overtime Requests:", response);
+      const response = await otcontroller.fetchOvertimeRequests();
+      console.log("Fetched Overtime Requests Data Structure:", response);
       setOvertimeRecords(response);
     } catch (error) {
       console.error("Error fetching overtime requests:", error);
@@ -44,17 +28,12 @@ const ManagerOtApproval = () => {
   // Approve request and update state
   const approveRequest = async (id) => {
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        throw new Error("Authentication token missing!");
-      }
-
-      await otcontroller.approveRequest(id, token);
+      await otcontroller.approveRequest(id);
 
       // Update state without re-fetching from API
       setOvertimeRecords((prevRecords) =>
         prevRecords.map((record) =>
-          record.id === id ? { ...record, isApproved: true, status: "Approved" } : record
+          record.id === id ? { ...record, status: "Approved" } : record
         )
       );
     } catch (error) {
@@ -65,17 +44,12 @@ const ManagerOtApproval = () => {
   // Reject request and update state
   const rejectRequest = async (id) => {
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        throw new Error("Authentication token missing!");
-      }
-
-      await otcontroller.rejectRequest(id, token);
+      await otcontroller.rejectRequest(id);
 
       // Update state without re-fetching from API
       setOvertimeRecords((prevRecords) =>
         prevRecords.map((record) =>
-          record.id === id ? { ...record, isApproved: false, status: "Rejected" } : record
+          record.id === id ? { ...record, status: "Rejected" } : record
         )
       );
     } catch (error) {
@@ -139,8 +113,7 @@ const ManagerOtApproval = () => {
                   <th>Overtime Hours</th>
                   <th>Reason</th>
                   <th>Status</th>
-                  <th>Paid</th>
-                  <th>Actions</th>
+                  <th>Actions</th> {/* Actions Column */}
                 </tr>
               </thead>
               <tbody>
@@ -167,13 +140,7 @@ const ManagerOtApproval = () => {
                       </span>
                     </td>
                     <td>
-                      <span
-                        className={`badge ${record.isPaid ? "bg-success" : "bg-danger"}`}
-                      >
-                        {record.isPaid ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td>
+                      {/* Action buttons */}
                       {record.status === "Pending" && (
                         <>
                           <button
