@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import ems.com.ems_project.model.Employee;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	Optional<Employee> findByEmail(String email);
@@ -27,7 +28,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	@Query(value = "SELECT id FROM employees ORDER BY id DESC LIMIT 1", nativeQuery = true)
 	Optional<String> findLastEmployeeId();
 
-	Optional<Object> findByDepartmentAndRole(Departments department, Roles role);
+	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId AND e.role.id = :roleId")
+	Optional<Employee> findByDepartmentAndRole(String departmentId, String roleId);
+
 }
 
 

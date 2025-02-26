@@ -82,7 +82,7 @@ public class Employee implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "position_id",nullable = false)
-    // @JsonIgnore
+    //@JsonIgnore
     private Positions position;
 
     @ManyToOne
@@ -91,7 +91,8 @@ public class Employee implements UserDetails {
     private Roles role;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id") // This references another Employee
+    @JoinColumn(name = "manager_id")
+    // This references another Employee
     private Employee manager;
 
     @Override

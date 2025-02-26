@@ -272,6 +272,13 @@ public class EmployeeServiceImp implements EmployeeService {
             String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
             employee.setPassword(hashedPassword);
 
+            Employee manager = null;
+            if (!role.getRoleName().equalsIgnoreCase("Manager")) {
+                manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2")
+                        .orElse(null);
+            }
+            employee.setManager(manager);
+
             // Save the employee
             Employee savedEmployee = employeeRepository.save(employee);
 
@@ -279,19 +286,6 @@ public class EmployeeServiceImp implements EmployeeService {
             employeeSalaryService.createEmployeeSalary(savedEmployee, registerDTO);
             employeeLeaveService.createEmployeeLeave(savedEmployee, registerDTO);
 
-            // Fetch the EmployeeLeave and EmployeeSalary entities
-            EmployeeLeaveDTO employeeLeaveDTO = employeeLeaveService.getEmployeeLeaveById(savedEmployee.getId());
-            EmployeeSalaryDTO employeeSalaryDTO = employeeSalaryService.getEmployeeSalaryById(savedEmployee.getId());
-
-            if (employeeSalaryDTO != null) {
-                employeeSalaryService.createEmployeeSalary(savedEmployee, registerDTO);
-            }
-
-            if (employeeLeaveDTO != null) {
-                employeeLeaveService.createEmployeeLeave(savedEmployee, registerDTO);
-            }
-
-            // Set response details
             reqRes.setEmployee(savedEmployee);
             reqRes.setStatusCode(201); // Created
             reqRes.setMessage("Employee registered successfully.");
