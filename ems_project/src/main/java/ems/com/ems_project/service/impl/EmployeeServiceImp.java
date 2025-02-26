@@ -1,9 +1,6 @@
 package ems.com.ems_project.service.impl;
 import ems.com.ems_project.common.GenerateId;
-import ems.com.ems_project.dto.EmployeeProfile;
-import ems.com.ems_project.dto.RegisterDTO;
-import ems.com.ems_project.dto.EmployeeDTO;
-import ems.com.ems_project.dto.ReqRes;
+import ems.com.ems_project.dto.*;
 import ems.com.ems_project.model.*;
 import ems.com.ems_project.repository.*;
 import ems.com.ems_project.service.EmployeeLeaveService;
@@ -11,14 +8,13 @@ import ems.com.ems_project.service.EmployeeSalaryService;
 import ems.com.ems_project.service.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -106,73 +102,34 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public ReqRes getAllEmployees() {
-        ReqRes reqRes = new ReqRes();
-        try {
-            List<Employee> employees = employeeRepository.findAll();
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeRepository.findAll().stream()
+                .map(employee -> {
 
-            // Map Employees to EmployeeDTO and fetch salary & leave details
-            List<EmployeeDTO> employeeDTO = employees.stream().map(employee -> {
-                EmployeeDTO dto = modelMapper.map(employee, EmployeeDTO.class);
+                    // Fetch salary details from EmployeeSalary table
+                    EmployeeSalary salary = employeeSalaryRepository.findByEmployeeId(employee.getId()).orElse(null);
 
-                // Fetch salary details from EmployeeSalary table
-                employeeSalaryRepository.findByEmployeeId(employee.getId()).ifPresent(salary -> {
-                    dto.setBasicSalary(salary.getBasicSalary());
-                    dto.setHouseAllowance(salary.getHouseAllowance());
-                    dto.setTransportation(salary.getTransportation());
-                    dto.setTotalSalary(salary.getTotalSalary());
-                });
+                    // Fetch leave details from EmployeeLeave table
+                    EmployeeLeave leave = employeeLeaveRepository.findByEmployeeId(employee.getId()).orElse(null);
 
-                // Fetch leave details from EmployeeLeave table
-                employeeLeaveRepository.findByEmployeeId(employee.getId()).ifPresent(leave -> {
-                    dto.setAnnualLeave(leave.getAnnualLeave());
-                    dto.setCasualLeave(leave.getCasualLeave());
-                    dto.setMedicalLeave(leave.getMedicalLeave());
-                    dto.setTotalLeave(leave.getTotal());
-                });
-
-                return dto;
-            }).collect(Collectors.toList());
-
-            // Set response data with EmployeeDTO list
-            reqRes.setEmployeeList(employeeDTO);  // Set the list of EmployeeDTOs
-            reqRes.setStatusCode(200);
-            reqRes.setMessage("Employees retrieved successfully.");
-        } catch (Exception e) {
-            reqRes.setStatusCode(500);
-            reqRes.setMessage("An error occurred while retrieving employees: " + e.getMessage());
-        }
-        return reqRes;
+                    // Convert to DTO
+                    return new EmployeeDTO(employee,leave, salary);
+                })
+                .collect(Collectors.toList());
     }
-
 
     @Override
-    public EmployeeDTO getEmployeeById(String id) {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with ID: " + id));
+    public EmployeeDTO getEmployeeById(String employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        // Fetch salary details
+        EmployeeSalary salary = employeeSalaryRepository.findByEmployeeId(employeeId).orElse(null);
 
-        // Map Employee to EmployeeDTO using ModelMapper
-        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        // Fetch leave details
+        EmployeeLeave leave = employeeLeaveRepository.findByEmployeeId(employeeId).orElse(null);
 
-        // Fetch salary details if available
-        employeeSalaryRepository.findByEmployeeId(employee.getId()).ifPresent(salary -> {
-            employeeDTO.setBasicSalary(salary.getBasicSalary());
-            employeeDTO.setHouseAllowance(salary.getHouseAllowance()) ;
-            employeeDTO.setTransportation(salary.getTransportation());
-            employeeDTO.setTotalSalary(salary.getTotalSalary());
-        });
-
-        // Fetch leave details if available
-        employeeLeaveRepository.findByEmployeeId(employee.getId()).ifPresent(leave -> {
-            employeeDTO.setAnnualLeave(leave.getAnnualLeave());
-            employeeDTO.setCasualLeave(leave.getCasualLeave());
-            employeeDTO.setMedicalLeave(leave.getMedicalLeave());
-            employeeDTO.setTotalLeave(leave.getTotal());
-        });
-
-        return employeeDTO;
+        return new EmployeeDTO(employee, leave, salary);
     }
-
     @Override
     public ReqRes updateProfile(String loggedInUserId, EmployeeProfile updatedProfile) {
         ReqRes reqRes = new ReqRes();
@@ -288,34 +245,10 @@ public class EmployeeServiceImp implements EmployeeService {
 
         try {
             // Fetch department, position, and role from repositories
-            System.out.println(registerDTO.getDepartmentId());
-            Optional<Departments> department = departmentRepository.findById(registerDTO.getDepartmentId());
-            System.out.println(department);
-            System.out.println(registerDTO.getRoleId());
-            System.out.println(registerDTO.getPositionId());
-            Optional<Positions> position = positionRepository.findById(registerDTO.getPositionId());
-            Optional<Roles> role = roleRepository.findById(registerDTO.getRoleId());
-            System.out.println(position);
-            System.out.println(role);
-            System.out.println("!!!!1!!!!");
-            // Ensure that department, position, and role exist
-            if (department.isEmpty()) {
-                reqRes.setStatusCode(400); // Bad Request
-                reqRes.setMessage("Department not found.");
-                return reqRes;
-            }
+            Roles role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(() -> new RuntimeException("Role not found"));
+            Departments department = departmentRepository.findById(registerDTO.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department not found"));
+            Positions position = positionRepository.findById(registerDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Position not found"));
 
-            if (position.isEmpty()) {
-                reqRes.setStatusCode(400); // Bad Request
-                reqRes.setMessage("Position not found.");
-                return reqRes;
-            }
-
-            if (role.isEmpty()) {
-                reqRes.setStatusCode(400); // Bad Request
-                reqRes.setMessage("Role not found.");
-                return reqRes;
-            }
             // Create new Employee entity
             Employee employee = new Employee();
             employee.setId(generateEmployeeId());  // If ID is provided, use it; otherwise, auto-generate.
@@ -332,17 +265,9 @@ public class EmployeeServiceImp implements EmployeeService {
             employee.setJoinDate(registerDTO.getJoinDate());
 
             // Set the role, department, and position
-            employee.setRole(role.get());
-            employee.setDepartment(department.get());
-            employee.setPosition(position.get());
-
-            // Hash the password
-//            if (registerDTO.getPassword() == null || registerDTO.getPassword().isEmpty()) {
-//                reqRes.setStatusCode(400); // Bad Request
-//                reqRes.setMessage("Password is required.");
-//                return reqRes;
-//            }
-
+            employee.setRole(role);
+            employee.setDepartment(department);
+            employee.setPosition(position);
 
             String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
             employee.setPassword(hashedPassword);
@@ -350,11 +275,21 @@ public class EmployeeServiceImp implements EmployeeService {
             // Save the employee
             Employee savedEmployee = employeeRepository.save(employee);
 
-
-            // Save EmployeeSalary entity
+            // Save EmployeeSalary and EmployeeLeave entities
             employeeSalaryService.createEmployeeSalary(savedEmployee, registerDTO);
             employeeLeaveService.createEmployeeLeave(savedEmployee, registerDTO);
 
+            // Fetch the EmployeeLeave and EmployeeSalary entities
+            EmployeeLeaveDTO employeeLeaveDTO = employeeLeaveService.getEmployeeLeaveById(savedEmployee.getId());
+            EmployeeSalaryDTO employeeSalaryDTO = employeeSalaryService.getEmployeeSalaryById(savedEmployee.getId());
+
+            if (employeeSalaryDTO != null) {
+                employeeSalaryService.createEmployeeSalary(savedEmployee, registerDTO);
+            }
+
+            if (employeeLeaveDTO != null) {
+                employeeLeaveService.createEmployeeLeave(savedEmployee, registerDTO);
+            }
 
             // Set response details
             reqRes.setEmployee(savedEmployee);
@@ -366,7 +301,6 @@ public class EmployeeServiceImp implements EmployeeService {
             reqRes.setStatusCode(500); // Internal Server Error
             reqRes.setMessage("An error occurred during registration: " + e.getMessage());
         }
-
         return reqRes;
     }
 

@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 //import javax.validation.Valid;
 
@@ -28,22 +29,34 @@ public class EmployeeController {
 
     @GetMapping("/all")
     public ResponseEntity<ReqRes> getAllEmployees() {
-        ReqRes reqRes = employeeService.getAllEmployees();
+        ReqRes reqRes = new ReqRes();
 
-        // Return appropriate response based on status code
-        if (reqRes.getStatusCode() == 200) {
-            return ResponseEntity.ok(reqRes); // Success - HTTP 200
-        } else {
-            return ResponseEntity.status(reqRes.getStatusCode()).body(reqRes); // Error - HTTP 500 or others
+        try {
+            List<EmployeeDTO> employeeList = employeeService.getAllEmployees();
+
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Employees retrieved successfully.");
+            reqRes.setEmployeeList(employeeList);
+
+            return ResponseEntity.ok(reqRes); // Return HTTP 200 with employees list
+
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("An error occurred while retrieving employees: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(reqRes); // Return HTTP 500 with error message
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
-        EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
-        return ResponseEntity.ok(employeeDTO);
+        try {
+            EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
+            return ResponseEntity.ok(employeeDTO); // Return HTTP 200 with EmployeeDTO
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(null); // Return HTTP 404 if not found
+        }
     }
-
     @PostMapping("/register")
     public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerRequest) {
 //        System.out.println("register request");
@@ -61,6 +74,8 @@ public class EmployeeController {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {
         try {

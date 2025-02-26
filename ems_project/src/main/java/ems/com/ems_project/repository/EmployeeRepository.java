@@ -2,6 +2,8 @@ package ems.com.ems_project.repository;
 
 import java.util.Optional;
 
+import ems.com.ems_project.model.Departments;
+import ems.com.ems_project.model.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
@@ -25,6 +27,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	@Query(value = "SELECT id FROM employees ORDER BY id DESC LIMIT 1", nativeQuery = true)
 	Optional<String> findLastEmployeeId();
 
+	Optional<Object> findByDepartmentAndRole(Departments department, Roles role);
 }
 
 

@@ -1,21 +1,18 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ems.com.ems_project.validation.ValidEmail;
-import ems.com.ems_project.validation.ValidPhoneNumber;
+import ems.com.ems_project.model.*;
 import lombok.Data;
-
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Data
-
 public class EmployeeDTO {
 
     private String id;
     private String name;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date dob;
     private String password;
     private String nrc;
@@ -27,11 +24,12 @@ public class EmployeeDTO {
     private String education;
     private String workExp;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date joinDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date resignDate;
+    private String managerName;
 
     private String roleName;
     private String positionName;
@@ -41,13 +39,61 @@ public class EmployeeDTO {
     private Double houseAllowance;
     private Double transportation;
     private Double totalSalary;
+
     // Leave details
     private Double annualLeave;
     private Double casualLeave;
     private Double medicalLeave;
     private Double totalLeave;
 
-    // Getters and Setters
+    // No-argument constructor (Required for ModelMapper)
+    public EmployeeDTO() {
+    }
+
+    // Constructor to initialize the DTO using Employee, Leave, and Salary
+    public EmployeeDTO(Employee employee, EmployeeLeave leave, EmployeeSalary salary) {
+        if (employee != null) {
+            this.id = employee.getId();
+            this.name = employee.getName();
+            this.dob = employee.getDob();
+            this.password = employee.getPassword();
+            this.nrc = employee.getNrc();
+            this.gender = employee.getGender();
+            this.maritalStatus = employee.getMaritalStatus();
+            this.phone = employee.getPhone();
+            this.email = employee.getEmail();
+            this.address = employee.getAddress();
+            this.education = employee.getEducation();
+            this.workExp = employee.getWorkExp();
+            this.joinDate = employee.getJoinDate();
+            this.resignDate = employee.getResignDate();
+
+            // Set manager name from Employee entity
+            this.managerName = (employee.getManager() != null) ? employee.getManager().getName() : null;
+
+            // Extract role, position, and department from Employee entity
+            this.roleName = (employee.getRole() != null) ? employee.getRole().getRoleName() : null;
+            this.positionName = (employee.getPosition() != null) ? employee.getPosition().getPositionName() : null;
+            this.departmentName = (employee.getDepartment() != null) ? employee.getDepartment().getDepartmentName() : null;
+        }
+
+        // Set salary values
+        if (salary != null) {
+            this.basicSalary = salary.getBasicSalary();
+            this.houseAllowance = salary.getHouseAllowance();
+            this.transportation = salary.getTransportation();
+            this.totalSalary = salary.getTotalSalary();
+        }
+
+        // Set leave values
+        if (leave != null) {
+            this.annualLeave = leave.getAnnualLeave();
+            this.casualLeave = leave.getCasualLeave();
+            this.medicalLeave = leave.getMedicalLeave();
+            this.totalLeave = leave.getTotal();
+        }
+    }
+
 
     public String getId() {
         return id;
@@ -71,6 +117,14 @@ public class EmployeeDTO {
 
     public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getNrc() {
@@ -185,7 +239,6 @@ public class EmployeeDTO {
         this.basicSalary = basicSalary;
     }
 
-
     public Double getHouseAllowance() {
         return houseAllowance;
     }
@@ -242,11 +295,11 @@ public class EmployeeDTO {
         this.totalLeave = totalLeave;
     }
 
-    public String getPassword() {
-        return password;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 }

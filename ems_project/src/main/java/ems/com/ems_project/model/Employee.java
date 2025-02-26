@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import ems.com.ems_project.dto.EmployeeDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 public class Employee implements UserDetails {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(length = 10, nullable = false, unique = true)
@@ -66,12 +65,11 @@ public class Employee implements UserDetails {
     @Column(name = "work_exp")
     private String workExp;
 
-   
     @Column(name = "join_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
-    
+
     @Column(name = "resign_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -84,7 +82,7 @@ public class Employee implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "position_id",nullable = false)
-   // @JsonIgnore
+    // @JsonIgnore
     private Positions position;
 
     @ManyToOne
@@ -92,7 +90,9 @@ public class Employee implements UserDetails {
     //@JsonIgnore
     private Roles role;
 
-
+    @ManyToOne
+    @JoinColumn(name = "manager_id") // This references another Employee
+    private Employee manager;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -102,8 +102,15 @@ public class Employee implements UserDetails {
         return List.of(); // Return an empty list if no role is assigned
     }
 
-	
-	@Override
+    public Employee getManager() {
+        return manager;
+    }
+
+    public void setManager(Employee manager) {
+        this.manager = manager;
+    }
+
+    @Override
     @JsonIgnore
     public String getUsername() {
         return this.email;
@@ -312,8 +319,8 @@ public class Employee implements UserDetails {
 
     public String getRoleName() {
         return role != null ? role.getRoleName() : null;
-   }
-    
+    }
+
     public String getDepartmentName() {
         return department != null ? department.getDepartmentName() : null;
     }
@@ -331,4 +338,3 @@ public class Employee implements UserDetails {
     }
 
 }
-

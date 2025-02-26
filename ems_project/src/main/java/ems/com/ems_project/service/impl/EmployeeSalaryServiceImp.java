@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ems.com.ems_project.common.GenerateId;
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeSalaryDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;
@@ -26,6 +27,14 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
                 .map(employeeSalary -> new EmployeeSalaryDTO(employeeSalary, employeeSalary.getEmployee().getName()))
                 .toList();
     }
+
+    public EmployeeSalaryDTO getEmployeeSalaryById(String employeeId) {
+        EmployeeSalary employeeSalary = salaryRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new RuntimeException("Salary details not found for employee ID: " + employeeId));
+
+        return new EmployeeSalaryDTO(employeeSalary, employeeSalary.getEmployee().getName());
+    }
+
 
     public void createEmployeeSalary(Employee savedEmployee, RegisterDTO registerDTO) {
         EmployeeSalary employeeSalary = new EmployeeSalary();

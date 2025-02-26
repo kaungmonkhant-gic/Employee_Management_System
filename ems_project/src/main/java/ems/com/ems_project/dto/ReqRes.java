@@ -9,8 +9,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,6 +23,7 @@ public class ReqRes {
     private List<EmployeeDTO> employeeList;
     private List<EmployeeProfile> employeeProfiles;
     private EmployeeDTO employeeDTO;
+    private RegisterDTO registerDTO;
     private Employee employee;// Change type from Employee to RegisterDTO
 
     public int getStatusCode() {
@@ -102,5 +101,8 @@ public class ReqRes {
     public void setRegisterDTO(RegisterDTO updatedEmployee) {
     }
 
+    public RegisterDTO getRegisterDTO() {
+        return registerDTO;
+    }
 
 }

@@ -1,6 +1,7 @@
 package ems.com.ems_project.service;
 
 import ems.com.ems_project.common.GenerateId;
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeLeaveDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;
@@ -25,6 +26,16 @@ public class EmployeeLeaveService {
                 .map(employeeLeave -> new EmployeeLeaveDTO(employeeLeave, employeeLeave.getEmployee().getName()))
                 .toList();
     }
+
+    // In EmployeeLeaveService.java
+    public EmployeeLeaveDTO getEmployeeLeaveById(String employeeId) {
+        EmployeeLeave employeeLeave = employeeLeaveRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new RuntimeException("Leave details not found for employee ID: " + employeeId));
+
+        return new EmployeeLeaveDTO(employeeLeave, employeeLeave.getEmployee().getName());
+    }
+
+
 
     public String generateEmployeeLeaveId() {
         // Get the last Leave ID from the database

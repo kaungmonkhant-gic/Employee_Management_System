@@ -1,14 +1,8 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.Positions;
 import ems.com.ems_project.validation.ValidEmail;
-import ems.com.ems_project.validation.ValidPassword;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
 import ems.com.ems_project.validation.ValidPhoneNumber;
@@ -33,7 +27,6 @@ public class RegisterDTO {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @ValidPassword
     private String password;
 
     @NotBlank(message = "Phone number is required")
@@ -44,7 +37,8 @@ public class RegisterDTO {
     @ValidGender
     private String gender;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @NotNull(message = "Date of Birth is required")
     private Date dob;
 
     private String nrc;
@@ -55,39 +49,36 @@ public class RegisterDTO {
     @NotBlank(message = "Address is required")
     private String address;
 
-    @NotNull(message = "Department ID is required")
-    private String departmentId;
-
-    @NotNull(message = "Position ID is required")
-    private String positionId;
-
-    @NotNull(message = "Role ID is required")
-    private Integer roleId;
-
     @Size(max = 500, message = "Work experience should not exceed 500 characters")
-    private String workExp; // Optional field
+    private String workExp;
 
     @Size(max = 300, message = "Education should not exceed 300 characters")
     private String education;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @NotNull(message = "Join date is required")
     private Date joinDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date resignDate;
 
+    // Department, Position, Role
+    private String departmentId;
+    private String positionId;
+    private String roleId;
+    private String managerId;
 
+    // Salary details
     private Double basicSalary;
     private Double houseAllowance;
     private Double transportation;
     private Double totalSalary;
+
     // Leave details
     private Double annualLeave;
     private Double casualLeave;
     private Double medicalLeave;
     private Double totalLeave;
-
-    // Optional field
 
 
     public String getId() {
@@ -170,29 +161,6 @@ public class RegisterDTO {
         this.address = address;
     }
 
-    public String getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(String departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public String getPositionId() {
-        return positionId;
-    }
-
-    public void setPositionId(String positionId) {
-        this.positionId = positionId;
-    }
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
-    }
 
     public String getWorkExp() {
         return workExp;
@@ -216,6 +184,30 @@ public class RegisterDTO {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public String getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(String positionId) {
+        this.positionId = positionId;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 
     public Double getBasicSalary() {
@@ -288,5 +280,13 @@ public class RegisterDTO {
 
     public void setResignDate(Date resignDate) {
         this.resignDate = resignDate;
+    }
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
     }
 }
