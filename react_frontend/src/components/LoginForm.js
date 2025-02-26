@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Form, Button, Card, Alert, Container } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import UserService from "../services/UserService";
 import { FaEnvelope, FaLock } from "react-icons/fa";
-
+import UserService from "../services/UserService";
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
-
+  const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
 
   // Validate form fields
@@ -81,28 +79,35 @@ function LoginForm() {
         justifyContent: "center",
       }}
     >
-      <Container className="d-flex justify-content-center">
+      <Container
+        style={{
+          animation: "fadeIn 1s ease-in-out",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <Card
-          className="shadow-lg p-5 w-100"
           style={{
-            maxWidth: "420px",
+            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.1)",
+            padding: "2rem",
             borderRadius: "16px",
-            background: "#ffffff",
+            maxWidth: "420px",
+            width: "100%",
+            transition: "box-shadow 0.3s ease-in-out",
           }}
         >
           <Card.Body>
-            <h2 className="text-center fw-bold mb-3">Welcome Back</h2>
-            <p className="text-center text-muted mb-4">Sign in to your account</p>
+            <h2 style={{ textAlign: "center", fontWeight: "bold" }}>Welcome Back</h2>
+            <p style={{ textAlign: "center", color: "#6c757d" }}>Sign in to your account</p>
 
-            {error && <Alert variant="danger" className="text-center">{error}</Alert>}
+            {error && <Alert variant="danger" style={{ textAlign: "center" }}>{error}</Alert>}
 
             <Form onSubmit={handleSubmit}>
-              {/* Email Input */}
               <Form.Group controlId="email" className="mb-3">
                 <Form.Label>Email Address</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light border-0">
-                    <FaEnvelope className="text-secondary" />
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ padding: "0.5rem", background: "#f8f9fa" }}>
+                    <FaEnvelope style={{ color: "#6c757d" }} />
                   </span>
                   <Form.Control
                     type="text"
@@ -110,20 +115,23 @@ function LoginForm() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     isInvalid={!!errors.username}
-                    className="rounded-end"
+                    style={{
+                      borderRadius: "0 4px 4px 0",
+                      padding: "0.5rem",
+                      borderColor: errors.username ? "red" : "#ced4da",
+                    }}
                   />
                 </div>
-                <Form.Control.Feedback type="invalid">
-                  {errors.username}
-                </Form.Control.Feedback>
+                {errors.username && (
+                  <div style={{ color: "red", fontSize: "0.875rem" }}>{errors.username}</div>
+                )}
               </Form.Group>
 
-              {/* Password Input */}
               <Form.Group controlId="password" className="mb-3">
                 <Form.Label>Password</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light border-0">
-                    <FaLock className="text-secondary" />
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ padding: "0.5rem", background: "#f8f9fa" }}>
+                    <FaLock style={{ color: "#6c757d" }} />
                   </span>
                   <Form.Control
                     type="password"
@@ -131,36 +139,40 @@ function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     isInvalid={!!errors.password}
-                    className="rounded-end"
+                    style={{
+                      borderRadius: "0 4px 4px 0",
+                      padding: "0.5rem",
+                      borderColor: errors.password ? "red" : "#ced4da",
+                    }}
                   />
                 </div>
-                <Form.Control.Feedback type="invalid">
-                  {errors.password}
-                </Form.Control.Feedback>
+                {errors.password && (
+                  <div style={{ color: "red", fontSize: "0.875rem" }}>{errors.password}</div>
+                )}
               </Form.Group>
 
-              {/* Login Button */}
               <Button
-                variant="primary"
                 type="submit"
-                className="w-100 mt-2"
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
                 style={{
+                  width: "100%",
                   padding: "12px",
                   fontSize: "1.1rem",
                   fontWeight: "bold",
                   borderRadius: "8px",
-                  background: "#007bff",
-                  borderColor: "#007bff",
-                  transition: "0.3s",
+                  background: hovered ? "#0056b3" : "#007bff",
+                  border: "none",
+                  transition: "background-color 0.3s ease, transform 0.2s ease",
+                  transform: hovered ? "scale(1.05)" : "scale(1)",
                 }}
               >
                 Login
               </Button>
             </Form>
 
-            {/* Forgot Password & Sign Up Links */}
-            <div className="text-center mt-4">
-              <Link to="/forgot-password" className="text-decoration-none text-primary">
+            <div style={{ textAlign: "center", marginTop: "1rem" }}>
+              <Link to="/forgot-password" style={{ textDecoration: "none", color: "#007bff" }}>
                 Forgot Password?
               </Link>
             </div>

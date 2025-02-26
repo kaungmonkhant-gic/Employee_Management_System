@@ -11,7 +11,7 @@ import PayRoll from "./components/PayRoll"; // PayRoll component
 import LoginForm from "./components/LoginForm"; // Login component
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
 import Tasks from "./components/Employee/Tasks";
-import Salary from "./components/Employee/Salary";
+import Salary from "./components/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
 import EmpLeave from "./components/Employee/EmpLeaveRequest"
@@ -23,7 +23,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
-import ViewSalary from "./components/ViewSalary";
+import ViewSalary from "./components/Employee/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
@@ -66,7 +66,7 @@ root.render(
         <Route path="attendance" element={<Attendance />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
-        <Route path="salary" element={<ViewSalary />} />
+        <Route path="salary" element={<Salary />} />
         <Route path="leave" element={<Leave />} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
@@ -82,7 +82,7 @@ root.render(
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />
-        <Route path="salary" element={<Salary />} />
+        <Route path="salary" element={<ViewSalary />} />
         <Route path="tasks" element={<Tasks />} />
       </Route>
 

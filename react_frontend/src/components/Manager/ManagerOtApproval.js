@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import managerOTController from "./Controller/managerOTController";
+import otcontroller from "./Controller/otcontroller";
 
 const ManagerOtApproval = () => {
   const [filteredStatus, setFilteredStatus] = useState("All");
@@ -11,7 +11,7 @@ const ManagerOtApproval = () => {
   const fetchOvertimeRequests = async () => {
     try {
       setIsLoading(true);
-      const response = await managerOTController.fetchOvertimeRequests();
+      const response = await otcontroller.fetchOvertimeRequests();
       console.log("Fetched Overtime Requests:", response);
       setOvertimeRecords(response);
     } catch (error) {
@@ -24,14 +24,14 @@ const ManagerOtApproval = () => {
   useEffect(() => {
     fetch("/api/overtime/all")
       .then((response) => response.json())
-      .then((data) => setOvertimeRequests(data))
+      .then((data) => setOvertimeRecords(data))
       .catch((error) => console.error("Error fetching overtime requests:", error));
   }, []);
 
   // Approve request
   const approveRequest = async (id) => {
     try {
-      await managerOTController.approveRequest(id);
+      await otcontroller.approveRequest(id);
       setOvertimeRecords((prevRecords) =>
         prevRecords.map((record) =>
           record.id === id ? { ...record, status: "Approved" } : record
@@ -45,7 +45,7 @@ const ManagerOtApproval = () => {
   // Reject request
   const rejectRequest = async (id) => {
     try {
-      await managerOTController.rejectRequest(id);
+      await otcontroller.rejectRequest(id);
       setOvertimeRecords((prevRecords) =>
         prevRecords.map((record) =>
           record.id === id ? { ...record, status: "Rejected" } : record
