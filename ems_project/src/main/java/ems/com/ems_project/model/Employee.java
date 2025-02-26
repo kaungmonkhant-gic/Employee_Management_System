@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import ems.com.ems_project.dto.EmployeeDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -91,9 +92,7 @@ public class Employee implements UserDetails {
     //@JsonIgnore
     private Roles role;
 
-    @ManyToOne
-    @JoinColumn(name = "manager_id") // This references another Employee
-    private Employee manager;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -103,15 +102,8 @@ public class Employee implements UserDetails {
         return List.of(); // Return an empty list if no role is assigned
     }
 
-    public Employee getManager() {
-        return manager;
-    }
-
-    public void setManager(Employee manager) {
-        this.manager = manager;
-    }
-
-    @Override
+	
+	@Override
     @JsonIgnore
     public String getUsername() {
         return this.email;

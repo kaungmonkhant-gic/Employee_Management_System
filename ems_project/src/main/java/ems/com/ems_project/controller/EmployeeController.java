@@ -105,7 +105,7 @@ public class EmployeeController {
 
 
     // Delete an employee by ID
-    @DeleteMapping("{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ReqRes> deleteEmployee(@PathVariable String id) {
         ReqRes reqRes = employeeService.deleteEmployee(id);
 

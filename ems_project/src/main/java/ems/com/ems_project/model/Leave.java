@@ -25,31 +25,31 @@ public class Leave {
     @Column(name = "leave_type")
     private LeaveType leaveType;  // Uses enum instead of String
 
+    @Column(name = "half_leave")
+    private Boolean halfLeave;
+
     @Column(name = "start_date")
-    @JsonFormat(pattern = "MM-dd-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @Column(name = "end_date")
-    @JsonFormat(pattern = "MM-dd-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
-
-    @Column(name = "total_days")
-    private Double totalDays;
 
     @Column(name = "reason")
     private String reason;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id")
+    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Employee manager;  // References Employee instead of String
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private RequestStatus status = RequestStatus.PENDING; // Default status is PENDING
+    @Column(name = "status", nullable = false)
+    private LeaveStatus status = LeaveStatus.PENDING;  // Default status is PENDING
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Employee employee;
 
@@ -67,6 +67,14 @@ public class Leave {
 
     public void setLeaveType(LeaveType leaveType) {
         this.leaveType = leaveType;
+    }
+
+    public Boolean getHalfLeave() {
+        return halfLeave;
+    }
+
+    public void setHalfLeave(Boolean halfLeave) {
+        this.halfLeave = halfLeave;
     }
 
     public Date getStartDate() {
@@ -101,11 +109,11 @@ public class Leave {
         this.manager = manager;
     }
 
-    public RequestStatus getStatus() {
+    public LeaveStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RequestStatus status) {
+    public void setStatus(LeaveStatus status) {
         this.status = status;
     }
 
@@ -115,13 +123,5 @@ public class Leave {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
-
-    public Double getTotalDays() {
-        return totalDays;
-    }
-
-    public void setTotalDays(Double totalDays) {
-        this.totalDays = totalDays;
     }
 }

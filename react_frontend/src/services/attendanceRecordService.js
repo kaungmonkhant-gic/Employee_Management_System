@@ -1,12 +1,10 @@
-// src/services/AttendanceService.js
-
+// src/services/attendanceRecordService.js
 import apiClient from "../components/api/apiclient";
 
-const attendanceService = {
-
-     fetchAttendance : async () => {
+const attendanceRecordService = {
+    fetchAllAttendance: async () => {
         try {
-            const response = await apiClient.get("/attendance");
+            const response = await apiClient.get("/attendance/all");
             console.log("Attendance Records:", response.data);
             return Array.isArray(response.data) ? response.data : [];
         } catch (error) {
@@ -14,6 +12,6 @@ const attendanceService = {
             return [];
         }
     },
-
 };
-export default attendanceService;
+
+export default attendanceRecordService;

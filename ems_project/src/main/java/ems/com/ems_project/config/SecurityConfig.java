@@ -46,23 +46,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/employee/profile/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
 
                         // Employee management: Admin (CRUD), Manager (View)
-                        .requestMatchers(HttpMethod.GET, "/employee/all", "/employee/{id}").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
+                        .requestMatchers(HttpMethod.GET, "/employee/all","/employee/{id}").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
                         .requestMatchers(HttpMethod.POST, "/employee/register").hasAuthority("ROLE_Admin")
                         .requestMatchers(HttpMethod.PUT, "/employee/update/**").hasAuthority("ROLE_Admin")
                         .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
 
                         // Salary management: Admin only
-                        .requestMatchers("/departments/**","/salary/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers("/departments/**","/salary/**","/leave/**").hasAuthority("ROLE_Admin")
 
                         // Attendance management: Admin & Manager
-                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
-
+                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
+                        .requestMatchers("/attendance/checkin","/attendance/checkout").hasAuthority("ROLE_Employee")
 
                         // OT management: Admin & Manager
-                        .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
+                        .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager", "ROLE_Employee")
 
-                        .requestMatchers( "/leave/**").authenticated()
-                        .requestMatchers("/empleave/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
+                        // Leave management: Manager only
+                        .requestMatchers("/leave/**").hasAuthority("ROLE_Manager")
 
                         // Default: All other requests need authentication
                         .anyRequest().authenticated()

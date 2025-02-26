@@ -14,6 +14,32 @@ const managerOTService = {
     }
   },
 
+    // Approve an overtime request
+  approveOvertimeRequest: async (id) => {
+    try {
+      console.log(`Approving request ID: ${id}`);
+      const response = await apiClient.put(`/ot/update/${id}`, { status: "Approved" });
+      console.log("Approved Overtime Request:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error approving request ID: ${id}`, error);
+      throw error;
+    }
+  },
+
+  // Reject an overtime request
+  rejectOvertimeRequest: async (id) => {
+    try {
+      console.log(`Rejecting request ID: ${id}`);
+      const response = await apiClient.put(`/ot/update/${id}`, { status: "Rejected" });
+      console.log("Rejected Overtime Request:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error rejecting request ID: ${id}`, error);
+      throw error;
+    }
+  },
+
   // Add a new overtime record
   // addOvertimeRecord: async (record) => {
   //   try {

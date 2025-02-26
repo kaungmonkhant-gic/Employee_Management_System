@@ -25,11 +25,11 @@ public class AttendanceDTO {
     private Date startDate;
     private Date endDate;
     private String leaveReason;
-    private RequestStatus leaveStatus = RequestStatus.PENDING;
+    private LeaveStatus leaveStatus;
     private String managerName;
     private String otTime;
     private String otReason;
-    private RequestStatus otStatus;
+    private Boolean otApproved;
     private Boolean otPaid;
     private String employeeName;
 
@@ -37,7 +37,7 @@ public class AttendanceDTO {
     public AttendanceDTO() {
     }
 
-    public AttendanceDTO(EmpDailyAtts attendance, Leave leave, Ots ot, String employeeName) {
+    public AttendanceDTO(EmpDailyAtts attendance, Leave leave, Ots ot, String employeeName){
         this.id = attendance.getId();
         this.date = attendance.getDate();
         this.checkInTime = attendance.getCheckInTime();
@@ -46,35 +46,17 @@ public class AttendanceDTO {
         this.lateMin = attendance.getLateMin();
         this.isLeave = attendance.getIsLeave();
         this.leaveEarly = attendance.getLeaveEarly();
-
-        // Check if leave is null before accessing its fields
-        if (leave != null) {
-            this.leaveType = leave.getLeaveType();
-            this.startDate = leave.getStartDate();
-            this.endDate = leave.getEndDate();
-            this.leaveReason = leave.getReason();
-            this.leaveStatus = leave.getStatus();
-        } else {
-            this.leaveType = null;  // or a default value
-            this.halfLeave = false;
-            this.startDate = null;
-            this.endDate = null;
-            this.leaveReason = null;
-            this.leaveStatus = RequestStatus.PENDING; // or another default value
-        }
-
-        //Check if OT is null before accessing its fields
-        if (ot != null) {
-            this.otTime = ot.getOtTime();
-            this.otReason = ot.getReason();
-            this.otStatus = ot.getStatus();
-            this.otPaid = ot.getPaid();
-        } else {
-            this.otTime = null;
-            this.otReason = null;
-            this.otStatus = null;
-            this.otPaid = false;  // Default value if needed
-        }
+        // Handle null values safely to avoid NullPointerException
+        this.leaveType = leave.getLeaveType();
+        this.halfLeave = leave.getHalfLeave();
+        this.startDate = leave.getStartDate();
+        this.endDate = leave.getEndDate();
+        this.leaveReason = leave.getReason();
+        this.leaveStatus = leave.getStatus();
+        this.otTime = ot.getOtTime();
+        this.otReason = ot.getReason();
+        this.otApproved = ot.getApproved();
+        this.otPaid = ot.getPaid();
 
         this.employeeName = employeeName;
     }
@@ -187,11 +169,11 @@ public class AttendanceDTO {
         this.leaveReason = leaveReason;
     }
 
-    public RequestStatus getLeaveStatus() {
+    public LeaveStatus getLeaveStatus() {
         return leaveStatus;
     }
 
-    public void setLeaveStatus(RequestStatus leaveStatus) {
+    public void setLeaveStatus(LeaveStatus leaveStatus) {
         this.leaveStatus = leaveStatus;
     }
 
@@ -219,12 +201,12 @@ public class AttendanceDTO {
         this.otReason = otReason;
     }
 
-    public RequestStatus getOtStatus() {
-        return otStatus;
+    public Boolean getOtApproved() {
+        return otApproved;
     }
 
-    public void setOtStatus(RequestStatus otStatus) {
-        this.otStatus = otStatus;
+    public void setOtApproved(Boolean otApproved) {
+        this.otApproved = otApproved;
     }
 
     public Boolean getOtPaid() {

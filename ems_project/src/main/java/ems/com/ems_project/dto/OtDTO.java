@@ -1,48 +1,36 @@
 package ems.com.ems_project.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import ems.com.ems_project.common.LocalTimeDeserializer;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalTime;
 import java.sql.Date;
 import ems.com.ems_project.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
 @Getter
 @Setter
 public class OtDTO {
 
     private String id;
     private String employeeName;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date date;
-   @JsonDeserialize(using = LocalTimeDeserializer.class)
-    private LocalTime startTime;
-    @JsonDeserialize(using = LocalTimeDeserializer.class)
-    private LocalTime endTime;
+    private LocalTime checkInTime;
+    private LocalTime checkOutTime;
     private String otTime;
     private String reason;
-    private RequestStatus otStatus = RequestStatus.PENDING;
+    private Boolean isApproved;
     private String managerName;
     private Boolean isPaid;
     //
     public OtDTO(Ots ot, Employee employee, Employee manager) {
-        if (ot != null) {
-            this.id = ot.getId(); // Only set ID if ot is not null
-            this.date = ot.getDate();
-            this.startTime = ot.getStartTime();
-            this.endTime = ot.getEndTime();
-            this.otTime = ot.getOtTime();
-            this.reason = ot.getReason();
-            this.otStatus = ot.getStatus();
-            this.isPaid = ot.getPaid();
-        }
-        // Extract employee name and manager name if available
-        this.employeeName = (employee != null) ? employee.getName() : null;
-        this.managerName = (manager != null) ? manager.getName() : null;
-
+        this.id = ot.getId();
+        this.date = ot.getDate();
+        this.checkInTime = ot.getCheckInTime();
+        this.checkOutTime = ot.getCheckOutTime();
+        this.otTime = ot.getOtTime();
+        this.reason = ot.getReason();
+        this.isApproved = ot.getApproved();
+        this.isPaid = ot.getPaid();
+        this.employeeName = employee != null ? employee.getName() : null;
+        this.managerName = manager != null ? manager.getName() : null;
     }
 
     // Getters and Setters
@@ -62,20 +50,20 @@ public class OtDTO {
         this.date = date;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public LocalTime getCheckInTime() {
+        return checkInTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
+    public void setCheckInTime(LocalTime checkInTime) {
+        this.checkInTime = checkInTime;
     }
 
-    public LocalTime getEndTime() {
-        return endTime;
+    public LocalTime getCheckOutTime() {
+        return checkOutTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
+    public void setCheckOutTime(LocalTime checkOutTime) {
+        this.checkOutTime = checkOutTime;
     }
 
     public String getOtTime() {
@@ -94,12 +82,12 @@ public class OtDTO {
         this.reason = reason;
     }
 
-    public RequestStatus getOtStatus() {
-        return otStatus;
+    public Boolean getIsApproved() {
+        return isApproved;
     }
 
-    public void setOtStatus(RequestStatus otStatus) {
-        this.otStatus = otStatus;
+    public void setIsApproved(Boolean isApproved) {
+        this.isApproved = isApproved;
     }
 
     public Boolean getIsPaid() {
@@ -125,5 +113,6 @@ public class OtDTO {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
+
 }
 

@@ -1,63 +1,73 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import overtimeController from "../Controller/overtimeController";
 
-const OT = () => {
+const OvertimeAdminDashboard = () => {
+  const [overtimeRequests, setOvertimeRequests] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState("All");
-  const [overtimeRecords, setOvertimeRecords] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Fetch overtime records
-  const fetchOvertimeRequests = async () => {
-    try {
-      setIsLoading(true);
-      const response = await overtimeController.fetchOvertimeRequests();
-      console.log("Fetched Overtime Requests Data Structure:", response);
-      setOvertimeRecords(response);
-    } catch (error) {
-      console.error("Error fetching overtime requests:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchOvertimeRequests();
   }, []);
 
-  // Update the status of an overtime request (approved/rejected)
-  const updateRequestStatus = async (id, status) => {
-    try {
-      const response = await fetch(`/api/overtime/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update request status.");
-      }
-      const updatedRequest = await response.json();
-      console.log("Updated Request:", updatedRequest);
-      fetchOvertimeRequests();
-    } catch (error) {
-      console.error("Error updating request status:", error);
-    }
+  // Sample data fetching (replace with actual API call)
+  const fetchOvertimeRequests = () => {
+    const requests = [
+      { id: 1, employee: "John Doe", date: "2025-02-10", hours: 3, status: "Pending" },
+      { id: 2, employee: "Jane Smith", date: "2025-02-05", hours: 5, status: "Approved" },
+      { id: 3, employee: "Michael Brown", date: "2025-02-08", hours: 2, status: "Rejected" },
+      { id: 4, employee: "Emma Wilson", date: "2025-02-11", hours: 4, status: "Pending" },
+    ];
+    setOvertimeRequests(requests);
   };
 
-  // Filter records based on status
-  const filteredRecords =
+  const updateRequestStatus = (id, status) => {
+    setOvertimeRequests((prevRequests) =>
+      prevRequests.map((request) =>
+        request.id === id ? { ...request, status } : request
+      )
+    );
+  };
+
+  const filteredRequests =
     filteredStatus === "All"
-      ? overtimeRecords
-      : overtimeRecords.filter(
-          (record) =>
-            (filteredStatus === "Approved" && record.isApproved) ||
-            (filteredStatus === "Pending" && !record.isApproved) ||
-            (filteredStatus === "Rejected" && !record.isApproved && record.status === "Rejected")
-        );
+      ? overtimeRequests
+      : overtimeRequests.filter((request) => request.status === filteredStatus);
 
   return (
     <div className="container mt-4">
       <h1 className="mb-4">Overtime Management - Admin Dashboard</h1>
+
+      {/* Metrics Section */}
+      <div className="row mb-4">
+        <div className="col-md-4">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Total Requests</h5>
+              <p className="card-text display-6">{overtimeRequests.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Pending Requests</h5>
+              <p className="card-text display-6">
+                {overtimeRequests.filter((req) => req.status === "Pending").length}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card text-center">
+            <div className="card-body">
+              <h5 className="card-title">Approved Requests</h5>
+              <p className="card-text display-6">
+                {overtimeRequests.filter((req) => req.status === "Approved").length}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Status Filter */}
       <div className="mb-4">
@@ -78,85 +88,66 @@ const OT = () => {
       </div>
 
       {/* Overtime Requests Table */}
-      
+      <div className="card">
+        <div className="card-header">
+          <h2 className="card-title mb-0">Overtime Requests</h2>
+        </div>
         <div className="card-body">
-          {isLoading ? (
-            <div className="d-flex justify-content-center my-4">
-              <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          ) : filteredRecords.length === 0 ? (
-            <div className="alert alert-warning">No overtime records available.</div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-striped">
-              <thead className="table-primary">
-                  <tr>
-                    <th>Employee Name</th>
-                    <th>Manager Name</th>
-                    <th>Date</th>
-                    <th>Check-In Time</th>
-                    <th>Check-Out Time</th>
-                    <th>Overtime Hours</th>
-                    <th>Reason</th>
-                    <th>Approved</th>
-                    <th>Paid</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRecords.map((record) => (
-                    <tr key={record.id}>
-                      <td>{record.employeeName || "N/A"}</td>
-                      <td>{record.managerName || "N/A"}</td>
-                      <td>{record.date || "N/A"}</td>
-                      <td>{record.checkInTime || "N/A"}</td>
-                      <td>{record.checkOutTime || "N/A"}</td>
-                      <td>{record.otTime || "N/A"}</td>
-                      <td>{record.reason || "N/A"}</td>
-                      <td>
-                        <span
-                          className={`badge ${record.isApproved ? "bg-success" : "bg-danger"}`}
+          <table className="table table-bordered table-hover">
+            <thead className="table-light">
+              <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Hours</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRequests.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.employee}</td>
+                  <td>{request.date}</td>
+                  <td>{request.hours}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        request.status === "Pending"
+                          ? "bg-warning"
+                          : request.status === "Approved"
+                          ? "bg-success"
+                          : "bg-danger"
+                      }`}
+                    >
+                      {request.status}
+                    </span>
+                  </td>
+                  <td>
+                    {request.status === "Pending" && (
+                      <>
+                        <button
+                          className="btn btn-success btn-sm me-2"
+                          onClick={() => updateRequestStatus(request.id, "Approved")}
                         >
-                          {record.isApproved ? "Yes" : "No"}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${record.isPaid ? "bg-success" : "bg-danger"}`}
+                          Approve
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => updateRequestStatus(request.id, "Rejected")}
                         >
-                          {record.isPaid ? "Yes" : "No"}
-                        </span>
-                      </td>
-                      <td>
-                        {!record.isApproved && (
-                          <>
-                            <button
-                              className="btn btn-success btn-sm me-2"
-                              onClick={() => updateRequestStatus(record.id, "Approved")}
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => updateRequestStatus(record.id, "Rejected")}
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                          Reject
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-   
+    </div>
   );
 };
 
-export default OT;
+export default OvertimeAdminDashboard;
