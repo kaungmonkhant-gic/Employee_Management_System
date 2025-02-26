@@ -1,6 +1,8 @@
 package ems.com.ems_project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import ems.com.ems_project.common.LocalTimeDeserializer;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -24,13 +26,16 @@ public class Ots {
     private String id;
 
     @Column(name = "date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date Date;
 
     @Column(name = "start_time")
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;
 
     @Column(name = "end_time")
+//    @JsonFormat(pattern = "hh:mm a", shape = JsonFormat.Shape.STRING)
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime endTime;
 
     @Column(name = "ot_time")
@@ -40,40 +45,22 @@ public class Ots {
     private String reason;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private RequestStatus status = RequestStatus.PENDING; // Default to false
 
     @Column(name = "is_paid")
-    private Boolean Paid = false;
+    private Boolean paid = false;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @JoinColumn(name = "manager_id")
     @JsonIgnore
     private Employee manager;
+
     @ManyToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Employee employee;
 
-
-    // Method to calculate overtime duration as a string (e.g., "2 hours 30 minutes")
-    @PrePersist
-    @PreUpdate
-    private void calculateOvertime() {
-        if (startTime != null && endTime != null) {
-            this.otTime = calculateOvertimeString(startTime, endTime);
-        }
-    }
-
-    // Helper method to format overtime duration as string
-    private String calculateOvertimeString(LocalTime checkInTime, LocalTime checkOutTime) {
-        Duration duration = Duration.between(checkInTime, checkOutTime);
-        long hours = duration.toHours();
-        long minutes = duration.toMinutes() % 60;
-
-        // Return the overtime duration as a formatted string
-        return String.format("%d hours %d minutes", hours, minutes);
-    }
 
 
     public String getId() {
@@ -135,11 +122,11 @@ public class Ots {
     }
 
     public Boolean getPaid() {
-        return Paid;
+        return paid;
     }
 
     public void setPaid(Boolean paid) {
-        Paid = paid;
+        paid = paid;
     }
 
     public Employee getManager() {

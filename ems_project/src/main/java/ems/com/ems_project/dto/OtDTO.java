@@ -1,18 +1,26 @@
 package ems.com.ems_project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import ems.com.ems_project.common.LocalTimeDeserializer;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalTime;
 import java.sql.Date;
 import ems.com.ems_project.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Getter
 @Setter
 public class OtDTO {
 
     private String id;
     private String employeeName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date date;
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime endTime;
     private String otTime;
     private String reason;
@@ -32,8 +40,10 @@ public class OtDTO {
             this.otStatus = ot.getStatus();
             this.isPaid = ot.getPaid();
         }
-        this.employeeName = employee != null ? employee.getName() : null;
-        this.managerName = manager != null ? manager.getName() : null;
+        // Extract employee name and manager name if available
+        this.employeeName = (employee != null) ? employee.getName() : null;
+        this.managerName = (manager != null) ? manager.getName() : null;
+
     }
 
     // Getters and Setters
@@ -116,5 +126,4 @@ public class OtDTO {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
-
 }
