@@ -5,16 +5,16 @@ import { useNavigate } from "react-router-dom";
 
 import DataTable from "./common/DataTable";
 
-function Leave() {
+function Salary() {
   const navigate = useNavigate(); // Initialize the navigate function
 
   const [columns] = useState([
     { field: "employeeId", headerName: "Emp ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Emp Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "annualLeave", headerName: "Annual Leave", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "casualLeave", headerName: "Casual Leave", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "medicalLeave", headerName: "Medical Leave", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "total", headerName: "Total", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "basicSalary", headerName: "Basic Salary", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "houseAllowance", headerName: "House Allowance", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "transportation", headerName: "Transportation", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "totalSalary", headerName: "Total Salary", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ]);
 
 
@@ -41,4 +41,4 @@ function Leave() {
   );
 }
 
-export default Leave;
+export default Salary;

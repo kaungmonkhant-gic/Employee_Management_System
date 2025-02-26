@@ -51,8 +51,8 @@ function AdminDashboard() {
           {showSubMenu && (
             <div className="ms-3">
               <Link to="/admin-dashboard/employee" className="nav-link text-dark">Employee List</Link>
-              <Link to="/admin-dashboard/leave" className="nav-link text-light">Employee Leave</Link>
-              <Link to="/admin-dashboard/salary" className="nav-link text-light">Salary</Link>
+              <Link to="/admin-dashboard/showleave" className="nav-link text-light">Show Leave</Link>
+              <Link to="/admin-dashboard/salary" className="nav-link text-light">Show Salary</Link>
             </div>
           )}
 

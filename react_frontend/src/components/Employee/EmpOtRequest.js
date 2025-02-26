@@ -20,7 +20,7 @@ const EmpOtRequestForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/overtime", {
+      const response = await fetch("/api/ot/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

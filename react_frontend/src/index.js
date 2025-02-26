@@ -30,7 +30,7 @@ import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
 import OvertimeHistory from "./components/Manager/OvertimeHistory";
 import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
-
+import ShowLeave from "./components/ShowLeave";
 
 
 
@@ -66,6 +66,7 @@ root.render(
         <Route path="attendance" element={<Attendance />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
+        <Route path="showleave" element={<ShowLeave/>} />
         <Route path="salary" element={<Salary />} />
         <Route path="leave" element={<Leave />} />
         <Route path="addleave" element={<AddLeave />} />
