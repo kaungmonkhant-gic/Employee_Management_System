@@ -14,7 +14,6 @@ public interface OtRepository extends JpaRepository<Ots, String> {
     Optional<String> findLastOtId();
 
     List<Ots> findByEmployeeId(String employeeId);
-//
 //    List<Ots> findByIsApproved(Boolean Approved);
 }
 

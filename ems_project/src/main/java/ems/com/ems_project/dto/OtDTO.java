@@ -27,8 +27,7 @@ public class OtDTO {
     private RequestStatus otStatus = RequestStatus.PENDING;
     private String managerName;
     private Boolean isPaid;
-
-
+    //
     public OtDTO(Ots ot, Employee employee, Employee manager) {
         if (ot != null) {
             this.id = ot.getId(); // Only set ID if ot is not null

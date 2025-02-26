@@ -21,6 +21,7 @@ public class OtController {
     public List<OtDTO> getAllOt() {
         return otService.getAllOt();
     }
+
     @GetMapping("/{employeeId}")
     public ResponseEntity<List<OtDTO>> getOTByEmployeeId(@PathVariable String employeeId) {
         List<OtDTO> otDTO = otService.getOTByEmployeeId(employeeId);
