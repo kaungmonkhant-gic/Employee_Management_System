@@ -7,8 +7,11 @@ import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
 import ems.com.ems_project.repository.EmployeeLeaveRepository;
+import ems.com.ems_project.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,8 @@ public class EmployeeLeaveService {
     private EmployeeLeaveRepository employeeLeaveRepository;
     @Autowired
     private GenerateId generateId;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     public List<EmployeeLeaveDTO> getAllLeavesWithEmployeeName() {
         return employeeLeaveRepository.findAll().stream()
@@ -27,12 +32,15 @@ public class EmployeeLeaveService {
                 .toList();
     }
 
-    // In EmployeeLeaveService.java
-    public EmployeeLeaveDTO getEmployeeLeaveById(String employeeId) {
-        EmployeeLeave employeeLeave = employeeLeaveRepository.findByEmployeeId(employeeId)
-                .orElseThrow(() -> new RuntimeException("Leave details not found for employee ID: " + employeeId));
+    public EmployeeLeaveDTO getEmployeeLeaveByEmployeeId(String loggedInUsername) {
+        Employee employee = employeeRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
+        EmployeeLeave employeeLeave = employeeLeaveRepository.findByEmployeeId(employee.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee leave not found"));
 
-        return new EmployeeLeaveDTO(employeeLeave, employeeLeave.getEmployee().getName());
+        String employeeName = employeeLeave.getEmployee().getName();
+
+        return new EmployeeLeaveDTO(employeeLeave, employeeName);
     }
 
 
