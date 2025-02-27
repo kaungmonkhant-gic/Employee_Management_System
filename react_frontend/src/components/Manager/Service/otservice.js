@@ -21,61 +21,38 @@ const managerOTService = {
   // Approve an overtime request
   approveOvertimeRequest: async (id, token) => {
     try {
-      console.log(`Approving request ID: ${id}`);
       const response = await apiClient.put(
         `/ot/approve/${id}`,
-        { status: "Approved" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to the headers
-          },
-        }
+        {},  // No body needed for approval
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Approved Overtime Request:", response.data);
+      console.log("Approved OT:", response.data);
       return response.data;
     } catch (error) {
-      console.error(`Error approving request ID: ${id}`, error);
+      console.error("Error approving OT:", error);
       throw error;
     }
   },
-
-  // Reject an overtime request
-  rejectOvertimeRequest: async (id, token) => {
-    try {
-      console.log(`Rejecting request ID: ${id}`);
-      const response = await apiClient.put(
-        `/ot/reject/${id}`,
-        { status: "Rejected" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to the headers
-          },
-        }
-      );
-      console.log("Rejected Overtime Request:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error(`Error rejecting request ID: ${id}`, error);
-      throw error;
+// Function to reject OT request with reason
+rejectOvertimeRequest: async (id, token) => {
+  try {
+    const reason = prompt("Enter rejection reason:");
+    if (!reason || reason.trim() === "") {
+      alert("Rejection reason is required!");
+      return;
     }
-  },
 
-  // Add a new overtime record
-  // addOvertimeRecord: async (record, token) => {
-  //   try {
-  //     console.log("Adding overtime record:", record);
-  //     const response = await apiClient.post("/overtime", record, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`, // Add token to the headers
-  //       },
-  //     });
-  //     console.log("Added Overtime Record:", response.data);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error("Error adding overtime record:", error);
-  //     throw error;
-  //   }
-  // },
+    const response = await apiClient.put(
+      `/ot/reject/${id}`,
+      { reason: reason },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("Rejected OT:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error rejecting OT:", error);
+    throw error;
+  }
+},
 };
-
 export default managerOTService;

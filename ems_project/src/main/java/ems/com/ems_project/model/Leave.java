@@ -55,6 +55,7 @@ public class Leave {
     @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
     @JsonIgnore
     private Employee employee;
+    private String rejectionReason;
 
     public String getId() {
         return id;
@@ -134,5 +135,13 @@ public class Leave {
 
     public void setTotalDays(Double totalDays) {
         this.totalDays = totalDays;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }

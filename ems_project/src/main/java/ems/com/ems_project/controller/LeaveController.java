@@ -46,17 +46,23 @@ public class LeaveController {
         }
     }
 
-    // Process Leave request (approve or reject)
+    @GetMapping("/{employeeId}/{status}")
+    public ResponseEntity<String> getLeaveCount(@PathVariable String employeeId, @PathVariable String status) {
+        // Call the service to get the formatted leave count response
+
+        String formattedResponse = leaveService.getLeaveCountByStatus(employeeId, status);
+        return ResponseEntity.ok(formattedResponse);
+    }
+
+
     @PutMapping("/{action}/{leaveId}")
     public ResponseEntity<LeaveDTO> processLeaveRequest(
             @PathVariable String action,
             @PathVariable String leaveId,
             @RequestBody(required = false) Map<String, String> requestBody) {
 
-        // Call the service method to process the leave request based on action (approve or reject)
-        LeaveDTO updatedLeaveDTO = leaveService.processLeaveRequest(leaveId, action);
-
-        // Return appropriate response with status code
+        String rejectionReason = (requestBody != null) ? requestBody.get("reason") : null;
+       LeaveDTO updatedLeaveDTO = leaveService.processLeaveRequest(leaveId, action, rejectionReason);
         return ResponseEntity.ok(updatedLeaveDTO);
     }
 }
