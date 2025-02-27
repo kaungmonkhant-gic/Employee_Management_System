@@ -30,6 +30,7 @@ import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
 import OvertimeHistory from "./components/Manager/OvertimeHistory";
 import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
+import ConfirmOtRequest from "./components/Manager/ConfirmOtRequest";
 import ShowLeave from "./components/ShowLeave";
 
 
@@ -91,6 +92,7 @@ root.render(
         <Route path="profile" element={<ManagerProfile />} />
         <Route path="overtime-history" element={<OvertimeHistory />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
+        <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />
       </Route>
     </Routes>
   </BrowserRouter>
