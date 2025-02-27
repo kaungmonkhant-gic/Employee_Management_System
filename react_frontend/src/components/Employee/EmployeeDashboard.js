@@ -69,7 +69,7 @@ function EmployeeDashboard() {
                 <Link to="/employee-dashboard/attendance" className="nav-link text-light">
                   Attendance
                 </Link>
-                <Link to= "/employee-dashboard/leave" className = "nav-link text light">
+                <Link to= "/employee-dashboard/leave" className = "nav-link text-light">
                 Leave
                 </Link>
                 <Link to="/employee-dashboard/profile" className="nav-link text-light">

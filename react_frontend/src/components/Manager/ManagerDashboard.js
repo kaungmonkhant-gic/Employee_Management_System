@@ -65,6 +65,7 @@ function ManagerDashboard() {
           </Link>
         </div>
       )}
+      
           
           {/* <div className="nav-link text-light" 
         onClick={() => setShowSubMenu(!showSubMenu)} 
@@ -91,7 +92,7 @@ function ManagerDashboard() {
         </div>
       )}
       */}
-          
+          <Link to="/manager-dashboard/profile" className="nav-link text-light">Profile</Link>
           <button onClick={handleLogout} className="btn btn-danger mt-4">
             Logout
           </button>

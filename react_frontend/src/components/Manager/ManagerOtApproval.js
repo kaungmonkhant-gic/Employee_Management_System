@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import otcontroller from "../Manager/Controller/otcontroller";
+import DataTable from "../common/DataTable";
+import { useNavigate } from "react-router-dom";
 
 const PendingRequests = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [headerText, setHeaderText] = useState("Manage Pending Requests");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,60 +50,57 @@ const PendingRequests = () => {
     }
   };
 
+  const columns = [
+    { field: "employeeName", headerName: "Employee", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "managerName", headerName: "Manager", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "date", headerName: "Date", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "startTime", headerName: "Start Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "endTime", headerName: "End Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "otTime", headerName: "OT Hours", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "reason", headerName: "Reason", minWidth: 200, flex: 2, cellClassName: "text-center" },
+    {
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 150,
+      flex: 1,
+      cellClassName: "text-center",
+      render: (row) => (
+        <div className="d-flex justify-content-center gap-2">
+          <button onClick={() => approveRequest(row.id)} className="btn btn-outline-success btn-sm">
+            <FaCheckCircle /> Approve
+          </button>
+          <button onClick={() => rejectRequest(row.id)} className="btn btn-outline-danger btn-sm">
+            <FaTimesCircle /> Reject
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="container mt-4">
-      <h1>Pending Overtime Requests</h1>
+      <h1>{headerText}</h1>
       <button className="btn btn-primary mb-3" onClick={() => navigate("/manager-dashboard/confirm-ot-request")}>
         View Confirmed Requests
       </button>
 
-      {isLoading ? (
-        <div className="d-flex justify-content-center my-4">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : pendingRequests.length === 0 ? (
-        <div className="alert alert-warning">No pending requests.</div>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-striped">
-            <thead className="table-primary">
-              <tr>
-                <th>Employee Name</th>
-                <th>Manager Name</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Overtime Hours</th>
-                <th>Reason</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pendingRequests.map((record) => (
-                <tr key={record.id}>
-                  <td>{record.employeeName || "N/A"}</td>
-                  <td>{record.managerName || "N/A"}</td>
-                  <td>{record.date || "N/A"}</td>
-                  <td>{record.startTime || "N/A"}</td>
-                  <td>{record.endTime || "N/A"}</td>
-                  <td>{record.otTime || "N/A"}</td>
-                  <td>{record.reason || "N/A"}</td>
-                  <td>
-                    <button className="btn btn-success btn-sm me-2" onClick={() => approveRequest(record.id)}>
-                      <i className="bi bi-check-circle"></i> Approve
-                    </button>
-                    <button className="btn btn-danger btn-sm" onClick={() => rejectRequest(record.id)}>
-                      <i className="bi bi-x-circle"></i> Reject
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {/* DataTable */}
+      <DataTable
+        fetchData={() =>
+          otcontroller.fetchOvertimeRequests().then((data) =>
+            Array.isArray(data) ? data.filter((request) => request.otStatus === "PENDING") : []
+          )
+        }
+        columns={columns}
+        keyField="id"
+        responsive
+        fixedHeader
+        fixedHeaderScrollHeight="400px"
+        noDataComponent="No pending overtime requests"
+        progressPending={isLoading}
+        highlightOnHover
+        pagination
+      />
     </div>
   );
 };
