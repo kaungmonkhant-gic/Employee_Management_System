@@ -7,8 +7,9 @@ import apiClient from "../api/apiclient";
 const LeaveRequests = () => {
   const [pending, setPending] = useState(0);
   const [approved, setApproved] = useState(0);
+  const [rejected, setRejected] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [availableLeaveDays, setAvailableLeaveDays] = useState(10);
+  const [availableLeaveDays, setAvailableLeaveDays] = useState(0);
 
   useEffect(() => {
     fetchLeaveData();
@@ -89,7 +90,7 @@ const LeaveRequests = () => {
   return (
     <div className="container mt-4">
       <div className="row mb-4">
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
             <div className="ms-3">
@@ -99,11 +100,21 @@ const LeaveRequests = () => {
           </div>
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <CheckCircleFill size={32} color="green" />
             <div className="ms-3">
               <p className="text-muted mb-1">Approved Requests</p>
+              <p className="fw-bold mb-0">{approved}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#danger" }}>
+            <CheckCircleFill size={32} color="red" />
+            <div className="ms-3">
+              <p className="text-muted mb-1">Rejected Requests</p>
               <p className="fw-bold mb-0">{approved}</p>
             </div>
           </div>
