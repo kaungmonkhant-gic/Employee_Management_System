@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/leave")
@@ -45,15 +46,17 @@ public class LeaveController {
         }
     }
 
-    @PutMapping("/approve/{leaveId}")
-    public ResponseEntity<LeaveDTO> approveLeave(@PathVariable String leaveId) {
-        LeaveDTO updatedLeave = leaveService.approveLeaveRequest(leaveId);
-        return ResponseEntity.ok(updatedLeave);
-    }
+    // Process Leave request (approve or reject)
+    @PutMapping("/{action}/{leaveId}")
+    public ResponseEntity<LeaveDTO> processLeaveRequest(
+            @PathVariable String action,
+            @PathVariable String leaveId,
+            @RequestBody(required = false) Map<String, String> requestBody) {
 
-    @PutMapping("/reject/{leaveId}")
-    public ResponseEntity<LeaveDTO> rejectLeave(@PathVariable String leaveId) {
-        LeaveDTO updatedLeave = leaveService.rejectLeaveRequest(leaveId);
-        return ResponseEntity.ok(updatedLeave);
+        // Call the service method to process the leave request based on action (approve or reject)
+        LeaveDTO updatedLeaveDTO = leaveService.processLeaveRequest(leaveId, action);
+
+        // Return appropriate response with status code
+        return ResponseEntity.ok(updatedLeaveDTO);
     }
 }

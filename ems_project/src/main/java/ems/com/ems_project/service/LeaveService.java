@@ -1,6 +1,7 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.LeaveDTO;
+import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.RequestStatus;
@@ -81,7 +82,7 @@ public class LeaveService {
         return new LeaveDTO(savedLeave, employee, manager);
     }
 
-    public LeaveDTO approveLeaveRequest(String leaveId) {
+    public LeaveDTO processLeaveRequest(String leaveId,String action) {
         // Get logged-in manager
         String loggedInUsername = getLoggedInUsername();
         Employee manager = employeeRepository.findByEmail(loggedInUsername)
@@ -100,36 +101,22 @@ public class LeaveService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to reject this leave request.");
         }
 
-
-        // Update status to APPROVED
-        leave.setStatus(RequestStatus.APPROVED);
+        // Process based on action type
+        if ("approve".equalsIgnoreCase(action)) {
+            leave.setStatus(RequestStatus.APPROVED);
+//            leave.setRejectionReason(null);  // Clear rejection reason if approving
+        } else if ("reject".equalsIgnoreCase(action)) {
+//            if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
+//            }
+            leave.setStatus(RequestStatus.REJECTED);
+//            leave.setRejectionReason(rejectionReason);  // Set rejection reason
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve' or 'reject'.");
+        }
         Leave updatedLeave = leaveRepository.save(leave);
 
-        return new LeaveDTO(updatedLeave, leave.getEmployee(), manager);
-    }
-    public LeaveDTO rejectLeaveRequest(String leaveId) {
-        // Get logged-in manager
-        String loggedInUsername = getLoggedInUsername();
-        Employee manager = employeeRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Manager not found"));
-
-        // Find leave request by ID
-        Leave leave = leaveRepository.findById(leaveId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Leave request not found"));
-
-        if (!leave.getStatus().equals(RequestStatus.PENDING)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This leave request has already been processed.");
-        }
-
-        // Check if the logged-in user is the assigned manager
-        if (!leave.getManager().getEmail().equals(loggedInUsername)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to reject this leave request.");
-        }
-
-        // Update status to REJECTED
-        leave.setStatus(RequestStatus.REJECTED);
-        Leave updatedLeave = leaveRepository.save(leave);
-
+        // Return updated OT DTO with rejection reason
         return new LeaveDTO(updatedLeave, leave.getEmployee(), manager);
     }
 

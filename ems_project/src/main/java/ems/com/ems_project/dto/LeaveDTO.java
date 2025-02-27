@@ -25,15 +25,16 @@ public class LeaveDTO {
     private String managerName;
 
     public LeaveDTO(Leave leave, Employee employee, Employee manager) {
-        this.id = leave.getId();
-        this.leaveType = leave.getLeaveType();
-        this.halfLeave = leave.getHalfLeave();
-        this.startDate = leave.getStartDate();
-        this.endDate = leave.getEndDate();
-        this.totalDays = leave.getTotalDays();
-        this.reason = leave.getReason();
-        this.status = leave.getStatus();
-
+        if (leave != null) {
+            this.id = leave.getId();
+            this.leaveType = leave.getLeaveType();
+            this.halfLeave = leave.getHalfLeave();
+            this.startDate = leave.getStartDate();
+            this.endDate = leave.getEndDate();
+            this.totalDays = leave.getTotalDays();
+            this.reason = leave.getReason();
+            this.status = leave.getStatus();
+        }
         // Get employee name
         this.employeeName = employee != null ? employee.getName() : null;
 
