@@ -8,27 +8,52 @@ const LeaveRequests = () => {
   const [pending, setPending] = useState(0);
   const [approved, setApproved] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [availableLeaveDays, setAvailableLeaveDays] = useState(10);
 
   useEffect(() => {
     fetchLeaveData();
   }, []);
-  const fetchLeaveData = async ()=> {
-    try{
+
+  const fetchLeaveData = async () => {
+    try {
       const response = await apiClient.get("/leave/submit");
       const data = response.data;
       setPending(data.pending || 0);
       setApproved(data.approved || 0);
-    } catch(error){
-      console.error("Error fetching leave data:",error);
+    } catch (error) {
+      console.error("Error fetching leave data:", error);
     }
   };
 
   const handleNewRequest = async (formData) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const startDate = new Date(formData.startDate).setHours(0, 0, 0, 0);
+    const endDate = new Date(formData.endDate).setHours(0, 0, 0, 0);
+    const requestedDays = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
+
+    if (startDate < today) {
+      alert("Start date cannot be in the past.");
+      return;
+    }
+
+    if (endDate < startDate) {
+      alert("End date cannot be earlier than the start date.");
+      return;
+    }
+
+    if (requestedDays > availableLeaveDays) {
+      alert("You do not have enough leave balance to make this request.");
+      return;
+    }
+
     try {
       const response = await apiClient.post("/leave/submit", formData);
-
       if (response.status === 201) {
-        fetchLeaveData(); // Refresh counts after submission
+        setAvailableLeaveDays((prev) => prev - requestedDays);
+        fetchLeaveData();
+        sendToManager(formData); 
+        setShowModal(false);
+        setPending(pending + 1); // Increase pending requests
       } else {
         console.error("Failed to submit leave request");
       }
@@ -37,10 +62,29 @@ const LeaveRequests = () => {
     }
   };
 
+  const sendToManager = async (formData) => {
+    try {
+      await apiClient.post("/manager/leave/request", formData);
+      alert("Leave request sent to the manager successfully.");
+    } catch (error) {
+      console.error("Error sending leave request to manager:", error);
+    }
+  };
 
-  // const handleNewRequest = () => {
-  //   setPending((prev) => prev + 1);
-  // };
+  const handleApproveRequest = async (requestId) => {
+    try {
+      const response = await apiClient.post(`/manager/approve/${requestId}`);
+      if (response.status === 200) {
+        setPending(pending - 1); // Decrease pending
+        setApproved(approved + 1); // Increase approved
+        alert("Leave request approved.");
+      } else {
+        alert("Failed to approve the request.");
+      }
+    } catch (error) {
+      console.error("Error approving leave request:", error);
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -68,6 +112,7 @@ const LeaveRequests = () => {
 
       <div className="p-3 border rounded shadow-sm bg-white">
         <h5 className="mb-3">Leave Requests</h5>
+        <p>Available Leave Balance: {availableLeaveDays} days</p>
         <Button variant="secondary" onClick={() => setShowModal(true)}>
           Apply for leave
         </Button>
@@ -79,12 +124,13 @@ const LeaveRequests = () => {
           <Modal.Title>Leave Request Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <LeaveForm 
-            user={{ name: "John Doe", id: "EMP123" }} 
-            availableLeaveDays={10} 
+          <LeaveForm
+            user={{ name: "John Doe", id: "EMP123" }}
+            availableLeaveDays={availableLeaveDays}
             onSubmit={() => setPending(pending + 1)} 
             onApprove={() => setApproved(approved + 1)}
-            onLeaveSubmit = {handleNewRequest}
+            onLeaveSubmit={handleNewRequest}
+            onCancel={() => setShowModal(false)}
           />
         </Modal.Body>
       </Modal>
