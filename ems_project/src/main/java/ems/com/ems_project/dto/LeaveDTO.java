@@ -23,6 +23,7 @@ public class LeaveDTO {
     private RequestStatus status = RequestStatus.PENDING;
     private String employeeName;
     private String managerName;
+    private String rejectionReason;
 
     public LeaveDTO(Leave leave, Employee employee, Employee manager) {
         if (leave != null) {
@@ -34,6 +35,7 @@ public class LeaveDTO {
             this.totalDays = leave.getTotalDays();
             this.reason = leave.getReason();
             this.status = leave.getStatus();
+            this.rejectionReason = leave.getRejectionReason();
         }
         // Get employee name
         this.employeeName = employee != null ? employee.getName() : null;
@@ -121,5 +123,13 @@ public class LeaveDTO {
 
     public void setTotalDays(Double totalDays) {
         this.totalDays = totalDays;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }
