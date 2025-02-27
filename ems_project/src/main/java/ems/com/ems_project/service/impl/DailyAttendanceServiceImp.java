@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DailyAttendanceServiceImp implements AttendanceService {
@@ -37,6 +38,22 @@ public class DailyAttendanceServiceImp implements AttendanceService {
                                 attendance.getEmployee().getName()))
                 .toList();
     }
+    public List<AttendanceDTO> getAttendanceByEmployeeId(String employeeId) {
+        // Check if the employee exists
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new RuntimeException("Employee not found");
+        }
+
+        // Get all attendance records for this employee
+        List<EmpDailyAtts> attendanceList = attendanceRepository.findByEmployeeId(employeeId);
+
+        // Convert each attendance record into an AttendanceDTO
+        return attendanceList.stream()
+                .map(attendance -> new AttendanceDTO(attendance, attendance.getLeave(), attendance.getOvertime(),
+                        attendance.getEmployee().getName()))
+                .collect(Collectors.toList());
+    }
+
 
     public String generateAttendanceId() {
         // Get the last Attendance ID from the database

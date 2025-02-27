@@ -11,7 +11,7 @@ import PayRoll from "./components/PayRoll"; // PayRoll component
 import LoginForm from "./components/LoginForm"; // Login component
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
 import Tasks from "./components/Employee/Tasks";
-import Salary from "./components/Employee/Salary";
+import Salary from "./components/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
 import EmpLeave from "./components/Employee/EmpLeaveRequest"
@@ -23,14 +23,15 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
-import ViewSalary from "./components/ViewSalary";
+import ViewSalary from "./components/Employee/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
 import OvertimeHistory from "./components/Manager/OvertimeHistory";
 import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
-
+import ConfirmOtRequest from "./components/Manager/ConfirmOtRequest";
+import ShowLeave from "./components/ShowLeave";
 
 
 
@@ -66,7 +67,8 @@ root.render(
         <Route path="attendance" element={<Attendance />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
-        <Route path="salary" element={<ViewSalary />} />
+        <Route path="showleave" element={<ShowLeave/>} />
+        <Route path="salary" element={<Salary />} />
         <Route path="leave" element={<Leave />} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
@@ -82,7 +84,7 @@ root.render(
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />
-        <Route path="salary" element={<Salary />} />
+        <Route path="salary" element={<ViewSalary />} />
         <Route path="tasks" element={<Tasks />} />
       </Route>
 
@@ -90,6 +92,7 @@ root.render(
         <Route path="profile" element={<ManagerProfile />} />
         <Route path="overtime-history" element={<OvertimeHistory />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
+        <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />
       </Route>
     </Routes>
   </BrowserRouter>

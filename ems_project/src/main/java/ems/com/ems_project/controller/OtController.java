@@ -3,6 +3,8 @@ package ems.com.ems_project.controller;
 import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.service.OtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +22,40 @@ public class OtController {
         return otService.getAllOt();
     }
 
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<List<OtDTO>> getOTByEmployeeId(@PathVariable String employeeId) {
+        List<OtDTO> otDTO = otService.getOTByEmployeeId(employeeId);
+        return ResponseEntity.ok(otDTO);
+    }
+
     // Generate a new OT ID
     @GetMapping("/generate-id")
     public String generateOtId() {
         return otService.generateOtId();
+    }
+    @PostMapping("/submit")
+    public ResponseEntity<OtDTO> submitOtRequest(@RequestBody OtDTO otDTO) {
+        try {
+            // Call the service to submit the OT request and get the saved OT
+            OtDTO createdOtDTO = otService.submitOTRequest(otDTO);  // Assuming service now returns OtDTO
+
+            // Return success response with created OT DTO
+            return new ResponseEntity<>(createdOtDTO, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            // Return error response if employee not found or any other error
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping("/approve/{otId}")
+    public ResponseEntity<OtDTO> approveOTRequest(@PathVariable String otId) {
+        OtDTO updatedOtDTO = otService.approveOTRequest(otId);
+        return ResponseEntity.ok(updatedOtDTO);
+    }
+
+    // Endpoint to reject an OT request
+    @PutMapping("/reject/{otId}")
+    public ResponseEntity<OtDTO> rejectOTRequest(@PathVariable String otId) {
+        OtDTO updatedOtDTO = otService.rejectOTRequest(otId);
+        return ResponseEntity.ok(updatedOtDTO);
     }
 }

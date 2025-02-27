@@ -21,14 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    
+
     @Autowired
     private JWTAuthFilter jwtAuthFilter;
-    
+
     @Lazy
     @Autowired
     private UserDetailsService userDetailsService;
-    
+
     @Autowired
     private PasswordEncoderConfig passwordEncoderConfig;
 
@@ -46,23 +46,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/employee/profile/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
 
                         // Employee management: Admin (CRUD), Manager (View)
-                        .requestMatchers(HttpMethod.GET, "/employee/all","/employee/{id}").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+                        .requestMatchers(HttpMethod.GET, "/employee/all", "/employee/{id}").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
                         .requestMatchers(HttpMethod.POST, "/employee/register").hasAuthority("ROLE_Admin")
                         .requestMatchers(HttpMethod.PUT, "/employee/update/**").hasAuthority("ROLE_Admin")
                         .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
 
                         // Salary management: Admin only
-                        .requestMatchers("/departments/**","/salary/**","/leave/**").hasAuthority("ROLE_Admin")
-
+                        .requestMatchers("/departments/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers("/salary/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
                         // Attendance management: Admin & Manager
-                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
-                        .requestMatchers("/attendance/checkin","/attendance/checkout").hasAuthority("ROLE_Employee")
+                        .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+
 
                         // OT management: Admin & Manager
-                        .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager", "ROLE_Employee")
+                        .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
 
-                        // Leave management: Manager only
-                        .requestMatchers("/leave/**").hasAuthority("ROLE_Manager")
+                        .requestMatchers( "/leave/**").authenticated()
+                        .requestMatchers("/empleave/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
 
                         // Default: All other requests need authentication
                         .anyRequest().authenticated()
@@ -81,7 +81,7 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoderConfig.passwordEncoder());
         return daoAuthenticationProvider;
     }
-    
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{

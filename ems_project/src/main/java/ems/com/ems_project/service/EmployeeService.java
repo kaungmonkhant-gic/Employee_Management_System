@@ -4,15 +4,14 @@ import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
-import ems.com.ems_project.model.Employee;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
 public interface EmployeeService extends UserDetailsService {
 
-    ReqRes getAllEmployees();
-    
+    List<EmployeeDTO> getAllEmployees();
+
     EmployeeDTO getEmployeeById(String Id);
 
     ReqRes getProfile(String email);

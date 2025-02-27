@@ -26,30 +26,33 @@ public class Leave {
     private LeaveType leaveType;  // Uses enum instead of String
 
     @Column(name = "half_leave")
-    private Boolean halfLeave;
+    private Boolean halfLeave = false;
 
     @Column(name = "start_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date startDate;
 
     @Column(name = "end_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date endDate;
+
+    @Column(name = "total_days")
+    private Double totalDays;
 
     @Column(name = "reason")
     private String reason;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "manager_id")
     @JsonIgnore
     private Employee manager;  // References Employee instead of String
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private LeaveStatus status = LeaveStatus.PENDING;  // Default status is PENDING
+    @Column(name = "status")
+    private RequestStatus status = RequestStatus.PENDING; // Default status is PENDING
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
     @JsonIgnore
     private Employee employee;
 
@@ -109,11 +112,11 @@ public class Leave {
         this.manager = manager;
     }
 
-    public LeaveStatus getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(LeaveStatus status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 
@@ -123,5 +126,13 @@ public class Leave {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public Double getTotalDays() {
+        return totalDays;
+    }
+
+    public void setTotalDays(Double totalDays) {
+        this.totalDays = totalDays;
     }
 }
