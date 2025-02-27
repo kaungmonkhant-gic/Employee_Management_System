@@ -27,6 +27,8 @@ public class OtDTO {
     private RequestStatus otStatus = RequestStatus.PENDING;
     private String managerName;
     private Boolean isPaid;
+    private String rejectionReason;
+
 
 
     public OtDTO(Ots ot, Employee employee, Employee manager) {
@@ -39,6 +41,7 @@ public class OtDTO {
             this.reason = ot.getReason();
             this.otStatus = ot.getStatus();
             this.isPaid = ot.getPaid();
+            this.rejectionReason = ot.getRejectionReason();
         }
         // Extract employee name and manager name if available
         this.employeeName = (employee != null) ? employee.getName() : null;
@@ -125,5 +128,13 @@ public class OtDTO {
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }

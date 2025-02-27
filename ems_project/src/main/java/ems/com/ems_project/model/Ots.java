@@ -61,6 +61,8 @@ public class Ots {
     @JsonIgnore
     private Employee employee;
 
+    private String rejectionReason;
+
 
 
     public String getId() {
@@ -143,5 +145,13 @@ public class Ots {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }

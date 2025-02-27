@@ -106,14 +106,8 @@ public class EmployeeServiceImp implements EmployeeService {
         return employeeRepository.findAll().stream()
                 .map(employee -> {
 
-                    // Fetch salary details from EmployeeSalary table
-                    EmployeeSalary salary = employeeSalaryRepository.findByEmployeeId(employee.getId()).orElse(null);
-
-                    // Fetch leave details from EmployeeLeave table
-                    EmployeeLeave leave = employeeLeaveRepository.findByEmployeeId(employee.getId()).orElse(null);
-
                     // Convert to DTO
-                    return new EmployeeDTO(employee,leave, salary);
+                    return new EmployeeDTO(employee,null,null);
                 })
                 .collect(Collectors.toList());
     }

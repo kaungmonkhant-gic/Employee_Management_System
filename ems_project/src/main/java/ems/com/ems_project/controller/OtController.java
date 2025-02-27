@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ot")
@@ -46,16 +47,30 @@ public class OtController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/approve/{otId}")
-    public ResponseEntity<OtDTO> approveOTRequest(@PathVariable String otId) {
-        OtDTO updatedOtDTO = otService.approveOTRequest(otId);
+    @PutMapping("/{action}/{otId}")
+    public ResponseEntity<OtDTO> processOTRequest(
+            @PathVariable String action,
+            @PathVariable String otId,
+            @RequestBody(required = false) Map<String, String> requestBody) {
+
+        String rejectionReason = (requestBody != null) ? requestBody.get("reason") : null;
+        OtDTO updatedOtDTO = otService.processOTRequest(otId, action, rejectionReason);
         return ResponseEntity.ok(updatedOtDTO);
     }
 
-    // Endpoint to reject an OT request
-    @PutMapping("/reject/{otId}")
-    public ResponseEntity<OtDTO> rejectOTRequest(@PathVariable String otId) {
-        OtDTO updatedOtDTO = otService.rejectOTRequest(otId);
-        return ResponseEntity.ok(updatedOtDTO);
-    }
+//    @PutMapping("/approve/{otId}")
+//    public ResponseEntity<OtDTO> approveOTRequest(@PathVariable String otId) {
+//        OtDTO updatedOtDTO = otService.approveOTRequest(otId);
+//        return ResponseEntity.ok(updatedOtDTO);
+//    }
+//
+////     //Endpoint to reject an OT request
+//    @PutMapping("/reject/{otId}")
+//    public ResponseEntity<OtDTO> rejectOTRequest(@PathVariable String otId) {
+//        OtDTO updatedOtDTO = otService.rejectOTRequest(otId);
+//        return ResponseEntity.ok(updatedOtDTO);
+//    }
+
+
+
 }
