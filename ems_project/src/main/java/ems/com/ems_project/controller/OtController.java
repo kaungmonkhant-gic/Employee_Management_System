@@ -34,6 +34,7 @@ public class OtController {
     public String generateOtId() {
         return otService.generateOtId();
     }
+
     @PostMapping("/submit")
     public ResponseEntity<OtDTO> submitOtRequest(@RequestBody OtDTO otDTO) {
         try {
@@ -47,6 +48,7 @@ public class OtController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
     @PutMapping("/{action}/{otId}")
     public ResponseEntity<OtDTO> processOTRequest(
             @PathVariable String action,
@@ -57,20 +59,5 @@ public class OtController {
         OtDTO updatedOtDTO = otService.processOTRequest(otId, action, rejectionReason);
         return ResponseEntity.ok(updatedOtDTO);
     }
-
-//    @PutMapping("/approve/{otId}")
-//    public ResponseEntity<OtDTO> approveOTRequest(@PathVariable String otId) {
-//        OtDTO updatedOtDTO = otService.approveOTRequest(otId);
-//        return ResponseEntity.ok(updatedOtDTO);
-//    }
-//
-////     //Endpoint to reject an OT request
-//    @PutMapping("/reject/{otId}")
-//    public ResponseEntity<OtDTO> rejectOTRequest(@PathVariable String otId) {
-//        OtDTO updatedOtDTO = otService.rejectOTRequest(otId);
-//        return ResponseEntity.ok(updatedOtDTO);
-//    }
-
-
 
 }

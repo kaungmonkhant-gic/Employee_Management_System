@@ -80,69 +80,48 @@ public class OtService {
                 .map(ots-> new OtDTO(ots, ots.getEmployee(), ots.getManager()))
                 .collect(Collectors.toList());
     }
-    public OtDTO approveOTRequest(String otId) {
+    public OtDTO processOTRequest(String otId, String action, String rejectionReason) {
         // Get the logged-in username (email) from JWT token
         String loggedInUsername = getLoggedInUsername();
 
         // Fetch the logged-in employee (manager)
         Employee manager = employeeRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Manager not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found"));
 
         // Fetch the OT request by ID
         Ots ot = otRepository.findById(otId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"OT request not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OT request not found"));
 
         // Check if OT request is already approved or rejected
         if (!ot.getStatus().equals(RequestStatus.PENDING)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This OT request has already been processed.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This OT request has already been processed.");
         }
 
         // Check if the logged-in user is the assigned manager
         if (!ot.getManager().getEmail().equals(loggedInUsername)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not authorized to approve this OT request");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to process this OT request.");
         }
 
-        // Update the status to "Approved"
-        ot.setStatus(RequestStatus.APPROVED);
+        // Process based on action type
+        if ("approve".equalsIgnoreCase(action)) {
+            ot.setStatus(RequestStatus.APPROVED);
+            ot.setRejectionReason(null);  // Clear rejection reason if approving
+        } else if ("reject".equalsIgnoreCase(action)) {
+            if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
+            }
+            ot.setStatus(RequestStatus.REJECTED);
+            ot.setRejectionReason(rejectionReason);  // Set rejection reason
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve' or 'reject'.");
+        }
 
-        // Save the updated OT request
+        // Save the updated OT request to the database
         Ots updatedOt = otRepository.save(ot);
 
-        // Return updated OT DTO
+        // Return updated OT DTO with rejection reason
         return new OtDTO(updatedOt, ot.getEmployee(), manager);
     }
-
-    // Method to reject OT request
-    public OtDTO rejectOTRequest(String otId) {
-        // Get the logged-in username (email) from JWT token
-        String loggedInUsername = getLoggedInUsername();
-
-        // Fetch the logged-in employee (manager)
-        Employee manager = employeeRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Manager not found"));
-
-        // Fetch the OT request by ID
-        Ots ot = otRepository.findById(otId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"OT request not found"));
-
-        // Check if OT request is already approved or rejected
-        if (!ot.getStatus().equals(RequestStatus.PENDING)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This OT request has already been processed.");
-        }
-        // Check if the logged-in user is the assigned manager
-        if (!ot.getManager().getEmail().equals(loggedInUsername)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not authorized to approve this OT request");
-        }
-        // Update the status to "Rejected"
-        ot.setStatus(RequestStatus.REJECTED);
-
-        // Save the updated OT request
-        Ots updatedOt = otRepository.save(ot);
-
-        // Return updated OT DTO
-        return new OtDTO(updatedOt, ot.getEmployee(), manager);
-    }
-
 
     // Helper method to get logged-in username (email) from JWT
     private String getLoggedInUsername() {
