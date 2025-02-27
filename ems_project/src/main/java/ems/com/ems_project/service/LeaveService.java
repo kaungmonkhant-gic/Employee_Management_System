@@ -1,7 +1,6 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.LeaveDTO;
-import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.RequestStatus;
@@ -14,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -104,13 +105,8 @@ public class LeaveService {
         // Process based on action type
         if ("approve".equalsIgnoreCase(action)) {
             leave.setStatus(RequestStatus.APPROVED);
-//            leave.setRejectionReason(null);  // Clear rejection reason if approving
         } else if ("reject".equalsIgnoreCase(action)) {
-//            if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
-//            }
             leave.setStatus(RequestStatus.REJECTED);
-//            leave.setRejectionReason(rejectionReason);  // Set rejection reason
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve' or 'reject'.");
         }
@@ -118,6 +114,37 @@ public class LeaveService {
 
         // Return updated OT DTO with rejection reason
         return new LeaveDTO(updatedLeave, leave.getEmployee(), manager);
+    }
+
+//    public Map<String, Long> getLeaveStatusCountByEmployee(String employeeId) {
+//        if (!employeeRepository.existsById(employeeId)) {
+//            throw new RuntimeException("Employee not found");
+//        }
+//
+//        List<Object[]> results = leaveRepository.getStatusCountByEmployeeId(employeeId);
+//
+//        // Convert result list to a map
+//        Map<String, Long> statusCountMap = results.stream()
+//                .collect(Collectors.toMap(
+//                        row -> (String) row[0],   // Status
+//                        row -> ((Number) row[1]).longValue()  // Count
+//                ));
+//
+//        // Ensure all statuses exist in the map, even if count is 0
+//        List<String> allStatuses = Arrays.asList("APPROVED", "PENDING", "REJECTED", "CANCELED");
+//        for (String status : allStatuses) {
+//            statusCountMap.putIfAbsent(status, 0L);
+//        }
+//
+//        return statusCountMap;
+//    }
+// Method to count leaves by employee and status
+    public String getLeaveCountByStatus(String employeeId, String status) {
+        // Count the number of leaves with the given employeeId and status
+        long count = leaveRepository.countByEmployeeIdAndStatus(employeeId, status.toUpperCase());
+
+        // Format the response as "Status : count"
+        return status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase() + " : " + count;
     }
 
 
