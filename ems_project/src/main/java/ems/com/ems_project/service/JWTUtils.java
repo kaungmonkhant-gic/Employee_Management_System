@@ -1,76 +1,81 @@
 package ems.com.ems_project.service;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JWTUtils {
 
-    private SecretKey Key;
-    private  static  final long EXPIRATION_TIME = 86400000;  //24 hours
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+    private final Key key;
 
-    public JWTUtils(){
-        String secreteString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
-        byte[] keyBytes = Base64.getDecoder().decode(secreteString.getBytes(StandardCharsets.UTF_8));
-        this.Key = new SecretKeySpec(keyBytes, "HmacSHA256");
+    // Constructor to initialize the secret key
+    public JWTUtils() {
+        String secretString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
+        byte[] keyBytes = Base64.getDecoder().decode(secretString);
+        this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public String generateToken(UserDetails userDetails){
-
+    // Generate Token (includes role name)
+    public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role", extractRoleFromAuthorities(userDetails)) // Store role name
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(Key)
-                .compact();
-    }
-    
-    public  String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
-        return Jwts.builder()
-                .claims(claims)
-                .claim("roles", userDetails.getAuthorities())
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(Key)
+                .signWith(key)
                 .compact();
     }
 
-    public List<String> extractRoles(String token) {
-        Claims claims = Jwts.parser().verifyWith(Key).build().parseSignedClaims(token).getPayload();
-        return claims.get("roles", List.class); // Extract roles
+    // Extract role name from JWT token
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("role", String.class); // Extract role name
     }
 
-    public  String extractUsername(String token){
-        return  extractClaims(token, Claims::getSubject);
+    // Extract username (subject) from JWT
+    public String extractUsername(String token) {
+        return extractClaims(token, Claims::getSubject);
     }
 
-    private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction){
-        return claimsTFunction.apply(Jwts.parser().verifyWith(Key).build().parseSignedClaims(token).getPayload());
-    }
-
-    public  boolean isTokenValid(String token, UserDetails userDetails){
+    // Validate token against user details
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public  boolean isTokenExpired(String token){
+    // Check if token is expired
+    public boolean isTokenExpired(String token) {
         return extractClaims(token, Claims::getExpiration).before(new Date());
     }
 
+    // Extract a specific claim
+    private <T> T extractClaims(String token, Function<Claims, T> claimsResolver) {
+        return claimsResolver.apply(extractAllClaims(token));
+    }
 
+    // Extract all claims from token
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith((SecretKey) key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    // Extract role name from authorities
+    private String extractRoleFromAuthorities(UserDetails userDetails) {
+        return userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(Object::toString)
+                .orElse("ROLE_USER"); // Default role if none found
+    }
 }
