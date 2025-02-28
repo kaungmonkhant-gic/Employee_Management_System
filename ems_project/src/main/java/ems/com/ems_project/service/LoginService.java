@@ -3,11 +3,10 @@ package ems.com.ems_project.service;
 import ems.com.ems_project.dto.LoginRequest;
 import ems.com.ems_project.dto.LoginResponse;
 import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.Roles;
 import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.RolesRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import ems.com.ems_project.config.PasswordEncoderConfig;
@@ -23,6 +22,8 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
 
         @Autowired
         private PasswordEncoderConfig passwordEncoderConfig;
+        @Autowired
+        private UserDetailsService userDetailsService;
 
         @Autowired
         private JWTUtils jwtutils;
@@ -37,19 +38,18 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
             }
 
             if (passwordEncoderConfig.passwordEncoder().matches(loginRequest.getPassword(), employee.getPassword())) {
+                // Generate JWT token with role name included
                 String token = generateToken(employee);
 
-                // Fetch the role using role_id from the Employee table
-                String roleId = employee.getRoleId();
-                Roles role = roleRepository.findById(roleId)
-                        .orElseThrow(() -> new RuntimeException("Role not found"));
+                // Extract role name from JWT token
+                String roleName = jwtutils.extractRole(token);
 
-                String roleName = role.getRoleName(); // Get role name from Role entity
-
+                // Prepare response
                 LoginResponse response = new LoginResponse();
                 response.setToken(token);
                 response.setMessage("Login Successful");
-                response.setRoleName(roleName); // Set the role name in the response
+                response.setEmployeeName(employee.getName());
+                response.setRoleName(roleName); // Set role name from token
 
                 return response;
             }
@@ -61,5 +61,4 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
             // Implement JWT token generation logic
             return jwtutils.generateToken(employee);
         }
-    }   
-
+    }

@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class LoginResponse {
     private String token;
     private String message;
     private String roleName;
+    private String employeeName;
 
     public String getToken() {
         return token;
@@ -34,6 +32,14 @@ public class LoginResponse {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 }
 
