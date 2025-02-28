@@ -18,12 +18,30 @@ const EmpProfile = () => {
     education: "",
     workExp: "",
     joinDate: "",
+    roleId: "",
+    positionID: "",
+    departmentId: "",
   };
 
   const [details, setDetails] = useState(initialDetails);
   const [originalDetails, setOriginalDetails] = useState(initialDetails);
   const [isEditing, setIsEditing] = useState(false);
-
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      if (parts[2].length === 4) {
+        // If the year is last, assume dd-MM-yyyy and convert
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      // Already in yyyy-MM-dd format, return as is
+      return dateString;
+    }
+  
+    return dateString; // Default return
+  };
+  
   // Dropdown data states
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
@@ -61,7 +79,7 @@ const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
           setDetails({
             id: employeeProfile.id,
             name: employeeProfile.name,
-            dob: employeeProfile.dob,
+            dob: formatDate(employeeProfile.dob),
             email: employeeProfile.email,
             phone: employeeProfile.phone,
             gender: employeeProfile.gender,
