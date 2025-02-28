@@ -19,7 +19,7 @@ public class PositionController {
     @Autowired
     private PositionService positionService;
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<Positions>> getAllPositions() {
         return ResponseEntity.ok(positionService.getAllPositions());
     }
