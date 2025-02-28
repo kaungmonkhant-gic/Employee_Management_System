@@ -121,14 +121,28 @@ public class LeaveService {
         return new LeaveDTO(updatedLeave, leave.getEmployee(), manager);
     }
 
+    public Map<String, Long> getLeaveStatusCountForLoggedInUser() {
+        // Find employee by email from SecurityContext
+        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
-// Method to count leaves by employee and status
-    public String getLeaveCountByStatus(String employeeId, String status) {
-        // Count the number of leaves with the given employeeId and status
-        long count = leaveRepository.countByEmployeeIdAndStatus(employeeId, status.toUpperCase());
+        // Fetch leave status count for the employee
+        List<Object[]> results = leaveRepository.getStatusCountByEmployeeId(employee.getId());
 
-        // Format the response as "Status : count"
-        return status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase() + " : " + count;
+        // Convert results to a map
+        Map<String, Long> statusCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],   // Status
+                        row -> ((Number) row[1]).longValue()  // Count
+                ));
+
+        // Ensure all possible statuses exist in the map
+        List<String> allStatuses = Arrays.asList("APPROVED", "PENDING", "REJECTED");
+        for (String status : allStatuses) {
+            statusCountMap.putIfAbsent(status, 0L);
+        }
+
+        return statusCountMap;
     }
 
 

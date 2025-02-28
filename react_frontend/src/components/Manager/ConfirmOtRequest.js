@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import otcontroller from "../Manager/Controller/otcontroller";
+import DataTable from "../common/DataTable";
 
 const ConfirmedRequests = () => {
   const [confirmedRequests, setConfirmedRequests] = useState([]);
@@ -24,6 +25,36 @@ const ConfirmedRequests = () => {
     fetchOvertimeRequests();
   }, []);
 
+  const columns = [
+    { field: "employeeName", headerName: "Employee", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "managerName", headerName: "Manager", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "date", headerName: "Date", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "startTime", headerName: "Start Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "endTime", headerName: "End Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "otTime", headerName: "OT Hours", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "reason", headerName: "Reason", minWidth: 200, flex: 2, cellClassName: "text-center" },
+    {
+      field: "otStatus",
+      headerName: "Status",
+      minWidth: 120,
+      flex: 1,
+      cellClassName: "text-center",
+      render: (row) => (
+        <span className={`badge ${row.otStatus === "APPROVED" ? "bg-success" : "bg-danger"}`}>
+          {row.otStatus}
+        </span>
+      ),
+    },
+    {
+      field: "rejectionReason",
+      headerName: "Rejection Reason",
+      minWidth: 200,
+      flex: 2,
+      cellClassName: "text-center",
+      render: (row) => (row.otStatus === "REJECTED" ? row.rejectionReason || "No reason given" : "N/A"),
+    },
+  ];
+
   return (
     <div className="container mt-4">
       <h1>Confirmed Overtime Requests</h1>
@@ -31,52 +62,22 @@ const ConfirmedRequests = () => {
         View Pending Requests
       </button>
 
-      {isLoading ? (
-        <div className="d-flex justify-content-center my-4">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : confirmedRequests.length === 0 ? (
-        <div className="alert alert-info">No confirmed requests.</div>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-striped">
-            <thead className="table-success">
-              <tr>
-                <th>Employee Name</th>
-                <th>Manager Name</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Overtime Hours</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Rejection Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              {confirmedRequests.map((record) => (
-                <tr key={record.id}>
-                  <td>{record.employeeName || "N/A"}</td>
-                  <td>{record.managerName || "N/A"}</td>
-                  <td>{record.date || "N/A"}</td>
-                  <td>{record.startTime || "N/A"}</td>
-                  <td>{record.endTime || "N/A"}</td>
-                  <td>{record.otTime || "N/A"}</td>
-                  <td>{record.reason || "N/A"}</td>
-                  <td>
-                    <span className={`badge ${record.otStatus === "APPROVED" ? "bg-success" : "bg-danger"}`}>
-                      {record.otStatus}
-                    </span>
-                  </td>
-                  <td>{record.otStatus === "REJECTED" ? record.rejectionReason || "No reason given" : "N/A"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        fetchData={() =>
+          otcontroller.fetchOvertimeRequests().then((data) =>
+            Array.isArray(data) ? data.filter((request) => request.otStatus !== "PENDING") : []
+          )
+        }
+        columns={columns}
+        keyField="id"
+        responsive
+        fixedHeader
+        fixedHeaderScrollHeight="400px"
+        noDataComponent="No confirmed overtime requests"
+        progressPending={isLoading}
+        highlightOnHover
+        pagination
+      />
     </div>
   );
 };
