@@ -101,13 +101,42 @@ public class EmployeeServiceImp implements EmployeeService {
                 .build();
     }
 
+
+    // Fetch List of Resigned Employees (resignDate is not null)
+    public List<EmployeeDTO> getResignedEmployees() {
+        List<Employee> resignedEmployees = employeeRepository.findResignedEmployees();
+
+        // Convert to EmployeeDTOs
+        return resignedEmployees.stream()
+                .map(EmployeeDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // Fetch List of Active Employees (resignDate is null)
+    public List<EmployeeDTO> getActiveEmployees() {
+        List<Employee> activeEmployees = employeeRepository.findActiveEmployees();
+
+        // Convert to EmployeeDTOs
+        return activeEmployees.stream()
+                .map(EmployeeDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // Get Count of Active Employees (resignDate is null)
+    public long getActiveEmployeeCount() {
+        return employeeRepository.countActiveEmployees();
+    }
+
+    // Get Count of Resigned Employees (resignDate is not null)
+    public long getResignedEmployeeCount() {
+        return employeeRepository.countResignedEmployees();
+    }
     @Override
     public List<EmployeeDTO> getAllEmployees() {
         return employeeRepository.findAll().stream()
                 .map(employee -> {
-
                     // Convert to DTO
-                    return new EmployeeDTO(employee,null,null);
+                    return new EmployeeDTO(employee);
                 })
                 .collect(Collectors.toList());
     }
@@ -116,13 +145,8 @@ public class EmployeeServiceImp implements EmployeeService {
     public EmployeeDTO getEmployeeById(String employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        // Fetch salary details
-        EmployeeSalary salary = employeeSalaryRepository.findByEmployeeId(employeeId).orElse(null);
 
-        // Fetch leave details
-        EmployeeLeave leave = employeeLeaveRepository.findByEmployeeId(employeeId).orElse(null);
-
-        return new EmployeeDTO(employee, leave, salary);
+        return new EmployeeDTO(employee);
     }
     @Override
     public ReqRes updateProfile(String loggedInUserId, EmployeeProfile updatedProfile) {
@@ -365,48 +389,6 @@ public class EmployeeServiceImp implements EmployeeService {
 
             employeeRepository.save(employee);
 
-            // Update Employee Salary
-            Optional<EmployeeSalary> existingSalary = employeeSalaryRepository.findByEmployeeId(Id);
-            EmployeeSalary employeeSalary = existingSalary.orElse(new EmployeeSalary());
-            if (employeeDTO.getBasicSalary() != null) {
-                employeeSalary.setBasicSalary(employeeDTO.getBasicSalary());
-            }
-            if (employeeDTO.getHouseAllowance() != null) {
-                employeeSalary.setHouseAllowance(employeeDTO.getHouseAllowance());
-            }
-            if (employeeDTO.getTransportation() != null) {
-                employeeSalary.setTransportation(employeeDTO.getTransportation());
-            }
-            employeeSalary.setEmployee(employee);
-            employeeSalaryRepository.save(employeeSalary);
-
-            // Update Employee Leave
-            Optional<EmployeeLeave> existingLeave = employeeLeaveRepository.findByEmployeeId(Id);
-            EmployeeLeave employeeLeave = existingLeave.orElse(new EmployeeLeave());
-            if (employeeDTO.getAnnualLeave() != null) {
-                employeeLeave.setAnnualLeave(employeeDTO.getAnnualLeave());
-            }
-            if (employeeDTO.getCasualLeave() != null) {
-                employeeLeave.setCasualLeave(employeeDTO.getCasualLeave());
-            }
-            if (employeeDTO.getMedicalLeave() != null) {
-                employeeLeave.setMedicalLeave(employeeDTO.getMedicalLeave());
-            }
-            // Calculate totalLeave dynamically
-            double totalLeave = (employeeLeave.getAnnualLeave() != null ? employeeLeave.getAnnualLeave() : 0.0) +
-                    (employeeLeave.getCasualLeave() != null ? employeeLeave.getCasualLeave() : 0.0) +
-                    (employeeLeave.getMedicalLeave() != null ? employeeLeave.getMedicalLeave() : 0.0);
-
-            employeeLeave.setTotal(totalLeave);
-            employeeLeave.setEmployee(employee);
-            employeeLeaveRepository.save(employeeLeave);
-
-            // Calculate total salary
-            double totalSalary = (employeeSalary.getBasicSalary() != null ? employeeSalary.getBasicSalary() : 0.0) +
-                    (employeeSalary.getHouseAllowance() != null ? employeeSalary.getHouseAllowance() : 0.0) +
-                    (employeeSalary.getTransportation() != null ? employeeSalary.getTransportation() : 0.0);
-
-            // Set success response
             reqRes.setStatusCode(200);
             reqRes.setMessage("Employee updated successfully.");
         } catch (Exception e) {

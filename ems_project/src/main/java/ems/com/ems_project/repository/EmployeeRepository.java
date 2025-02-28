@@ -1,5 +1,6 @@
 package ems.com.ems_project.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import ems.com.ems_project.model.Departments;
@@ -30,6 +31,22 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
 	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId AND e.role.id = :roleId")
 	Optional<Employee> findByDepartmentAndRole(String departmentId, String roleId);
+
+	// Fetch resigned employees (resignDate is not null) using JPQL
+	@Query("SELECT e FROM Employee e WHERE e.resignDate IS NOT NULL")
+	List<Employee> findResignedEmployees();
+
+	// Fetch active employees (resignDate is null) using JPQL
+	@Query("SELECT e FROM Employee e WHERE e.resignDate IS NULL")
+	List<Employee> findActiveEmployees();
+
+	// Count resigned employees using JPQL
+	@Query("SELECT COUNT(e) FROM Employee e WHERE e.resignDate IS NOT NULL")
+	long countResignedEmployees();
+
+	// Count resigned employees using JPQL
+	@Query("SELECT COUNT(e) FROM Employee e WHERE e.resignDate IS NULL")
+	long countActiveEmployees();
 
 }
 

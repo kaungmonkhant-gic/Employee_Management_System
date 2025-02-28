@@ -35,23 +35,8 @@ public class EmployeeDTO {
     private String positionName;
     private String departmentName;
 
-    private Double basicSalary;
-    private Double houseAllowance;
-    private Double transportation;
-    private Double totalSalary;
-
-    // Leave details
-    private Double annualLeave;
-    private Double casualLeave;
-    private Double medicalLeave;
-    private Double totalLeave;
-
-    // No-argument constructor (Required for ModelMapper)
-    public EmployeeDTO() {
-    }
-
     // Constructor to initialize the DTO using Employee, Leave, and Salary
-    public EmployeeDTO(Employee employee, EmployeeLeave leave, EmployeeSalary salary) {
+    public EmployeeDTO(Employee employee) {
         if (employee != null) {
             this.id = employee.getId();
             this.name = employee.getName();
@@ -75,22 +60,6 @@ public class EmployeeDTO {
             this.roleName = (employee.getRole() != null) ? employee.getRole().getRoleName() : null;
             this.positionName = (employee.getPosition() != null) ? employee.getPosition().getPositionName() : null;
             this.departmentName = (employee.getDepartment() != null) ? employee.getDepartment().getDepartmentName() : null;
-        }
-
-        // Set salary values
-        if (salary != null) {
-            this.basicSalary = salary.getBasicSalary();
-            this.houseAllowance = salary.getHouseAllowance();
-            this.transportation = salary.getTransportation();
-            this.totalSalary = salary.getTotalSalary();
-        }
-
-        // Set leave values
-        if (leave != null) {
-            this.annualLeave = leave.getAnnualLeave();
-            this.casualLeave = leave.getCasualLeave();
-            this.medicalLeave = leave.getMedicalLeave();
-            this.totalLeave = leave.getTotal();
         }
     }
 
@@ -231,69 +200,6 @@ public class EmployeeDTO {
         this.departmentName = departmentName;
     }
 
-    public Double getBasicSalary() {
-        return basicSalary;
-    }
-
-    public void setBasicSalary(Double basicSalary) {
-        this.basicSalary = basicSalary;
-    }
-
-    public Double getHouseAllowance() {
-        return houseAllowance;
-    }
-
-    public void setHouseAllowance(Double houseAllowance) {
-        this.houseAllowance = houseAllowance;
-    }
-
-    public Double getTransportation() {
-        return transportation;
-    }
-
-    public void setTransportation(Double transportation) {
-        this.transportation = transportation;
-    }
-
-    public Double getTotalSalary() {
-        return totalSalary;
-    }
-
-    public void setTotalSalary(Double totalSalary) {
-        this.totalSalary = totalSalary;
-    }
-
-    public Double getAnnualLeave() {
-        return annualLeave;
-    }
-
-    public void setAnnualLeave(Double annualLeave) {
-        this.annualLeave = annualLeave;
-    }
-
-    public Double getCasualLeave() {
-        return casualLeave;
-    }
-
-    public void setCasualLeave(Double casualLeave) {
-        this.casualLeave = casualLeave;
-    }
-
-    public Double getMedicalLeave() {
-        return medicalLeave;
-    }
-
-    public void setMedicalLeave(Double medicalLeave) {
-        this.medicalLeave = medicalLeave;
-    }
-
-    public Double getTotalLeave() {
-        return totalLeave;
-    }
-
-    public void setTotalLeave(Double totalLeave) {
-        this.totalLeave = totalLeave;
-    }
 
     public String getManagerName() {
         return managerName;

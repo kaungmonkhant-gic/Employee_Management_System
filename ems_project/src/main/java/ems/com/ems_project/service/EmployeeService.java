@@ -10,6 +10,11 @@ import java.util.List;
 
 public interface EmployeeService extends UserDetailsService {
 
+    List<EmployeeDTO> getResignedEmployees();
+    List<EmployeeDTO> getActiveEmployees();
+    long getActiveEmployeeCount();
+    long getResignedEmployeeCount();
+
     List<EmployeeDTO> getAllEmployees();
 
     EmployeeDTO getEmployeeById(String Id);
