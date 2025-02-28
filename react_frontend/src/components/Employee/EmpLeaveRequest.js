@@ -5,91 +5,32 @@ import LeaveForm from "../common/LeaveForm";
 import apiClient from "../api/apiclient";
 
 const LeaveRequests = () => {
-  const [pending, setPending] = useState(0);
-  const [approved, setApproved] = useState(0);
+  const [pending, setPending] = useState([]);
+  const [approved, setApproved] = useState([]);
+  const [rejected, setRejected] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [availableLeaveDays, setAvailableLeaveDays] = useState(10);
+  const [availableLeaveDays, setAvailableLeaveDays] = useState(0);
+
 
   useEffect(() => {
-    fetchLeaveData();
+    const fetchLeaveRequests = async () => {
+      try {
+        const response = await apiClient.get("/leave/status-count"); // Replace with actual API endpoint
+        setPending(response.data.PENDING);
+        setApproved(response.data.APPROVED);
+        setRejected(response.data.REJECTED);
+      } catch (error) {
+        console.error("Error fetching leave requests:", error);
+      }
+    };
+
+    fetchLeaveRequests();
   }, []);
-
-  const fetchLeaveData = async () => {
-    try {
-      const response = await apiClient.get("/leave/submit");
-      const data = response.data;
-      setPending(data.pending || 0);
-      setApproved(data.approved || 0);
-    } catch (error) {
-      console.error("Error fetching leave data:", error);
-    }
-  };
-
-  const handleNewRequest = async (formData) => {
-    const today = new Date().setHours(0, 0, 0, 0);
-    const startDate = new Date(formData.startDate).setHours(0, 0, 0, 0);
-    const endDate = new Date(formData.endDate).setHours(0, 0, 0, 0);
-    const requestedDays = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
-
-    if (startDate < today) {
-      alert("Start date cannot be in the past.");
-      return;
-    }
-
-    if (endDate < startDate) {
-      alert("End date cannot be earlier than the start date.");
-      return;
-    }
-
-    if (requestedDays > availableLeaveDays) {
-      alert("You do not have enough leave balance to make this request.");
-      return;
-    }
-
-    try {
-      const response = await apiClient.post("/leave/submit", formData);
-      if (response.status === 201) {
-        setAvailableLeaveDays((prev) => prev - requestedDays);
-        fetchLeaveData();
-        sendToManager(formData); 
-        setShowModal(false);
-        setPending(pending + 1); // Increase pending requests
-      } else {
-        console.error("Failed to submit leave request");
-      }
-    } catch (error) {
-      console.error("Error submitting leave request:", error);
-    }
-  };
-
-  const sendToManager = async (formData) => {
-    try {
-      await apiClient.post("/manager/leave/request", formData);
-      alert("Leave request sent to the manager successfully.");
-    } catch (error) {
-      console.error("Error sending leave request to manager:", error);
-    }
-  };
-
-  const handleApproveRequest = async (requestId) => {
-    try {
-      const response = await apiClient.post(`/manager/approve/${requestId}`);
-      if (response.status === 200) {
-        setPending(pending - 1); // Decrease pending
-        setApproved(approved + 1); // Increase approved
-        alert("Leave request approved.");
-      } else {
-        alert("Failed to approve the request.");
-      }
-    } catch (error) {
-      console.error("Error approving leave request:", error);
-    }
-  };
-
+  
   return (
     <div className="container mt-4">
       <div className="row mb-4">
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
             <div className="ms-3">
@@ -99,12 +40,22 @@ const LeaveRequests = () => {
           </div>
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <CheckCircleFill size={32} color="green" />
             <div className="ms-3">
               <p className="text-muted mb-1">Approved Requests</p>
               <p className="fw-bold mb-0">{approved}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#danger" }}>
+            <CheckCircleFill size={32} color="red" />
+            <div className="ms-3">
+              <p className="text-muted mb-1">Rejected Requests</p>
+              <p className="fw-bold mb-0">{rejected}</p>
             </div>
           </div>
         </div>
@@ -124,14 +75,8 @@ const LeaveRequests = () => {
           <Modal.Title>Leave Request Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <LeaveForm
-            user={{ name: "John Doe", id: "EMP123" }}
-            availableLeaveDays={availableLeaveDays}
-            onSubmit={() => setPending(pending + 1)} 
-            onApprove={() => setApproved(approved + 1)}
-            onLeaveSubmit={handleNewRequest}
-            onCancel={() => setShowModal(false)}
-          />
+          <LeaveForm/>
+           {/* called the leave form in common file */}
         </Modal.Body>
       </Modal>
     </div>

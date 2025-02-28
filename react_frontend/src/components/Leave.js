@@ -75,7 +75,7 @@ const Leave = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>#</th>
+              <th>No</th>
               <th>Employee</th>
               <th>Leave Type</th>
               <th>Status</th>

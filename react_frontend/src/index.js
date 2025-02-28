@@ -23,7 +23,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
 import Leave from "./components/Leave";
-import ViewSalary from "./components/Employee/ViewSalary";
+// import ViewSalary from "./components/Employee/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
@@ -84,7 +84,7 @@ root.render(
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />
-        <Route path="salary" element={<ViewSalary />} />
+        {/* <Route path="salary" element={<ViewSalary />} /> */}
         <Route path="tasks" element={<Tasks />} />
       </Route>
 
