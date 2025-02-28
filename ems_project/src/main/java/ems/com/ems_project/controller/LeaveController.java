@@ -46,12 +46,10 @@ public class LeaveController {
         }
     }
 
-    @GetMapping("/{employeeId}/{status}")
-    public ResponseEntity<String> getLeaveCount(@PathVariable String employeeId, @PathVariable String status) {
-        // Call the service to get the formatted leave count response
-
-        String formattedResponse = leaveService.getLeaveCountByStatus(employeeId, status);
-        return ResponseEntity.ok(formattedResponse);
+    @GetMapping("/status-count")
+    public ResponseEntity<Map<String, Long>> getLeaveStatusCount() {
+        Map<String, Long> statusCount = leaveService.getLeaveStatusCountForLoggedInUser();
+        return ResponseEntity.ok(statusCount);
     }
 
 
