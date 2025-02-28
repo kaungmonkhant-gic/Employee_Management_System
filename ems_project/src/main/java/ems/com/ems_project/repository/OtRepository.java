@@ -3,6 +3,7 @@ package ems.com.ems_project.repository;
 import ems.com.ems_project.model.Ots;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public interface OtRepository extends JpaRepository<Ots, String> {
     Optional<String> findLastOtId();
 
     List<Ots> findByEmployeeId(String employeeId);
-//    List<Ots> findByIsApproved(Boolean Approved);
+    @Query(value = "SELECT status, COUNT(*) FROM ots WHERE employee_id = :employeeId GROUP BY status", nativeQuery = true)
+    List<Object[]> getStatusCountByEmployeeId(@Param("employeeId") String employeeId);
 }
 

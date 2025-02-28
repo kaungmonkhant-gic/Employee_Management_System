@@ -12,7 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -122,6 +125,29 @@ public class OtService {
         // Return updated OT DTO with rejection reason
         return new OtDTO(updatedOt, ot.getEmployee(), manager);
     }
+    public Map<String, Long> getOtStatusCountForLoggedInUser() {
+        // Find employee by email from SecurityContext
+        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+
+        // Fetch OT status count for the employee
+        List<Object[]> results = otRepository.getStatusCountByEmployeeId(employee.getId());
+
+        // Convert results to a map
+        Map<String, Long> statusCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],   // Status
+                        row -> ((Number) row[1]).longValue()  // Count
+                ));
+
+        // Dynamically get all possible statuses from the RequestStatus enum
+        for (RequestStatus status : RequestStatus.values()) {
+            statusCountMap.putIfAbsent(status.name(), 0L);
+        }
+
+        return statusCountMap;
+    }
+
 
     // Helper method to get logged-in username (email) from JWT
     private String getLoggedInUsername() {

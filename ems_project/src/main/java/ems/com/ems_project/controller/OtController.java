@@ -59,5 +59,10 @@ public class OtController {
         OtDTO updatedOtDTO = otService.processOTRequest(otId, action, rejectionReason);
         return ResponseEntity.ok(updatedOtDTO);
     }
+    @GetMapping("/status-count")
+    public ResponseEntity<Map<String, Long>> getOtStatusCount() {
+        Map<String, Long> statusCount = otService.getOtStatusCountForLoggedInUser();
+        return ResponseEntity.ok(statusCount);
+    }
 
 }

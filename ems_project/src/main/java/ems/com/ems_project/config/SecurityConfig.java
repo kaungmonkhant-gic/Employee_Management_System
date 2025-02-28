@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
 
                         // Salary management: Admin only
-                        .requestMatchers("/departments/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers(HttpMethod.GET,"/departments/**").authenticated()
                         .requestMatchers("/salary/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
                         // Attendance management: Admin & Manager
                         .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
 
                         .requestMatchers( "/leave/**").authenticated()
+                        .requestMatchers("/salary-history/**").authenticated()
                         .requestMatchers("/empleave/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
 
                         // Default: All other requests need authentication
