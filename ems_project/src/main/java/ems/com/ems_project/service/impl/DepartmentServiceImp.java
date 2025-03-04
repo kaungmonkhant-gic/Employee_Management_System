@@ -24,6 +24,11 @@ public class DepartmentServiceImp implements DepartmentService {
     public List<Departments> getAllDepartments() {
         return departmentsRepository.findAll();
     }
+
+    // Get total count of departments
+    public long getTotalDepartmentsCount() {
+        return departmentsRepository.countTotalDepartments();
+    }
     // Method to generate a new Department ID with a prefix
     public String generateDepartmentId() {
         // Get the last Department ID from the database

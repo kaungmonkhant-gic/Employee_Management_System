@@ -17,5 +17,8 @@ public interface DepartmentsRepository extends JpaRepository<Departments, String
 
     Optional<String> findLastDepartmentId();
     Optional<Departments> findByDepartmentName(String departmentName);
+    // Count total departments
+    @Query("SELECT COUNT(DISTINCT d.id) FROM Departments d")
+    long countTotalDepartments();
 }
 

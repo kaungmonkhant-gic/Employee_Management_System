@@ -4,4 +4,5 @@ import java.util.List;
 
 public interface DepartmentService {
     List<Departments> getAllDepartments();
+    long getTotalDepartmentsCount();
 }

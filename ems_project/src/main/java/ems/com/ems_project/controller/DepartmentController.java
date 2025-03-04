@@ -16,8 +16,12 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<Departments>> getAlDepartments() {
         return ResponseEntity.ok(departmentService.getAllDepartments());
+    }
+    @GetMapping("/count")
+    public long getTotalDepartments() {
+        return departmentService.getTotalDepartmentsCount();
     }
 }

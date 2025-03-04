@@ -33,6 +33,7 @@ public interface EmployeeService extends UserDetailsService {
 
     //get last generated Employee Id
     String generateEmployeeId();
+    long getActiveManagersCount();
 
 
     List<EmployeeDTO> getActiveEmployeesBasedOnRole(String token);

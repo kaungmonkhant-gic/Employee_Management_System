@@ -30,14 +30,6 @@ public class EmployeeController {
     @Autowired
     private JWTUtils jwtutils;
 
-    // Endpoint to get the count of active employees
-    @GetMapping("/active-count")
-    public ResponseEntity<Long> getActiveEmployeeCount(@RequestHeader("Authorization") String token) {
-        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
-        long count = employeeService.getActiveEmployeeCountBasedOnRole(jwtToken);
-        return ResponseEntity.ok(count);
-    }
-
 
     @GetMapping("/active")
     public ResponseEntity<List<EmployeeDTO>> getActiveEmployees(@RequestHeader("Authorization") String authorizationHeader) {
@@ -67,6 +59,19 @@ public class EmployeeController {
         }
         return ResponseEntity.ok(resignedEmployees);
     }
+
+    // Endpoint to get the count of active employees
+    @GetMapping("/active-count")
+    public ResponseEntity<Long> getActiveEmployeeCount(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        long count = employeeService.getActiveEmployeeCountBasedOnRole(jwtToken);
+        return ResponseEntity.ok(count);
+    }
+    @GetMapping("/manager-count")
+    public ResponseEntity<Long> getActiveManagersCount() {
+        long count = employeeService.getActiveManagersCount();
+        return ResponseEntity.ok(count);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
         try {
@@ -93,7 +98,6 @@ public class EmployeeController {
             return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {

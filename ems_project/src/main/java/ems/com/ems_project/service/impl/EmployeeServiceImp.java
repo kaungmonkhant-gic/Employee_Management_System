@@ -142,6 +142,9 @@ public class EmployeeServiceImp implements EmployeeService {
 
         return count;
     }
+    public long getActiveManagersCount() {
+        return employeeRepository.countActiveManagers("ROLE 2");
+    }
 
 
     @Override
