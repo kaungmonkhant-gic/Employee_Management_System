@@ -1,6 +1,10 @@
-//import profileService from "../components/Manager/Service/profileService";
-import profileService from "../../../services/profileService";
+// Code for Leave Request Controller
+import leaveService from "../Service/LeaveRequestService";
+import { getRemainingLeaveDays } from "../Service/LeaveRequestService";
+
+
 const EmpLeaveRequestController = {
+
     fetchLeaveCounts: async (setPending, setApproved, setRejected) => {
         try {
           const data = await leaveService.getLeaveCounts();
@@ -19,6 +23,25 @@ const EmpLeaveRequestController = {
         } catch (error) {
           onError(error);
         }
+      },
+
+      getLeaveBalance: async () => {
+        const data = await leaveService.fetchLeaveBalanceFromAPI();
+        if (!data) return { annualLeave: 0, casualLeave: 0, medicalLeave: 0 };
+        
+        return {
+          annualLeave: data.annualLeave,
+          casualLeave: data.casualLeave,
+          medicalLeave: data.medicalLeave,
+        };
+      },
+
+      fetchRemainingLeaveDays: async (leaveType) => {
+        const leaveBalance = await leaveService.fetchLeaveBalanceFromAPI();
+        if (leaveBalance) {
+          return leaveService.getRemainingLeaveDays(leaveType, leaveBalance);
+        }
+        return 0;
       },
   
 };

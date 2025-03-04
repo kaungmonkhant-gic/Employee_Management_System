@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
+import { getLeaveBalance, fetchRemainingLeaveDays } from "../Employee/Controller/LeaveRequestController";
+import EmpLeaveRequestController from "../Employee/Controller/LeaveRequestController";
 
 const LeaveForm = ({ onLeaveSubmit }) => {
   const [formData, setFormData] = useState({
     leaveType: "",
-    startDate: "mm-dd-yyyy",  // Empty initially
+    startDate: "",  // Empty initially
     endDate: "",
     reason: "",
+  });
+  const [leaveBalance, setLeaveBalance] = useState({
+    annualLeave: 0,
+    casualLeave: 0,
+    medicalLeave: 0,
   });
 
   const [errors, setErrors] = useState({});
@@ -15,27 +22,27 @@ const LeaveForm = ({ onLeaveSubmit }) => {
   const [modalType, setModalType] = useState(""); // For submit or cancel modal
   const [totalLeaveDays, setTotalLeaveDays] = useState(0); // Total leave days
   const [remainingLeaveDays, setRemainingLeaveDays] = useState(0); // Remaining leave days
+  
 
-  // Simulate API call to fetch remaining leave days
-  const fetchRemainingLeaveDays = async (leaveType) => {
-    const response = await new Promise((resolve) => {
-      setTimeout(() => {
-        const leaveBalance = {
-          "Medical Leave": 5,
-          "Casual Leave": 7,
-          "Annual Leave": 15,
-        };
-        resolve(leaveBalance[leaveType] || 0);
-      }, 1000);
-    });
-    setRemainingLeaveDays(response);
-  };
+   // Fetch leave balance when the component mounts
+   useEffect(() => {
+    const fetchBalance = async () => {
+      const balance = await EmpLeaveRequestController.getLeaveBalance();
+      setLeaveBalance(balance);
+    };
+    fetchBalance();
+  }, []);
 
-  useEffect(() => {
-    if (formData.leaveType) {
-      fetchRemainingLeaveDays(formData.leaveType);
-    }
-  }, [formData.leaveType]);
+
+// Fetch remaining leave days when leave type changes
+useEffect(() => {
+  if (formData.leaveType) {
+    EmpLeaveRequestController.fetchRemainingLeaveDays(formData.leaveType)
+      .then(setRemainingLeaveDays)
+      .catch((error) => console.error("Failed to fetch remaining leave days", error));
+  }
+}, [formData.leaveType]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -187,7 +194,7 @@ const LeaveForm = ({ onLeaveSubmit }) => {
                 <input
                   type="text"
                   className="form-control border-0 border-bottom"
-                  value={`You have ${remainingLeaveDays} days left for leave`}
+                  value={`You have days ${remainingLeaveDays ?? 0} left for leave`}
                   readOnly
                 />
               </div>
@@ -222,63 +229,63 @@ const LeaveForm = ({ onLeaveSubmit }) => {
       </div>
 
       {/* Modal for confirmation */}
-      <Modal show={showModal} onHide={handleCancelSubmission} centered style={{ width: 600, height: 500 }}>
-        <Modal.Header closeButton>
-          <Modal.Title>{modalType === "submit" ? "Confirm Leave Submission" : "Are You Sure?"}</Modal.Title>
-        </Modal.Header>
+        <Modal show={showModal} onHide={handleCancelSubmission} centered style={{ width: 600, height: 500 }}>
+          <Modal.Header closeButton>
+            <Modal.Title>{modalType === "submit" ? "Confirm Leave Submission" : "Are You Sure?"}</Modal.Title>
+          </Modal.Header>
 
-        <Modal.Body>
-          {modalType === "submit" ? (
-            <>
-              <p>
-                You are about to submit a leave request for <strong>{formData.leaveType}</strong> from{" "}
-                <strong>{formData.startDate}</strong> to <strong>{formData.endDate}</strong>.
-              </p>
-              <p>
-                You have <strong>{totalLeaveDays}</strong> days of leave. You currently have{" "}
-                <strong>{remainingLeaveDays}</strong> days left. Are you sure you want to submit the leave request?
-              </p>
-            </>
-          ) : (
-            <>
-              <textarea
-                readOnly
-                className="form-control" style={{ height: 95 }}
-                value={`Leave Type: ${formData.leaveType}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}`}
-              />
-            </>
-          )}
-        </Modal.Body>
+          <Modal.Body>
+            {modalType === "submit" ? (
+              <>
+                <p>
+                  You are about to submit a leave request for <strong>{formData.leaveType}</strong> from{" "}
+                  <strong>{formData.startDate}</strong> to <strong>{formData.endDate}</strong>.
+                </p>
+                <p>
+                  You have <strong>{totalLeaveDays}</strong> days of leave. You currently have{" "}
+                  <strong>{remainingLeaveDays}</strong> days left. Are you sure you want to submit the leave request?
+                </p>
+              </>
+            ) : (
+              <>
+                <textarea
+                  readOnly
+                  className="form-control" style={{ height: 95 }}
+                  value={`Leave Type: ${formData.leaveType}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}`}
+                />
+              </>
+            )}
+          </Modal.Body>
 
-        <Modal.Footer>
-          {modalType === "submit" ? (
-            <>
-              <Button variant="danger" onClick={handleConfirmSubmission}>
-                Yes
-              </Button>
-              <Button variant="secondary" onClick={handleCancelSubmission}>
-                No
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="danger"
-                onClick={() => {
-                  setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
-                  setShowModal(false);
-                }}
-                disabled={!formData.leaveType || !formData.startDate || !formData.endDate}
-              >
-                Yes, Cancel
-              </Button>
-              <Button variant="secondary" onClick={handleCancelSubmission}>
-                No, Go Back
-              </Button>
-            </>
-          )}
-        </Modal.Footer>
-      </Modal>
+          <Modal.Footer>
+            {modalType === "submit" ? (
+              <>
+                <Button variant="danger" onClick={handleConfirmSubmission}>
+                  Yes
+                </Button>
+                <Button variant="secondary" onClick={handleCancelSubmission}>
+                  No
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+                    setShowModal(false);
+                  }}
+                  disabled={!formData.leaveType || !formData.startDate || !formData.endDate}
+                >
+                  Yes, Cancel
+                </Button>
+                <Button variant="secondary" onClick={handleCancelSubmission}>
+                  No, Go Back
+                </Button>
+              </>
+            )}
+          </Modal.Footer>
+        </Modal>
     </div>
   );
 };
