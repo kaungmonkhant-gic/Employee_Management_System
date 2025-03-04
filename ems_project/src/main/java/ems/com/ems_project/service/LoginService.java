@@ -17,8 +17,8 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
         @Autowired
         private EmployeeRepository employeeRepository;
 
-        @Autowired
-        private RolesRepository roleRepository; // Add RoleRepository to fetch the role
+//        @Autowired
+//        private RolesRepository roleRepository; // Add RoleRepository to fetch the role
 
         @Autowired
         private PasswordEncoderConfig passwordEncoderConfig;
