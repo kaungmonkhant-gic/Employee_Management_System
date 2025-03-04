@@ -17,6 +17,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	Optional<Employee> findByEmail(String email);
 	Optional<Employee> findById(String Id);
 
+
+
 	// Check if email already exists
 	boolean existsByEmail(String email);
 
@@ -39,6 +41,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	// Fetch active employees (resignDate is null) using JPQL
 	@Query("SELECT e FROM Employee e WHERE e.resignDate IS NULL")
 	List<Employee> findActiveEmployees();
+
+	// Count active employees in a specific department (resignDate is null)
+	@Query("SELECT COUNT(e) FROM Employee e WHERE e.resignDate IS NULL AND e.department.id = :departmentId")
+	long countActiveEmployeesByDepartmentId(@Param("departmentId") String departmentId);
+
+	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId AND e.resignDate IS NULL")
+	List<Employee> findActiveEmployeesByDepartmentId(@Param("departmentId") String departmentId);
+	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId AND e.resignDate IS NOT NULL")
+	List<Employee> findResignedEmployeesByDepartmentId(@Param("departmentId") String departmentId);
+
 
 	// Count resigned employees using JPQL
 	@Query("SELECT COUNT(e) FROM Employee e WHERE e.resignDate IS NOT NULL")

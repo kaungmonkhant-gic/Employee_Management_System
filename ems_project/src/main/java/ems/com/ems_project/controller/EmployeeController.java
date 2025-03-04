@@ -5,6 +5,7 @@ import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.service.EmployeeService;
+import ems.com.ems_project.service.JWTUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 //import javax.validation.Valid;
 
@@ -25,29 +27,46 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private JWTUtils jwtutils;
 
-
-    @GetMapping("/all")
-    public ResponseEntity<ReqRes> getAllEmployees() {
-        ReqRes reqRes = new ReqRes();
-
-        try {
-            List<EmployeeDTO> employeeList = employeeService.getAllEmployees();
-
-            reqRes.setStatusCode(200);
-            reqRes.setMessage("Employees retrieved successfully.");
-            reqRes.setEmployeeList(employeeList);
-
-            return ResponseEntity.ok(reqRes); // Return HTTP 200 with employees list
-
-        } catch (Exception e) {
-            reqRes.setStatusCode(500);
-            reqRes.setMessage("An error occurred while retrieving employees: " + e.getMessage());
-
-            return ResponseEntity.status(500).body(reqRes); // Return HTTP 500 with error message
-        }
+    // Endpoint to get the count of active employees
+    @GetMapping("/active-count")
+    public ResponseEntity<Long> getActiveEmployeeCount(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        long count = employeeService.getActiveEmployeeCountBasedOnRole(jwtToken);
+        return ResponseEntity.ok(count);
     }
 
+
+    @GetMapping("/active")
+    public ResponseEntity<List<EmployeeDTO>> getActiveEmployees(@RequestHeader("Authorization") String authorizationHeader) {
+        // Extract the JWT token from the Authorization header
+        String token = authorizationHeader.replace("Bearer ", "");
+
+        // Call the service method to get active employees based on the role
+        List<EmployeeDTO> activeEmployees = employeeService.getActiveEmployeesBasedOnRole(token);
+
+        // If no active employees are found, return a 404 Not Found
+        if (activeEmployees.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(activeEmployees);
+        }
+
+        // Return the list of active employees with a 200 OK status
+        return ResponseEntity.ok(activeEmployees);
+    }
+
+
+    @GetMapping("/resigned")
+    public ResponseEntity<List<EmployeeDTO>> getResignedEmployees(@RequestHeader("Authorization") String authorizationHeader) {
+        // Extract the JWT token from the Authorization header
+        String token = authorizationHeader.replace("Bearer ", "");
+        List<EmployeeDTO> resignedEmployees = employeeService.getResignedEmployeesBasedOnRole(token);
+        if (resignedEmployees.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resignedEmployees);
+        }
+        return ResponseEntity.ok(resignedEmployees);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
         try {

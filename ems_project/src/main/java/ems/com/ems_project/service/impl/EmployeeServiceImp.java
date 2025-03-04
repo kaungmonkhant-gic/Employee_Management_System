@@ -6,6 +6,7 @@ import ems.com.ems_project.repository.*;
 import ems.com.ems_project.service.EmployeeLeaveService;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import ems.com.ems_project.service.EmployeeService;
+import ems.com.ems_project.service.JWTUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -15,9 +16,7 @@ import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +52,105 @@ public class EmployeeServiceImp implements EmployeeService {
     private EmployeeSalaryService salaryService;
     @Autowired
     private GenerateId generateId;
+
+    @Autowired
+    private JWTUtils jwtutils;
+
+
+    public List<EmployeeDTO> getActiveEmployeesBasedOnRole(String token) {
+        // Extract user details from the token
+        String email = jwtutils.extractUsername(token);
+        String roleName = jwtutils.extractRole(token);
+
+        // Get the employee's details
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Fetch active employees based on role
+        List<Employee> employees;
+        if ("Admin".equals(roleName)) {
+            // Admin: Get all active employees
+            employees = employeeRepository.findActiveEmployees();
+        } else if ("Manager".equals(roleName)) {
+            // Manager: Get active employees from their department
+            String departmentId = employee.getDepartment().getId();
+            employees = employeeRepository.findActiveEmployeesByDepartmentId(departmentId);
+        } else {
+            return Collections.emptyList(); // Other roles don't have access
+        }
+
+        // Exclude logged-in employee from the list
+        employees = employees.stream()
+                .filter(emp -> !emp.getId().equals(employee.getId()))
+                .collect(Collectors.toList());
+
+        // Convert to DTO and return
+        return employees.stream()
+                .map(EmployeeDTO::new)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<EmployeeDTO> getResignedEmployeesBasedOnRole(String token) {
+        // Extract user details from the token
+        String email = jwtutils.extractUsername(token);
+        String roleName = jwtutils.extractRole(token);
+
+        // Get the employee's details
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Fetch resigned employees based on role
+        List<Employee> employees;
+        if ("Admin".equals(roleName)) {
+            // Admin: Get all resigned employees
+            employees = employeeRepository.findResignedEmployees();
+        } else if ("Manager".equals(roleName)) {
+            // Manager: Get resigned employees from their department
+            String departmentId = employee.getDepartment().getId();
+            employees = employeeRepository.findResignedEmployeesByDepartmentId(departmentId);
+        } else {
+            return Collections.emptyList(); // Other roles don't have access
+        }
+
+        // Convert to DTO and return
+        return employees.stream()
+                .map(EmployeeDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public long getActiveEmployeeCountBasedOnRole(String token) {
+        // Extract user details from the token
+        String email = jwtutils.extractUsername(token);
+        String roleName = jwtutils.extractRole(token);
+
+        // Get the employee's details
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        long count;
+        if ("Admin".equals(roleName)) {
+            // Admin: Get count of all active employees
+            count = employeeRepository.countActiveEmployees();
+        } else if ("Manager".equals(roleName)) {
+            // Manager: Get count of active employees from the same department
+            String departmentId = employee.getDepartment().getId();
+            count = employeeRepository.countActiveEmployeesByDepartmentId(departmentId);
+        } else {
+            return 0; // Other roles don't have access
+        }
+
+        return count;
+    }
+
+
+    @Override
+    public EmployeeDTO getEmployeeById(String employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        return new EmployeeDTO(employee);
+    }
 
     @Override
     public ReqRes getProfile(String email) {
@@ -102,25 +200,8 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
 
-    // Fetch List of Resigned Employees (resignDate is not null)
-    public List<EmployeeDTO> getResignedEmployees() {
-        List<Employee> resignedEmployees = employeeRepository.findResignedEmployees();
 
-        // Convert to EmployeeDTOs
-        return resignedEmployees.stream()
-                .map(EmployeeDTO::new)
-                .collect(Collectors.toList());
-    }
 
-    // Fetch List of Active Employees (resignDate is null)
-    public List<EmployeeDTO> getActiveEmployees() {
-        List<Employee> activeEmployees = employeeRepository.findActiveEmployees();
-
-        // Convert to EmployeeDTOs
-        return activeEmployees.stream()
-                .map(EmployeeDTO::new)
-                .collect(Collectors.toList());
-    }
 
     // Get Count of Active Employees (resignDate is null)
     public long getActiveEmployeeCount() {
@@ -131,23 +212,7 @@ public class EmployeeServiceImp implements EmployeeService {
     public long getResignedEmployeeCount() {
         return employeeRepository.countResignedEmployees();
     }
-    @Override
-    public List<EmployeeDTO> getAllEmployees() {
-        return employeeRepository.findAll().stream()
-                .map(employee -> {
-                    // Convert to DTO
-                    return new EmployeeDTO(employee);
-                })
-                .collect(Collectors.toList());
-    }
 
-    @Override
-    public EmployeeDTO getEmployeeById(String employeeId) {
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        return new EmployeeDTO(employee);
-    }
     @Override
     public ReqRes updateProfile(String loggedInUserId, EmployeeProfile updatedProfile) {
         ReqRes reqRes = new ReqRes();

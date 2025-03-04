@@ -7,15 +7,15 @@ import ems.com.ems_project.dto.ReqRes;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EmployeeService extends UserDetailsService {
 
-    List<EmployeeDTO> getResignedEmployees();
-    List<EmployeeDTO> getActiveEmployees();
-    long getActiveEmployeeCount();
-    long getResignedEmployeeCount();
 
-    List<EmployeeDTO> getAllEmployees();
+    long getActiveEmployeeCountBasedOnRole(String token);
+
+
+//    List<EmployeeDTO> getAllEmployees();
 
     EmployeeDTO getEmployeeById(String Id);
 
@@ -33,5 +33,9 @@ public interface EmployeeService extends UserDetailsService {
 
     //get last generated Employee Id
     String generateEmployeeId();
+
+
+    List<EmployeeDTO> getActiveEmployeesBasedOnRole(String token);
+    List<EmployeeDTO> getResignedEmployeesBasedOnRole(String token);
 }
 
