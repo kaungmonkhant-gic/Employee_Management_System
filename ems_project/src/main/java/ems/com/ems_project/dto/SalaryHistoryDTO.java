@@ -1,54 +1,46 @@
-package ems.com.ems_project.model;
+package ems.com.ems_project.dto;
+
+import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.SalaryHistory;
+import lombok.Data;
 
 import java.util.Date;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@Entity
-@Table(name = "salary_history")
 @Data
-public class SalaryHistory {
+public class SalaryHistoryDTO {
 
-    @Id
-    @Column(length = 10, nullable = false, unique = true)
     private String id;
-
-    @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;
-
-    @Column(name = "house_allowance")
     private Double houseAllowance;
-
-    @Column(name = "ot_fee")
     private Double otFee;
-
-    @Column(name = "late_over")
     private Double lateOver;
-
-    @Column(name = "leave_over")
     private Double leaveOver;
-
-    @Column(name = "manual_adjustment")
     private Double manualAdjustment;
-
-    @Column(name = "bonus")
     private Double bonus;
-
-    @Column(name = "date", nullable = false)
     private Date date;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;  // Foreign Key to Employee
+    private String employeeName; // Optional to display employee name in DTO
+    private String managerName;  // Optional to display manager name in DTO
 
-    @ManyToOne
-    @JoinColumn(name = "paid_by", nullable = false)
-    private Employee manager;
+
+    // Constructor to map SalaryHistory entity to SalaryHistoryDTO
+    public SalaryHistoryDTO(SalaryHistory salaryHistory, Employee employee, Employee manager) {
+        if (salaryHistory != null) {
+            this.id = salaryHistory.getId();
+            this.basicSalary = salaryHistory.getBasicSalary();
+            this.houseAllowance = salaryHistory.getHouseAllowance();
+            this.otFee = salaryHistory.getOtFee();
+            this.lateOver = salaryHistory.getLateOver();
+            this.leaveOver = salaryHistory.getLeaveOver();
+            this.manualAdjustment = salaryHistory.getManualAdjustment();
+            this.bonus = salaryHistory.getBonus();
+            this.date = salaryHistory.getDate();
+        }
+            // Optional, assuming Employee and Manager have getName method
+            // Extract employee name and manager name if available
+            this.employeeName = (employee != null) ? employee.getName() : null;
+            this.managerName = (manager != null) ? manager.getName() : null;
+    }
 
     public String getId() {
         return id;
@@ -122,19 +114,22 @@ public class SalaryHistory {
         this.date = date;
     }
 
-    public Employee getEmployee() {
-        return employee;
+    public String getEmployeeName() {
+        return employeeName;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
-    public Employee getManager() {
-        return manager;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setManager(Employee manager) {
-        this.manager = manager;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
+
+
 }
+

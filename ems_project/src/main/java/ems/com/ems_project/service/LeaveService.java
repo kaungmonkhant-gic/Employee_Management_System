@@ -1,6 +1,7 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.LeaveDTO;
+import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.RequestStatus;
@@ -13,10 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +32,22 @@ public class LeaveService {
         return leaveRepository.findAll().stream()
                 .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))  // Pass Employee and Manager to DTO constructor
                 .collect(Collectors.toList()); // Collect the list of DTOs
+    }
+
+
+    public List<LeaveDTO> getLeaveRecordsForLoggedInUser() {
+        // Find the logged-in employee using the authenticated email
+        String loggedInUsername = getLoggedInUsername();
+        Employee employee = employeeRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
+
+        // Fetch only OT records related to the logged-in user
+        List<Leave> leaveRecords = leaveRepository.findByEmployeeId(employee.getId());
+
+        // Convert to DTO format
+        return leaveRecords.stream()
+                .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))  // Convert OT entity to DTO
+                .collect(Collectors.toList());
     }
     public List<LeaveDTO> getLeaveByEmployeeId(String employeeId) {
         if (!employeeRepository.existsById(employeeId)) {
@@ -132,18 +146,53 @@ public class LeaveService {
         // Convert results to a map
         Map<String, Long> statusCountMap = results.stream()
                 .collect(Collectors.toMap(
-                        row -> (String) row[0],   // Status
-                        row -> ((Number) row[1]).longValue()  // Count
+                        row -> ((RequestStatus) row[0]).name(),  // Convert Enum to String
+                        row -> ((Number) row[1]).longValue()     // Convert count properly
                 ));
 
-        // Ensure all possible statuses exist in the map
-        List<String> allStatuses = Arrays.asList("APPROVED", "PENDING", "REJECTED");
-        for (String status : allStatuses) {
-            statusCountMap.putIfAbsent(status, 0L);
+        // Dynamically get all possible statuses from the RequestStatus enum
+        for (RequestStatus status : RequestStatus.values()) {
+            statusCountMap.putIfAbsent(status.name(), 0L);
         }
 
         return statusCountMap;
     }
+
+
+    public Map<String, Long> getLeaveStatusCountByRole() {
+        // Get logged-in user from the security context
+        Employee employee = employeeRepository.findByEmail(
+                        SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+
+        List<Object[]> results;
+
+        if (employee.getRoleName().equals("Admin")) {
+            // Admin: Fetch status count for all employees
+            results = leaveRepository.getStatusCountForAllEmployees();
+        } else if (employee.getRoleName().equals("Manager")) {
+            // Manager: Fetch status count for employees they manage
+            results = leaveRepository.getStatusCountByManagerId(employee.getId());
+        } else {
+            // If the role is not Admin or Manager, you could either throw an exception or return an empty map
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
+        }
+
+        // Convert results to a map
+        Map<String, Long> statusCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        row -> ((RequestStatus) row[0]).name(),  // Convert Enum to String
+                        row -> ((Number) row[1]).longValue()     // Convert count properly
+                ));
+
+        // Ensure all statuses are included with a count of 0 if missing
+        for (RequestStatus status : RequestStatus.values()) {
+            statusCountMap.putIfAbsent(status.name(), 0L);
+        }
+
+        return statusCountMap;
+    }
+
 
 
     // Helper method to get logged-in username (email) from JWT

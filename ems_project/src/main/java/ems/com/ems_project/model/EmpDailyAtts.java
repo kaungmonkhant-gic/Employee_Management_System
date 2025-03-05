@@ -40,6 +40,9 @@ public class EmpDailyAtts {
     @Column(name = "is_leave")
     private Boolean isLeave;
 
+    @Column(name = "is_Ot")
+    private Boolean isOT;
+
 
     @Column(name = "leave_early")
     private Boolean leaveEarly;
@@ -144,5 +147,13 @@ public class EmpDailyAtts {
 
     public void setLeave(Leave leave) {
         this.leave = leave;
+    }
+
+    public Boolean getOT() {
+        return isOT;
+    }
+
+    public void setOT(Boolean OT) {
+        isOT = OT;
     }
 }

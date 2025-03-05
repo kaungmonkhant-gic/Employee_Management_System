@@ -43,21 +43,6 @@ public class EmployeeLeaveService {
         return new EmployeeLeaveDTO(employeeLeave, employeeName);
     }
 
-
-
-    public String generateEmployeeLeaveId() {
-        // Get the last Leave ID from the database
-        Optional<String> lastLeaveIdOptional = employeeLeaveRepository.findLastLeaveId();
-
-        String lastLeaveId = lastLeaveIdOptional.orElse(null); // If no ID exists, use null
-
-        // Define the prefix for the Leave ID
-        String prefix = "EMPLEA"; // You can adjust this prefix as needed
-
-        // Generate the new Leave ID using the GenerateId class and the prefix
-        return generateId.generateId(lastLeaveId, prefix);
-    }
-
     public void createEmployeeLeave(Employee savedEmployee, RegisterDTO registerDTO) {
         EmployeeLeave employeeLeave = new EmployeeLeave();
 
@@ -75,5 +60,17 @@ public class EmployeeLeaveService {
         employeeLeave.setTotal(totalLeave);
 
         employeeLeaveRepository.save(employeeLeave);
+    }
+    public String generateEmployeeLeaveId() {
+        // Get the last Leave ID from the database
+        Optional<String> lastLeaveIdOptional = employeeLeaveRepository.findLastLeaveId();
+
+        String lastLeaveId = lastLeaveIdOptional.orElse(null); // If no ID exists, use null
+
+        // Define the prefix for the Leave ID
+        String prefix = "EMPLEA"; // You can adjust this prefix as needed
+
+        // Generate the new Leave ID using the GenerateId class and the prefix
+        return generateId.generateId(lastLeaveId, prefix);
     }
 }

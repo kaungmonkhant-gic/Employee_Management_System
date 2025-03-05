@@ -27,6 +27,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
 	// Check if NRC already exists
 	boolean existsByNrc(String nrc);
+	boolean existsByManagerId(String managerId);
+
 
 	@Query(value = "SELECT id FROM employees ORDER BY id DESC LIMIT 1", nativeQuery = true)
 	Optional<String> findLastEmployeeId();
@@ -59,6 +61,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	// Count resigned employees using JPQL
 	@Query("SELECT COUNT(e) FROM Employee e WHERE e.resignDate IS NULL")
 	long countActiveEmployees();
+	@Query("SELECT COUNT(e) FROM Employee e WHERE e.role.id = :roleId AND e.resignDate IS NULL")
+	long countActiveManagers(@Param("roleId") String roleId);
 
 }
 

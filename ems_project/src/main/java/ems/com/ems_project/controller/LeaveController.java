@@ -1,6 +1,7 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.LeaveDTO;
+import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,11 @@ public class LeaveController {
     @GetMapping("/all")
     public List<LeaveDTO> getAllLeave() {
         return leaveService.getAllLeave();
+    }
+
+    @GetMapping("/self")
+    public ResponseEntity<List<LeaveDTO>> getLoggedInUserLeaveRecords() {
+        return ResponseEntity.ok(leaveService.getLeaveRecordsForLoggedInUser());
     }
 
     @GetMapping("/{employeeId}")
@@ -44,6 +50,11 @@ public class LeaveController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+    // Get leave status count based on role (Admin/Manager)
+    @GetMapping("/role")
+    public Map<String, Long> getLeaveStatusForRoleBased() {
+        return leaveService.getLeaveStatusCountByRole();
     }
 
     @GetMapping("/status-count")

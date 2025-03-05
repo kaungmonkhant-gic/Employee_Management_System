@@ -33,7 +33,6 @@ public class Employee implements UserDetails {
     private String name;
 
     @Column(name = "dob")
-    @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date dob;
 
