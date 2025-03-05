@@ -12,7 +12,7 @@ public class EmployeeDTO {
     private String id;
     private String name;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date dob;
     private String password;
     private String nrc;
