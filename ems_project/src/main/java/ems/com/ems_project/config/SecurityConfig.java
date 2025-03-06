@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/employee/profile/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
 
                         // Employee management: Admin (CRUD), Manager (View)
-                        .requestMatchers(HttpMethod.GET, "/employee/all", "/employee/{id}").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
+                        .requestMatchers(HttpMethod.GET, "/employee/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
                         .requestMatchers(HttpMethod.POST, "/employee/register").hasAuthority("ROLE_Admin")
                         .requestMatchers(HttpMethod.PUT, "/employee/update/**").hasAuthority("ROLE_Admin")
                         .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")

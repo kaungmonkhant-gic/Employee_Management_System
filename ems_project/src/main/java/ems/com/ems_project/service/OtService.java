@@ -36,6 +36,22 @@ public class OtService {
                 .collect(Collectors.toList()); // Collect the list of DTOs
     }
 
+    public List<OtDTO> getOtRecordsForLoggedInUser() {
+        // Find the logged-in employee using the authenticated email
+        String loggedInUsername = getLoggedInUsername();
+        Employee employee = employeeRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
+
+        // Fetch only OT records related to the logged-in user
+        List<Ots> otRecords = otRepository.findByEmployeeId(employee.getId());
+
+        // Convert to DTO format
+        return otRecords.stream()
+                .map(ot -> new OtDTO(ot, ot.getEmployee(), ot.getManager()))  // Convert OT entity to DTO
+                .collect(Collectors.toList());
+    }
+
+
     public OtDTO submitOTRequest(OtDTO requestDTO) {
 
         //  Get the logged-in username (email) from JWT token

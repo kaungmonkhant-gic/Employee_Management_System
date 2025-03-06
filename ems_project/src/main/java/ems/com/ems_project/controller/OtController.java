@@ -23,6 +23,12 @@ public class OtController {
         return otService.getAllOt();
     }
 
+    @GetMapping("/self")
+    public ResponseEntity<List<OtDTO>> getLoggedInUserOtRecords() {
+        return ResponseEntity.ok(otService.getOtRecordsForLoggedInUser());
+    }
+
+
     @GetMapping("/{employeeId}")
     public ResponseEntity<List<OtDTO>> getOTByEmployeeId(@PathVariable String employeeId) {
         List<OtDTO> otDTO = otService.getOTByEmployeeId(employeeId);

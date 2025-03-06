@@ -37,8 +37,6 @@ public class EmployeeProfile {
     private String departmentName;
     // Getters and Setters for all fields
 
-
-
 	public String getId() {
 		return Id;
 	}
