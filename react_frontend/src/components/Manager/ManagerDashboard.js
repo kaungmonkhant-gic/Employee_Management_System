@@ -29,35 +29,62 @@ function ManagerDashboard() {
           <Link to="/manager-dashboard" className="nav-link text-light">
             Dashboard
           </Link>
+
+          <div className="nav-link text-light" 
+                        onClick={() => setShowSubMenu(!showSubMenu)} 
+                        style={{ cursor: "pointer" }}>
+                        Employee
+                             <i
+                              className={`bi ms-2 ${
+                                showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+                              }`}
+                              style={{ color: "white" }}
+                            />
+                   </div>
+          
+                    {/* Dropdown Submenu */}
+                    {showSubMenu && (
+                      <div className="ms-3">
+                        <Link to="/manager-dashboard/employee-list" className="nav-link text-dark">
+                          Employee List
+                        </Link>
+                        <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">
+                          Employee Leave
+                        </Link>
+                        <Link to="/manager-dashboard/salary" className="nav-link text-light">
+                          Salary
+                        </Link>
+                      </div>
+                    )}
+
+                    <div className="nav-link text-light" 
+                                onClick={() => setShowSubMenu(!showSubMenu)} 
+                                style={{ cursor: "pointer" }}
+                              >
+                                Attendance
+                                <i
+                                  className={`bi ms-2 ${
+                                    showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+                                  }`}
+                                  style={{ color: "white" }}
+                                />
+                              </div>
+                    
+                              {/* Dropdown Submenu */}
+                              {showSubMenu && (
+                                <div className="ms-3">
+                                  <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-dark">
+                                    Daily Attendance
+                                  </Link>
+                                  <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-dark">
+                                    Attendance Record
+                                  </Link>
+                                </div>
+                              )}
+                      
+                      
           
 
-<div className="nav-link text-light" 
-        onClick={() => setShowSubMenu(!showSubMenu)} 
-        style={{ cursor: "pointer" }}
-      >
-        Overtime
-        <i
-          className={`bi ms-2 ${
-            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-          }`}
-          style={{ color: "white" }}
-        />
-      </div>
-
-      {/* Dropdown Submenu */}
-      {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
-            Pending Requests
-          </Link>
-          {/* <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
-            Overtime History
-          </Link> */}
-          <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">
-            Confirmed Requests
-          </Link>
-        </div>
-      )}
       
           
           {/* <div className="nav-link text-light" 
@@ -88,6 +115,35 @@ function ManagerDashboard() {
       <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">
            leave
           </Link>
+
+          
+<div className="nav-link text-light" 
+        onClick={() => setShowSubMenu(!showSubMenu)} 
+        style={{ cursor: "pointer" }}
+      >
+        Overtime
+        <i
+          className={`bi ms-2 ${
+            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+          }`}
+          style={{ color: "white" }}
+        />
+      </div>
+
+      {/* Dropdown Submenu */}
+      {showSubMenu && (
+        <div className="ms-3">
+          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
+            Pending Requests
+          </Link>
+          {/* <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
+            Overtime History
+          </Link> */}
+          <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">
+            Confirmed Requests
+          </Link>
+        </div>
+      )}
           {/* <div className="nav-link text-light" 
         onClick={() => setShowSubMenu(!showSubMenu)} 
         style={{ cursor: "pointer" }}
