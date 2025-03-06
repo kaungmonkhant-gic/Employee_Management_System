@@ -13,10 +13,11 @@ function Employee() {
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
   const [headerText, setHeaderText] = useState("Register New Employee");
   const [showActive, setShowActive] = useState(true); // State for toggling tables
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
+        setLoading(true); // Start loading
         const activeData = await employeeController.fetchActiveUsers();
         const resignedData = await employeeController.fetchResignedUsers();
   
@@ -37,6 +38,8 @@ function Employee() {
         }
       } catch (error) {
         console.error("Error fetching employees:", error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
   
@@ -149,37 +152,41 @@ function Employee() {
             <button className="btn btn-outline-secondary mb-3" onClick={() => setShowActive(false)}>
               Show Resigned Employees
             </button>
-          </div>
-
+          </div>          
           {/* Show Active Employees */}
-          {showActive && (
-            <DataTable
-              fetchData={() => activeEmployees}
-              columns={columns}
-              keyField="number"
-              responsive
-              fixedHeader
-              fixedHeaderScrollHeight="400px"
-              noDataComponent="No active employees found"
-              highlightOnHover
-              pagination
-            />
-          )}
-
-          {/* Show Resigned Employees */}
-          {!showActive && (
-            <DataTable
-              fetchData={() => resignedEmployees}
-              columns={columns}
-              keyField="number"
-              responsive
-              fixedHeader
-              fixedHeaderScrollHeight="400px"
-              noDataComponent="No resigned employees found"
-              highlightOnHover
-              pagination
-            />
-          )}
+          {showActive ? (
+  loading ? ( // Show loading message while fetching data
+    <p className="text-center">Loading active employees...</p>
+  ) : (
+    <DataTable
+      fetchData={() => activeEmployees} // Pass active employees
+      columns={columns}
+      keyField="number"
+      responsive
+      fixedHeader
+      fixedHeaderScrollHeight="400px"
+      noDataComponent="No active employees found"
+      highlightOnHover
+      pagination
+    />
+  )
+) : (
+  loading ? ( // Show loading message while fetching resigned employees
+    <p className="text-center">Loading resigned employees...</p>
+  ) : (
+    <DataTable
+      fetchData={() => resignedEmployees} // Pass resigned employees
+      columns={columns}
+      keyField="number"
+      responsive
+      fixedHeader
+      fixedHeaderScrollHeight="400px"
+      noDataComponent="No resigned employees found"
+      highlightOnHover
+      pagination
+    />
+  )
+)}
         </>
       ) : (
         <EmployeeForm onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} headerText={headerText} />
