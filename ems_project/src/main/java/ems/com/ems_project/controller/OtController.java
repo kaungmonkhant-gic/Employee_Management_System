@@ -1,6 +1,5 @@
 package ems.com.ems_project.controller;
 
-import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.service.OtService;
 import org.springframework.beans.factory.annotation.Autowired;

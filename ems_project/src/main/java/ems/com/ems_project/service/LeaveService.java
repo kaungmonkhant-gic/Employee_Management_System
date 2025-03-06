@@ -30,12 +30,6 @@ public class LeaveService {
     @Autowired
     private JWTUtils jwtutils;
 
-//    // Method to get all Leave records with employee and manager
-//    public List<LeaveDTO> getAllLeave() {
-//        return leaveRepository.findAll().stream()
-//                .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))  // Pass Employee and Manager to DTO constructor
-//                .collect(Collectors.toList()); // Collect the list of DTOs
-//    }
 
     public List<LeaveDTO> getLeavesRecordRoleBased(String token) {
         // Extract user details from the token
@@ -104,8 +98,14 @@ public class LeaveService {
         Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        // Assign the employee's manager (if they have one)
-        Employee manager = employee.getManager();
+        System.out.println("Employee Role: " + employee.getRole());
+
+
+        // Assign the employee's manager (if they have one). Manager will be null for managers.
+        Employee manager = null;
+        if (!"Manager".equals(employee.getRole().getRoleName())) {
+            manager = employee.getManager();  // Get the manager if the employee is not a manager
+        }
 
         String leaveId = generateLeaveId();  // This will generate the new OT ID
 
@@ -120,6 +120,12 @@ public class LeaveService {
         leave.setReason(requestDTO.getReason());
         leave.setStatus(requestDTO.getStatus());
         leave.setLeaveType(requestDTO.getLeaveType());
+// Automatically set the leave status to Approved if the employee is a manager
+        if ("Manager".equals(employee.getRole().getRoleName())) {
+            leave.setStatus(RequestStatus.APPROVED);  // Approve the leave if the employee is a manager
+        } else {
+            leave.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
+        }
         // Save OT object to the repository
         Leave savedLeave = leaveRepository.save(leave);
 

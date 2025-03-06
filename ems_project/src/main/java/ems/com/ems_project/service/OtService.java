@@ -85,8 +85,12 @@ public class OtService {
         Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
 
-        // Assign the employee's manager (if they have one)
-        Employee manager = employee.getManager();
+
+        // Assign the employee's manager (if they have one). Manager will be null for managers.
+        Employee manager = null;
+        if (!"Manager".equals(employee.getRole().getRoleName())) {
+            manager = employee.getManager();  // Get the manager if the employee is not a manager
+        }
 
         // Generate OT ID
         String otId = generateOtId();
@@ -102,6 +106,12 @@ public class OtService {
         ot.setOtTime(requestDTO.getOtTime());
         ot.setReason(requestDTO.getReason());
         ot.setStatus(requestDTO.getOtStatus());
+
+        if ("Manager".equals(employee.getRole().getRoleName())) {
+            ot.setStatus(RequestStatus.APPROVED);  // Approve the leave if the employee is a manager
+        } else {
+            ot.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
+        }
         // Save OT object to the repository
         Ots savedOt = otRepository.save(ot);
 
