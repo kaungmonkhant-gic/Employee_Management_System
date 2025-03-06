@@ -49,11 +49,11 @@ function AdminDashboard() {
     ],
   };
 
-  const [counts, setCounts] = useState({
-    totalEmployees: 0,
-    totalDepartments: 0,
-    totalManagers: 0,
-  });
+  // const [counts, setCounts] = useState({
+  //   totalEmployees: 0,
+  //   totalDepartments: 0,
+  //   totalManagers: 0,
+  // });
 
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [totalDepartments, setTotalDepartments] = useState(0);
@@ -64,17 +64,26 @@ function AdminDashboard() {
         const employees = await employeeController.fetchEmployeeCount();
         const departments = await employeeController.fetchDepartmentCount();
         const managers = await employeeController.fetchManagerCount();
-
-        setTotalEmployees(employees);
-        setTotalDepartments(departments);
-        setTotalManagers(managers);
+  
+        // Log the raw responses to verify they're just numbers
+        console.log("Employees:", employees);
+        console.log("Departments:", departments);
+        console.log("Managers:", managers);
+  
+        // Directly set the values since the response is just a number
+        setTotalEmployees(employees || 0);
+        setTotalDepartments(departments || 0);  // Just the number
+        setTotalManagers(managers || 0);        // Just the number
       } catch (error) {
         console.error("Failed to fetch counts:", error);
       }
     };
-
+  
     loadCounts();
   }, []);
+  
+  
+  
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh" }}>
@@ -150,25 +159,27 @@ function AdminDashboard() {
             {/* Admin Stats Section */}
             
             <div className="row my-4">
-      <div className="col-md-4">
-        <div className="card shadow-sm p-3 text-center">
-          <h5>👥 Total Employees</h5>
-          <h3>{totalEmployees}</h3>
-        </div>
-      </div>
-      <div className="col-md-4">
-        <div className="card shadow-sm p-3 text-center">
-          <h5>🏢 Total Departments</h5>
-          <h3>{totalDepartments}</h3>
-        </div>
-      </div>
-      <div className="col-md-4">
-        <div className="card shadow-sm p-3 text-center">
-          <h5>👨‍💼 Total Managers</h5>
-          <h3>{totalManagers}</h3>
-        </div>
-      </div>
+            
+  <div className="col-md-4">
+    <div className="card shadow-sm p-3 text-center">
+      <h5>👥 Total Employees</h5>
+      <h3>{totalEmployees !== undefined ? totalEmployees : "Loading..."}</h3>
     </div>
+  </div>
+  <div className="col-md-4">
+    <div className="card shadow-sm p-3 text-center">
+      <h5>🏢 Total Departments</h5>
+      <h3>{totalDepartments !== undefined ? totalDepartments : "Loading..."}</h3>
+    </div>
+  </div>
+  <div className="col-md-4">
+    <div className="card shadow-sm p-3 text-center">
+      <h5>👨‍💼 Total Managers</h5>
+      <h3>{totalManagers !== undefined ? totalManagers : "Loading..."}</h3>
+    </div>
+  </div>
+</div>
+
             {/* Attendance Summary (Chart) */}
             <div className="row my-4">
               <div className="col-md-6">

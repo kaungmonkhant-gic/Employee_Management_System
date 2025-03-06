@@ -106,30 +106,38 @@ const employeeController = {
   // Fetch employee, department, and manager counts
   fetchEmployeeCount: async (token) => {
     try {
-      return await employeeService.fetchEmployeeCount(token);
+      const data = await employeeService.fetchEmployeeCount(token); // Fetch employee count
+      console.log("Fetched employee count:", data); // Log the data to inspect
+      return data; // Return the fetched data
     } catch (error) {
       console.error("Failed to fetch active employee count:", error);
       return 0;
     }
   },
-  fetchDepartmentCount: async () => {
+  
+  fetchDepartmentCount: async (token) => {
     try {
-      const data = await employeeService.fetchDepartmentCount();
-      return data.totalDepartments; // Extract the number directly
+      const data = await employeeService.fetchDepartmentCount(token); // Fetch department count
+      console.log("Fetched department count:", data); // Log the data to inspect
+      return data; // Extract the totalDepartments value
     } catch (error) {
       console.error("Failed to fetch department count:", error);
       return 0;
     }
   },
-  fetchManagerCount: async () => {
+  
+  fetchManagerCount: async (token) => {
     try {
-      const data = await employeeService.fetchManagerCount();
-      return data.totalManagers; // Extract the number directly
+      const data = await employeeService.fetchManagerCount(token); // Fetch manager count
+      console.log("Fetched manager count:", data); // Log the data to inspect
+      return data; // Extract the totalManagers value
     } catch (error) {
       console.error("Failed to fetch manager count:", error);
       return 0;
     }
   },
+  
+  
  
 };
 
