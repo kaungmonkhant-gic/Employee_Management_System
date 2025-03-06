@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
 import { getLeaveBalance, fetchRemainingLeaveDays } from "../Employee/Controller/LeaveRequestController";
 import EmpLeaveRequestController from "../Employee/Controller/LeaveRequestController";
+import EmpLeaveService from "../Employee/Service/LeaveRequestService";
 
 const LeaveForm = ({ onLeaveSubmit }) => {
   const [formData, setFormData] = useState({
@@ -67,7 +68,7 @@ useEffect(() => {
     }
   }, [formData.startDate, formData.endDate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let validationErrors = {};
     const today = new Date().toISOString().split("T")[0]; // Get today's date in yyyy-mm-dd format
@@ -94,26 +95,46 @@ useEffect(() => {
     // Show confirmation modal before submission
     setModalType("submit");
     setShowModal(true);
+
   };
 
   const handleCancel = () => {
     setModalType("cancel");
+    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
     setShowModal(true);
   };
 
-  const handleConfirmSubmission = () => {
-    console.log("Leave request submitted:", formData);
-    onLeaveSubmit(); // Notify parent component if needed
-
-    // Reset form
-    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
-    setErrors({});
-    setShowModal(false);
+  const handleConfirmSubmission = async () => {
+    const leaveRequestData = {
+      leaveType: formData.leaveType,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      totalDays: totalLeaveDays,
+      reason: formData.reason,
+    };
+  
+    try {
+      const response = await EmpLeaveService.applyForLeave(leaveRequestData);
+      console.log("Leave request submitted successfully:", response);
+  
+      // Optionally show a success message to the user
+      // alert("Leave request submitted successfully!");
+  
+      // Reset form after successful submission
+      setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+      setErrors({});
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error submitting leave request:", error);
+  
+      // Show error message to user
+      // alert("Failed to submit leave request. Please try again.");
+    }
   };
 
   const handleCancelSubmission = () => {
-    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
-    setErrors({});
+    // setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+    // setErrors({});
     setShowModal(false);
   };
 
@@ -217,7 +238,7 @@ useEffect(() => {
 
             {/* Submit and Cancel buttons */}
             <div className="d-flex justify-content-end mt-4">
-              <button type="submit" className="btn" style={{ backgroundColor: "#001F3F", color: "white", marginRight: "10px" }}>
+              <button type="submit" className="btn" style={{ backgroundColor: "#001F3F", color: "white", marginRight: "10px" }} onClick={handleSubmit}>
                 Submit
               </button>
               <button type="button" className="btn btn-secondary" onClick={handleCancel}>
@@ -277,10 +298,10 @@ useEffect(() => {
                   }}
                   disabled={!formData.leaveType || !formData.startDate || !formData.endDate}
                 >
-                  Yes, Cancel
+                  Yes
                 </Button>
                 <Button variant="secondary" onClick={handleCancelSubmission}>
-                  No, Go Back
+                  No
                 </Button>
               </>
             )}
