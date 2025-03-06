@@ -35,7 +35,6 @@ public class LeaveService {
     @Autowired
     private JWTUtils jwtutils;
 
-
     public List<LeaveDTO> getLeavesRecordRoleBased(String token) {
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);

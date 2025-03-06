@@ -23,6 +23,7 @@ public class OtService {
 
     @Autowired
     private OtRepository otRepository;
+
     @Autowired
     private GenerateId generateId;
     @Autowired

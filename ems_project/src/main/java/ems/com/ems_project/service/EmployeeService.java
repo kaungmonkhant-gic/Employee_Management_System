@@ -7,7 +7,6 @@ import ems.com.ems_project.dto.ReqRes;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
-import java.util.Map;
 
 public interface EmployeeService extends UserDetailsService {
 

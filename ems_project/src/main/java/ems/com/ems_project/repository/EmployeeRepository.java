@@ -18,7 +18,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	Optional<Employee> findById(String Id);
 
 
-
 	// Check if email already exists
 	boolean existsByEmail(String email);
 

@@ -56,7 +56,6 @@ public class EmployeeServiceImp implements EmployeeService {
     @Autowired
     private JWTUtils jwtutils;
 
-
     public List<EmployeeDTO> getActiveEmployeesBasedOnRole(String token) {
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);

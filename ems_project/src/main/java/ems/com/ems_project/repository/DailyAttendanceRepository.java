@@ -13,10 +13,9 @@ import java.util.Optional;
 @Repository
 public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, Integer> {
     List<EmpDailyAtts> findAll();
-
     List<EmpDailyAtts> findByEmployeeId(String employeeId);
-
     EmpDailyAtts findByEmployeeAndDate(Employee employee, Date date);
+
    @Query(value = "SELECT id FROM emp_daily_atts ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastAttendanceId();
 

@@ -67,7 +67,6 @@ public class Employee implements UserDetails {
     @Column(name = "join_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
-
     @Column(name = "resign_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date resignDate;

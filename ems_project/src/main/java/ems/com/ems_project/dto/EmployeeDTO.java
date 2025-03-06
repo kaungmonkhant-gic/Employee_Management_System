@@ -31,7 +31,6 @@ public class EmployeeDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date resignDate;
     private String managerName;
-
     private String roleName;
     private String positionName;
     private String departmentName;

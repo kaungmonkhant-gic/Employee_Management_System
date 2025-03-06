@@ -71,7 +71,6 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
         return salaryRepository.save(employeeSalary);
     }
 
-
     @Override
     public String generateEmployeeSalaryId() {
         // Get the last Employee Salary ID from the correct repository

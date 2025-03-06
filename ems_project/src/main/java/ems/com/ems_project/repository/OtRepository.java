@@ -25,6 +25,7 @@ public interface OtRepository extends JpaRepository<Ots, String> {
     @Query("SELECT ot.status, COUNT(ot) FROM Ots ot WHERE ot.employee.manager.id = :managerId GROUP BY ot.status")
     List<Object[]> getStatusCountByManagerId(@Param("managerId") String managerId);
 
+
     List<Ots> findByManagerId(String id);
 
 }

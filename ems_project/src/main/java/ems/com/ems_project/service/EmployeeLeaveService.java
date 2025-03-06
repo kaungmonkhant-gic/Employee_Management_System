@@ -1,7 +1,6 @@
 package ems.com.ems_project.service;
 
 import ems.com.ems_project.common.GenerateId;
-import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeLeaveDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
