@@ -27,7 +27,7 @@ function ManagerDashboard() {
         <nav className="nav flex-column">
 
           <Link to="/manager-dashboard" className="nav-link text-light">
-            Dashboard
+          🏠 Dashboard
           </Link>
 
           <div className="nav-link text-light" 
@@ -61,7 +61,7 @@ function ManagerDashboard() {
                                 onClick={() => setShowSubMenu(!showSubMenu)} 
                                 style={{ cursor: "pointer" }}
                               >
-                                Attendance
+                                📝 Attendance
                                 <i
                                   className={`bi ms-2 ${
                                     showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
@@ -121,7 +121,7 @@ function ManagerDashboard() {
         onClick={() => setShowSubMenu(!showSubMenu)} 
         style={{ cursor: "pointer" }}
       >
-        Overtime
+        🕒 Overtime
         <i
           className={`bi ms-2 ${
             showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
@@ -172,7 +172,8 @@ function ManagerDashboard() {
         </div>
       )} */}
 
-          <Link to="/manager-dashboard/profile" className="nav-link text-light">Profile</Link>
+          <Link to="/manager-dashboard/profile" className="nav-link text-light"> 👤 Profile</Link>
+          <Link to="/manager-dashboard/payroll" className="nav-link text-light"> 💼 Payroll</Link>
           <button onClick={handleLogout} className="btn btn-danger mt-4">
             Logout
           </button>
