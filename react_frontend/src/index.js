@@ -32,6 +32,9 @@ import OvertimeHistory from "./components/Manager/OvertimeHistory";
 import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
 import ConfirmOtRequest from "./components/Manager/ConfirmOtRequest";
 import ShowLeave from "./components/ShowLeave";
+import ManagerLeave from "./components/Manager/ManagerLeave";
+import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
+import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
 
 
 
@@ -90,6 +93,10 @@ root.render(
 
       <Route path="/manager-dashboard/*" element={<ManagerDashboard />}>
         <Route path="profile" element={<ManagerProfile />} />
+        <Route path="leave" element={<Leave />} />
+        <Route path="manager-leave" element={<ManagerLeave />} />
+        <Route path="manager-leave-Approval" element={<ManagerLeaveApproval />} />
+        <Route path="leave-confirmed" element={<LeavveConfirmedRequest />}/>
         <Route path="overtime-history" element={<OvertimeHistory />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
         <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />

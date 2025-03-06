@@ -92,6 +92,37 @@ function ManagerDashboard() {
         </div>
       )}
       */}
+      <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">
+           leave
+          </Link>
+          {/* <div className="nav-link text-light" 
+        onClick={() => setShowSubMenu(!showSubMenu)} 
+        style={{ cursor: "pointer" }}
+      >
+        Leave
+        <i
+          className={`bi ms-2 ${
+            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+          }`}
+          style={{ color: "white" }}
+        />
+      </div> */}
+
+      {/* Dropdown Submenu */}
+      {/* {showSubMenu && (
+        <div className="ms-3">
+          <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">
+           Apply Leave
+          </Link>
+          <Link to="/manager-dashboard/leave-history" className="nav-link text-light">
+            Leave History
+          </Link>
+          <Link to="/manager-dashboard/manager-leave-approval" className="nav-link text-light">
+            View Leave Request
+          </Link>
+        </div>
+      )} */}
+
           <Link to="/manager-dashboard/profile" className="nav-link text-light">Profile</Link>
           <button onClick={handleLogout} className="btn btn-danger mt-4">
             Logout
