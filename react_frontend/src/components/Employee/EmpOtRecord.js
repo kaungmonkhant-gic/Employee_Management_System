@@ -6,7 +6,7 @@ const EmpOtRecord = () => {
   const [overtimeRecords, setOvertimeRecords] = useState([]);
 
   useEffect(() => {
-    fetch("/api/overtime/employee/1") // Replace with actual employee ID
+    fetch("/ot/all") // Replace with actual employee ID
       .then((response) => response.json())
       .then((data) => setOvertimeRecords(data))
       .catch((error) => console.error("Error fetching overtime records:", error));

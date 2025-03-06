@@ -4,7 +4,7 @@ import ems.com.ems_project.model.EmployeeSalary;
 public class EmployeeSalaryDTO {
 
     private String id;
-    private String EmployeeId;
+    private String employeeId;
     private Double basicSalary;
     private Double houseAllowance;
     private Double transportation;
@@ -13,7 +13,7 @@ public class EmployeeSalaryDTO {
 
     public EmployeeSalaryDTO(EmployeeSalary employeeSalary, String employeeName) {
         this.id = employeeSalary.getId();
-        this.EmployeeId = employeeSalary.getEmployee().getId();
+        this.employeeId = employeeSalary.getEmployee().getId();
         this.basicSalary = employeeSalary.getBasicSalary();
         this.houseAllowance = employeeSalary.getHouseAllowance();
         this.transportation = employeeSalary.getTransportation();
@@ -30,11 +30,11 @@ public class EmployeeSalaryDTO {
     }
 
     public String getEmployeeId() {
-        return EmployeeId;
+        return employeeId;
     }
 
     public void setEmployeeId(String employeeId) {
-        EmployeeId = employeeId;
+        employeeId = employeeId;
     }
 
     public Double getBasicSalary() {

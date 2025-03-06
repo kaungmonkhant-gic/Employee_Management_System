@@ -127,7 +127,7 @@ fetchDepartmentCount: async (token) => {
     const response = await apiClient.get("/departments/count", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("Department count response:", response.data); // Log the response to inspect the data
+    
     return response.data || 0; // Extract 'count' directly from response
   } catch (error) {
     console.error("Error fetching department count:", error);
@@ -140,7 +140,7 @@ fetchManagerCount: async (token) => {
     const response = await apiClient.get("/employee/manager-count", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("Manager count response:", response.data); // Log the response to inspect the data
+   
     return response.data || 0; // Extract 'count' directly from response
   } catch (error) {
     console.error("Error fetching active manager count:", error);

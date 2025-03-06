@@ -9,10 +9,13 @@ import ems.com.ems_project.dto.EmployeeSalaryDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeSalary;
+import ems.com.ems_project.model.Positions;
 import ems.com.ems_project.repository.EmployeeSalaryRepository;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.Position;
 
 @Service
 public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
@@ -36,16 +39,39 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
     }
 
 
-    public void createEmployeeSalary(Employee savedEmployee, RegisterDTO registerDTO) {
-        EmployeeSalary employeeSalary = new EmployeeSalary();
-        employeeSalary.setId(generateEmployeeSalaryId()); // Generate and set ID
-        employeeSalary.setEmployee(savedEmployee);
-        employeeSalary.setBasicSalary(registerDTO.getBasicSalary());
-        employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
-        employeeSalary.setTransportation(registerDTO.getTransportation());
+//    public void createEmployeeSalary(Employee savedEmployee, RegisterDTO registerDTO) {
+//        EmployeeSalary employeeSalary = new EmployeeSalary();
+//        employeeSalary.setId(generateEmployeeSalaryId()); // Generate and set ID
+//        employeeSalary.setEmployee(savedEmployee);
+//        employeeSalary.setBasicSalary(registerDTO.getBasicSalary());
+//        employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
+//        employeeSalary.setTransportation(registerDTO.getTransportation());
+//
+//        salaryRepository.save(employeeSalary);
+//    }
 
-        salaryRepository.save(employeeSalary);
+    public EmployeeSalary createEmployeeSalary(Employee employee) {
+        // Fetch salary details based on position
+        EmployeeSalary positionSalary = salaryRepository.findByPositionId(employee.getPositionId());
+        System.out.println("Fetching salary details for position ID: " + employee.getPositionId());
+
+        if (positionSalary == null) {
+            throw new RuntimeException("Salary details not found for position: " + employee.getPosition().getPositionName());
+        }
+
+        // Create new salary entry for the employee
+        EmployeeSalary employeeSalary = new EmployeeSalary();
+        employeeSalary.setId(generateEmployeeSalaryId()); // Generate unique ID
+        employeeSalary.setEmployee(employee);
+        employeeSalary.setPositions(employee.getPosition()); // Assign position
+        employeeSalary.setBasicSalary(positionSalary.getBasicSalary());
+        employeeSalary.setHouseAllowance(positionSalary.getHouseAllowance());
+        employeeSalary.setTransportation(positionSalary.getTransportation());
+
+        return salaryRepository.save(employeeSalary);
     }
+
+
     @Override
     public String generateEmployeeSalaryId() {
         // Get the last Employee Salary ID from the correct repository

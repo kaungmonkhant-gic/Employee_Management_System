@@ -73,25 +73,27 @@ public class Employee implements UserDetails {
     private Date resignDate;
 
     @ManyToOne
-    //@JsonIgnore
+    @JsonIgnore
     @JoinColumn(name = "department_id",nullable = false)
     private Departments department;
 
     @ManyToOne
     @JoinColumn(name = "position_id",nullable = false)
-    //@JsonIgnore
+    @JsonIgnore
     private Positions position;
 
     @ManyToOne
     @JoinColumn(name = "role_id",nullable = false)
-    //@JsonIgnore
+    @JsonIgnore
     private Roles role;
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
+    @JsonIgnore
     // This references another Employee
     private Employee manager;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (role != null && role.getRoleName() != null) {

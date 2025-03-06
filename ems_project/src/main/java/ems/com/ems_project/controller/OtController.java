@@ -18,7 +18,7 @@ public class OtController {
     private OtService otService;
 
     @GetMapping("/role/records")
-    public ResponseEntity<List<OtDTO>> getLeavesForManager(
+    public ResponseEntity<List<OtDTO>> getOtBasedOnRole(
             @RequestHeader("Authorization") String token) {
         // Extract actual token (remove "Bearer ")
         String actualToken = token.replace("Bearer ", "");
