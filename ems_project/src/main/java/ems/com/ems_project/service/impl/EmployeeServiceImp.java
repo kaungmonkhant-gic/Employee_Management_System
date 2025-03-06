@@ -309,80 +309,171 @@ public class EmployeeServiceImp implements EmployeeService {
         return reqRes;
     }
 
-    @Override
-    public ReqRes registerEmployee(RegisterDTO registerDTO) {
-        System.out.println("Employee Register Start");
+//    @Override
+//    public ReqRes registerEmployee(RegisterDTO registerDTO) {
+//        System.out.println("Employee Register Start");
+//        ReqRes reqRes = new ReqRes();
+//
+//        // Check for missing email
+//        if (registerDTO.getEmail() == null || registerDTO.getEmail().isEmpty()) {
+//            reqRes.setStatusCode(400); // Bad Request
+//            reqRes.setMessage("Email is required.");
+//            return reqRes;
+//        }
+//
+//        // Check for duplicate email
+//        Optional<Employee> existingEmployee = employeeRepository.findByEmail(registerDTO.getEmail());
+//        if (existingEmployee.isPresent()) {
+//            reqRes.setStatusCode(409); // Conflict
+//            reqRes.setMessage("Employee with email " + registerDTO.getEmail() + " already exists.");
+//            return reqRes;
+//        }
+//
+//        try {
+//            // Fetch department, position, and role from repositories
+//            Roles role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(() -> new RuntimeException("Role not found"));
+//            Departments department = departmentRepository.findById(registerDTO.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department not found"));
+//            Positions position = positionRepository.findById(registerDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Position not found"));
+//
+//            // Create new Employee entity
+//            Employee employee = new Employee();
+//            employee.setId(generateEmployeeId());  // If ID is provided, use it; otherwise, auto-generate.
+//            employee.setEmail(registerDTO.getEmail());
+//            employee.setName(registerDTO.getName());
+//            employee.setPhone(registerDTO.getPhone());
+//            employee.setGender(registerDTO.getGender());
+//            employee.setDob(registerDTO.getDob());
+//            employee.setNrc(registerDTO.getNrc());
+//            employee.setMaritalStatus(registerDTO.getMaritalStatus());
+//            employee.setAddress(registerDTO.getAddress());
+//            employee.setWorkExp(registerDTO.getWorkExp());
+//            employee.setEducation(registerDTO.getEducation());
+//            employee.setJoinDate(registerDTO.getJoinDate());
+//
+//            // Set the role, department, and position
+//            employee.setRole(role);
+//            employee.setDepartment(department);
+//            employee.setPosition(position);
+//
+//            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
+//            employee.setPassword(hashedPassword);
+//
+//            Employee manager = null;
+//            if (!role.getRoleName().equalsIgnoreCase("Manager")) {
+//                manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2")
+//                        .orElse(null);
+//            }
+//            employee.setManager(manager);
+//
+//            // Save the employee
+//            Employee savedEmployee = employeeRepository.save(employee);
+//
+//            // Save EmployeeSalary and EmployeeLeave entities
+//            employeeSalaryService.createEmployeeSalary(savedEmployee);
+//            employeeLeaveService.createEmployeeLeave(savedEmployee);
+//
+//            reqRes.setEmployee(savedEmployee);
+//            reqRes.setStatusCode(201); // Created
+//            reqRes.setMessage("Employee registered successfully.");
+//        } catch (Exception e) {
+//            // Log the exception for debugging purposes
+//            System.err.println("Error during registration: " + e.getMessage());
+//            reqRes.setStatusCode(500); // Internal Server Error
+//            reqRes.setMessage("An error occurred during registration: " + e.getMessage());
+//        }
+//        return reqRes;
+//    }
+@Override
+public ReqRes registerEmployee(RegisterDTO registerDTO) {
+    System.out.println("Employee Registration Start");
+    ReqRes reqRes = new ReqRes();
+
+    try {
+        // Validate email
+        if (registerDTO.getEmail() == null || registerDTO.getEmail().trim().isEmpty()) {
+            return createErrorResponse(400, "Email is required.");
+        }
+
+        // Check if employee already exists
+        if (employeeRepository.findByEmail(registerDTO.getEmail()).isPresent()) {
+            return createErrorResponse(409, "Employee with email " + registerDTO.getEmail() + " already exists.");
+        }
+
+        // Fetch related entities
+        Roles role = roleRepository.findById(registerDTO.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found for ID: " + registerDTO.getRoleId()));
+
+        Departments department = departmentRepository.findById(registerDTO.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found for ID: " + registerDTO.getDepartmentId()));
+
+        Positions position = positionRepository.findById(registerDTO.getPositionId())
+                .orElseThrow(() -> new RuntimeException("Position not found for ID: " + registerDTO.getPositionId()));
+
+        // Create new Employee
+        Employee employee = new Employee();
+        employee.setId(generateEmployeeId());
+        employee.setEmail(registerDTO.getEmail().trim());
+        employee.setName(registerDTO.getName());
+        employee.setPhone(registerDTO.getPhone());
+        employee.setGender(registerDTO.getGender());
+        employee.setDob(registerDTO.getDob());
+        employee.setNrc(registerDTO.getNrc());
+        employee.setMaritalStatus(registerDTO.getMaritalStatus());
+        employee.setAddress(registerDTO.getAddress());
+        employee.setWorkExp(registerDTO.getWorkExp());
+        employee.setEducation(registerDTO.getEducation());
+        employee.setJoinDate(registerDTO.getJoinDate());
+
+        // Set related entities
+        employee.setRole(role);
+        employee.setDepartment(department);
+        employee.setPosition(position);
+
+        // Encode password
+        String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
+        employee.setPassword(hashedPassword);
+
+        // Assign Manager (if applicable)
+        Employee manager = null;
+        if (!role.getRoleName().equalsIgnoreCase("Manager")) {
+            manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2").orElse(null);
+        }
+        employee.setManager(manager);
+
+        // Save Employee
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        // Save Employee Salary and Leave Data
+        employeeSalaryService.createEmployeeSalary(savedEmployee);
+        employeeLeaveService.createEmployeeLeave(savedEmployee);
+
+        // Success Response
+        reqRes.setEmployee(savedEmployee);
+        reqRes.setStatusCode(201);
+        reqRes.setMessage("Employee registered successfully.");
+        System.out.println("Employee Registration Successful: " + savedEmployee.getEmail());
+
+    } catch (RuntimeException e) {
+        System.err.println("Validation Error during registration: " + e.getMessage());
+        return createErrorResponse(400, e.getMessage());
+    } catch (Exception e) {
+        System.err.println("Unexpected Error during registration: " + e.getMessage());
+        e.printStackTrace();
+        return createErrorResponse(500, "An internal error occurred during registration.");
+    }
+    return reqRes;
+}
+
+    /**
+     * Helper method to create an error response.
+     */
+    private ReqRes createErrorResponse(int statusCode, String message) {
         ReqRes reqRes = new ReqRes();
-
-        // Check for missing email
-        if (registerDTO.getEmail() == null || registerDTO.getEmail().isEmpty()) {
-            reqRes.setStatusCode(400); // Bad Request
-            reqRes.setMessage("Email is required.");
-            return reqRes;
-        }
-
-        // Check for duplicate email
-        Optional<Employee> existingEmployee = employeeRepository.findByEmail(registerDTO.getEmail());
-        if (existingEmployee.isPresent()) {
-            reqRes.setStatusCode(409); // Conflict
-            reqRes.setMessage("Employee with email " + registerDTO.getEmail() + " already exists.");
-            return reqRes;
-        }
-
-        try {
-            // Fetch department, position, and role from repositories
-            Roles role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(() -> new RuntimeException("Role not found"));
-            Departments department = departmentRepository.findById(registerDTO.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department not found"));
-            Positions position = positionRepository.findById(registerDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Position not found"));
-
-            // Create new Employee entity
-            Employee employee = new Employee();
-            employee.setId(generateEmployeeId());  // If ID is provided, use it; otherwise, auto-generate.
-            employee.setEmail(registerDTO.getEmail());
-            employee.setName(registerDTO.getName());
-            employee.setPhone(registerDTO.getPhone());
-            employee.setGender(registerDTO.getGender());
-            employee.setDob(registerDTO.getDob());
-            employee.setNrc(registerDTO.getNrc());
-            employee.setMaritalStatus(registerDTO.getMaritalStatus());
-            employee.setAddress(registerDTO.getAddress());
-            employee.setWorkExp(registerDTO.getWorkExp());
-            employee.setEducation(registerDTO.getEducation());
-            employee.setJoinDate(registerDTO.getJoinDate());
-
-            // Set the role, department, and position
-            employee.setRole(role);
-            employee.setDepartment(department);
-            employee.setPosition(position);
-
-            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
-            employee.setPassword(hashedPassword);
-
-            Employee manager = null;
-            if (!role.getRoleName().equalsIgnoreCase("Manager")) {
-                manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2")
-                        .orElse(null);
-            }
-            employee.setManager(manager);
-
-            // Save the employee
-            Employee savedEmployee = employeeRepository.save(employee);
-
-            // Save EmployeeSalary and EmployeeLeave entities
-            employeeSalaryService.createEmployeeSalary(savedEmployee, registerDTO);
-            employeeLeaveService.createEmployeeLeave(savedEmployee, registerDTO);
-
-            reqRes.setEmployee(savedEmployee);
-            reqRes.setStatusCode(201); // Created
-            reqRes.setMessage("Employee registered successfully.");
-        } catch (Exception e) {
-            // Log the exception for debugging purposes
-            System.err.println("Error during registration: " + e.getMessage());
-            reqRes.setStatusCode(500); // Internal Server Error
-            reqRes.setMessage("An error occurred during registration: " + e.getMessage());
-        }
+        reqRes.setStatusCode(statusCode);
+        reqRes.setMessage(message);
         return reqRes;
     }
+
 
     @Override
     public ReqRes updateEmployee(String id, EmployeeDTO employeeDTO) {

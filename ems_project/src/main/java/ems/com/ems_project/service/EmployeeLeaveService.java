@@ -43,23 +43,36 @@ public class EmployeeLeaveService {
         return new EmployeeLeaveDTO(employeeLeave, employeeName);
     }
 
-    public void createEmployeeLeave(Employee savedEmployee, RegisterDTO registerDTO) {
+//    public void createEmployeeLeave(Employee savedEmployee, RegisterDTO registerDTO) {
+//        EmployeeLeave employeeLeave = new EmployeeLeave();
+//
+//        // Generate and assign ID before saving
+//        employeeLeave.setId(generateEmployeeLeaveId());
+//        employeeLeave.setEmployee(savedEmployee);
+//        employeeLeave.setAnnualLeave(registerDTO.getAnnualLeave());
+//        employeeLeave.setCasualLeave(registerDTO.getCasualLeave());
+//        employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
+//
+//        // Calculate total leave
+//        double totalLeave = registerDTO.getAnnualLeave()
+//                + registerDTO.getCasualLeave()
+//                + registerDTO.getMedicalLeave();
+//        employeeLeave.setTotal(totalLeave);
+//
+//        employeeLeaveRepository.save(employeeLeave);
+//    }
+
+    public EmployeeLeave createEmployeeLeave(Employee employee) {
+
         EmployeeLeave employeeLeave = new EmployeeLeave();
-
-        // Generate and assign ID before saving
         employeeLeave.setId(generateEmployeeLeaveId());
-        employeeLeave.setEmployee(savedEmployee);
-        employeeLeave.setAnnualLeave(registerDTO.getAnnualLeave());
-        employeeLeave.setCasualLeave(registerDTO.getCasualLeave());
-        employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
+        employeeLeave.setEmployee(employee);
+        employeeLeave.setAnnualLeave(10.0);
+        employeeLeave.setCasualLeave(6.0);
+        employeeLeave.setMedicalLeave(30.0);
+        employeeLeave.setTotal(10.0 + 6.0 + 30.0);
 
-        // Calculate total leave
-        double totalLeave = registerDTO.getAnnualLeave()
-                + registerDTO.getCasualLeave()
-                + registerDTO.getMedicalLeave();
-        employeeLeave.setTotal(totalLeave);
-
-        employeeLeaveRepository.save(employeeLeave);
+        return employeeLeaveRepository.save(employeeLeave);
     }
     public String generateEmployeeLeaveId() {
         // Get the last Leave ID from the database

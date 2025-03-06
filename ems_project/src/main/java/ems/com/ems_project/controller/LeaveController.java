@@ -1,7 +1,6 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.LeaveDTO;
-import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,12 +16,6 @@ public class LeaveController {
 
     @Autowired
     private LeaveService leaveService;
-
-//    // Get all OT records with employee and manager names
-//    @GetMapping("/all")
-//    public List<LeaveDTO> getAllLeave() {
-//        return leaveService.getAllLeave();
-//    }
 
     @GetMapping("/self")
     public ResponseEntity<List<LeaveDTO>> getLoggedInUserLeaveRecords() {
@@ -63,7 +56,7 @@ public class LeaveController {
         return ResponseEntity.ok(statusCount);
     }
     @GetMapping("/role/records")
-    public ResponseEntity<List<LeaveDTO>> getLeavesForManager(
+    public ResponseEntity<List<LeaveDTO>> getLeaveBasedOnRole(
             @RequestHeader("Authorization") String token) {
         // Extract actual token (remove "Bearer ")
         String actualToken = token.replace("Bearer ", "");
