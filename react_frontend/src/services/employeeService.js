@@ -122,29 +122,32 @@ fetchEmployeeCount: async (token) => {
   }
 },
 
-fetchManagerCount: async (token) => {
+fetchDepartmentCount: async (token) => {
   try {
-    const response = await apiClient.get("/edmployee/manager-count", {
+    const response = await apiClient.get("/departments/count", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data; // Expecting a numeric value from the backend
+    console.log("Department count response:", response.data); // Log the response to inspect the data
+    return response.data || 0; // Extract 'count' directly from response
+  } catch (error) {
+    console.error("Error fetching department count:", error);
+    return 0;
+  }
+},
+
+fetchManagerCount: async (token) => {
+  try {
+    const response = await apiClient.get("/employee/manager-count", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log("Manager count response:", response.data); // Log the response to inspect the data
+    return response.data || 0; // Extract 'count' directly from response
   } catch (error) {
     console.error("Error fetching active manager count:", error);
     return 0;
   }
 },
 
-fetchDepartmentCount: async (token) => {
-  try {
-    const response = await apiClient.get("/departments/count", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data; // Expecting a numeric value from the backend
-  } catch (error) {
-    console.error("Error fetching department count:", error);
-    return 0;
-  }
-},
 };
 
 export default employeeService;
