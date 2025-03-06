@@ -128,7 +128,7 @@ public class Ots {
     }
 
     public void setPaid(Boolean paid) {
-        paid = paid;
+        this.paid = paid;
     }
 
     public Employee getManager() {
