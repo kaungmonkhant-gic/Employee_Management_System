@@ -155,7 +155,8 @@ public class OtService {
             if ("approve".equalsIgnoreCase(action)) {
                 ot.setStatus(RequestStatus.APPROVED);
                 ot.setRejectionReason(null);  // Clear rejection reason if approving
-            } else {
+            } else if ("reject".equalsIgnoreCase(action)) {
+                // If rejecting, a rejection reason must be provided
                 if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
                 }
@@ -255,8 +256,6 @@ public class OtService {
             return principal.toString();
         }
     }
-
-
 
     public String generateOtId() {
         // Get the last Attendance ID from the database
