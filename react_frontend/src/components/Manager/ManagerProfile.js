@@ -36,7 +36,30 @@ const [selectedDepartmentId, setSelectedDepartmentId] = useState(details.departm
 const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
 
   const [selectedGender, setSelectedGender] = useState("");
-
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+  
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      let [day, month, year] = parts;
+  
+      // Ensure values are valid numbers
+      if (isNaN(day) || isNaN(month) || isNaN(year)) return "";
+  
+      // If the year is last and has 4 digits (dd-MM-yyyy), convert to yyyy-MM-dd
+      if (year.length === 4) {
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      }
+  
+      // If the first part is a 4-digit year (already yyyy-MM-dd), return as is
+      if (day.length === 4) {
+        return dateString;
+      }
+    }
+  
+    return ""; // Return empty if the format is incorrect
+  };
+  
 
   useEffect(() => {
     if (details.position) setSelectedPositionId(details.positionId);
@@ -185,7 +208,7 @@ const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
         const updatedProfile = {
           id: details.id,
           name: details.name,
-          dob: details.dob,
+          dob: formatDate(details.dob),
           phone: details.phone,
           gender: selectedGender,
           address: details.address,
