@@ -52,7 +52,7 @@ public class LeaveController {
         }
     }
     // Get leave status count based on role (Admin/Manager)
-    @GetMapping("/role")
+    @GetMapping("/role-status-count")
     public Map<String, Long> getLeaveStatusForRoleBased() {
         return leaveService.getLeaveStatusCountByRole();
     }
