@@ -5,7 +5,7 @@ const managerOTService = {
   fetchOvertimeRequests: async (token) => {
     try {
       console.log("Fetching overtime records...");
-      const response = await apiClient.get("/ot/all", {
+      const response = await apiClient.get("/ot/role/records", {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to the headers
         },

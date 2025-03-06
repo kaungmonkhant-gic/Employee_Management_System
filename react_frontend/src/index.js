@@ -35,7 +35,7 @@ import ShowLeave from "./components/ShowLeave";
 import ManagerLeave from "./components/Manager/ManagerLeave";
 import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
-import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
+import ViewEmployee from "./components/Manager/ViewEmployee";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -51,13 +51,13 @@ root.render(
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/"
+      {/* <Route path="/"
              element={
                <PrivateRoute>
                  <App/>
                </PrivateRoute>
              }
-      />
+      /> */}
         <Route
             path="/admin-dashboard"
             element={
@@ -92,6 +92,7 @@ root.render(
       </Route>
 
       <Route path="/manager-dashboard/*" element={<ManagerDashboard />}>
+      <Route path="view-employeelist" element={<ViewEmployee />} />
         <Route path="profile" element={<ManagerProfile />} />
         <Route path="leave" element={<Leave />} />
         <Route path="manager-leave" element={<ManagerLeave />} />

@@ -40,19 +40,36 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
     casualLeave: "",
     totalLeave: "",
   });
-  //const positions = ["Senior Developer", "Junior Developer", "Fresher", "Intern", "Accountant"];
-  //const roles = ["Admin", "Employee", "Manager"];
+  useEffect(() => {
+    if (editingEmployee) {
+      setEmployeeData((prev) => ({
+        ...prev,
+        ...editingEmployee,
+        departmentId: editingEmployee.departmentId || "",
+        positionId: editingEmployee.positionId || "",
+        roleId: editingEmployee.roleId || "",
+        nrcRegion: editingEmployee.nrcRegion || "",
+        nrcTownship: editingEmployee.nrcTownship || "",
+        nrcType: editingEmployee.nrcType || "",
+        gender: editingEmployee.gender || "",
+        dob: editingEmployee.dob || "",
+        phone: editingEmployee.phone || "",
+        address: editingEmployee.address || "",
+        workExp: editingEmployee.workExp || "",
+        joinDate: editingEmployee.joinDate || "",
+        resignDate: editingEmployee.resignDate || "",
+      }));
+      setSelectedDepartmentId(editingEmployee.departmentId || "");
+      setSelectedPositionId(editingEmployee.positionId || "");
+      setSelectedRoleId(editingEmployee.roleId || "");
+    }
+  }, [editingEmployee]);
+
 
   useEffect(() => {
-    if (!editingEmployee) return;
-
-    setEmployeeData((prev) => ({
-      ...prev,
-      ...editingEmployee,
-      departmentId: editingEmployee.departmentId || "",
-      positionId: editingEmployee.positionId || "",
-      roleId: editingEmployee.roleId || ""
-    }));
+    if (editingEmployee) {
+      setEmployeeData(editingEmployee);
+    }
   }, [editingEmployee]);
 
   useEffect(() => {
@@ -354,25 +371,27 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
               </div>
 
               {/* Department Dropdown */}
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Department</label>
-                  <select 
-                  value={selectedDepartmentId} 
-                  onChange={handleDepartmentChange} 
-                  className="form-select form-select-lg"
-                  required>
-                    <option value="">-- Select Department --</option>
-                    {Array.isArray(departments) && departments.length > 0 ? (
-                      departments.map((dept) => (
-                        <option key={dept.id} value={dept.id}>
-                          {dept.departmentName}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>Loading...</option>
-                    )}
-                  </select>
-              </div>
+              {/* Department Dropdown */}
+          <div className="mb-2">
+            <label className="form-label fw-semibold">Department</label>
+            <select
+              value={selectedDepartmentId}
+              onChange={handleDepartmentChange}
+              className="form-select form-select-lg"
+              required
+            >
+              <option value="">-- Select Department --</option>
+              {departments.length > 0 ? (
+                departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.departmentName}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Loading...</option>
+              )}
+            </select>
+          </div>
 
               <div className="mb-2">
                 <label  className="form-label fw-semibold">Role</label>
@@ -428,93 +447,6 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                  className="form-control form-control-lg" placeholder="Password..."/>
               </div>
             </div>
-          </div>
-
-          {/* Second Row */}
-          <div className="row gx-3 mt-3">
-            {/* Salary & Allowance */}
-            {/* <div className="col-md-6">
-              <h5 className="fw-bold text-secondary">Salary & Allowance</h5>
-              <hr />
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Basic Salary</label>
-                <input
-                  type="number"
-                  name="basicSalary"
-                  value={employeeData.basicSalary}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                  required
-                />
-              </div>
-
-              <div className="mb-2">
-                <label className="form-label fw-semibold">House Allowance</label>
-                <input
-                  type="number"
-                  name="houseAllowance"
-                  value={employeeData.houseAllowance}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                  required
-                />
-              </div>
-
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Transportation</label>
-                <input
-                  type="number"
-                  name="transportation"
-                  value={employeeData.transportation}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                  required
-                />
-              </div>
-
-            </div> */}
-
-            {/* Leave Information */}
-            {/* <div className="col-md-6">
-              <h5 className="fw-bold text-secondary">Leave Information</h5>
-              <hr />
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Annual Leave</label>
-                <input
-                  type="number"
-                  name="annualLeave"
-                  value={employeeData.annualLeave}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                  required
-                />
-              </div>
-
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Casual Leave</label>
-                <input
-                  type="number"
-                  name="casualLeave"
-                  value={employeeData.casualLeave}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                  required
-                />
-              </div>
-
-              <div className="mb-2">
-                <label className="form-label fw-semibold">Manual Leave</label>
-                <input
-                  type="number"
-                  name="medicalLeave"
-                  value={employeeData.medicalLeave}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                  required
-                />
-              </div>
-
-            </div> */}
           </div>
 
           {/* Buttons */}
