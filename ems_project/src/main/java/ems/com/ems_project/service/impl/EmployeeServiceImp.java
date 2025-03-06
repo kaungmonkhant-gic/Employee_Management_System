@@ -90,7 +90,6 @@ public class EmployeeServiceImp implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-
     public List<EmployeeDTO> getResignedEmployeesBasedOnRole(String token) {
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);

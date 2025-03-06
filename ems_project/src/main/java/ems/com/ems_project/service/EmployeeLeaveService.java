@@ -6,6 +6,7 @@ import ems.com.ems_project.dto.EmployeeLeaveDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
+import ems.com.ems_project.model.LeaveType;
 import ems.com.ems_project.repository.EmployeeLeaveRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,39 @@ public class EmployeeLeaveService {
 
         return new EmployeeLeaveDTO(employeeLeave, employeeName);
     }
+
+    public void updateLeaveBalance(EmployeeLeave employeeLeave, LeaveType leaveType, Double leaveDuration) {
+        switch (leaveType) {
+            case ANNUAL:
+                if (employeeLeave.getAnnualLeave() < leaveDuration) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient annual leave balance.");
+                }
+                employeeLeave.setAnnualLeave(employeeLeave.getAnnualLeave() - leaveDuration);
+                break;
+            case CASUAL:
+                if (employeeLeave.getCasualLeave() < leaveDuration) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient casual leave balance.");
+                }
+                employeeLeave.setCasualLeave(employeeLeave.getCasualLeave() - leaveDuration);
+                break;
+            case MEDICAL:
+                if (employeeLeave.getMedicalLeave() < leaveDuration) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient medical leave balance.");
+                }
+                employeeLeave.setMedicalLeave(employeeLeave.getMedicalLeave() - leaveDuration);
+                break;
+            default:
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid leave type.");
+        }
+
+        // Update the total leave balance
+        employeeLeave.setTotal(employeeLeave.getAnnualLeave() + employeeLeave.getCasualLeave() + employeeLeave.getMedicalLeave());
+
+        // Save updated leave balance
+        employeeLeaveRepository.save(employeeLeave);
+    }
+
+
 
 //    public void createEmployeeLeave(Employee savedEmployee, RegisterDTO registerDTO) {
 //        EmployeeLeave employeeLeave = new EmployeeLeave();

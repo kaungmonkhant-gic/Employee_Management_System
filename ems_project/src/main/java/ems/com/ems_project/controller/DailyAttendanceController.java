@@ -4,6 +4,8 @@ import ems.com.ems_project.dto.AttendanceDTO;
 import ems.com.ems_project.service.AttendanceService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,6 +19,12 @@ public class DailyAttendanceController {
     @GetMapping("/all")
     public List<AttendanceDTO> getAllAttendance() {
         return attendanceService.getAllAttendance();
+    }
+
+    @GetMapping("/records")
+    public ResponseEntity<List<AttendanceDTO>> getAttendanceRecordsForLoggedInUser() {
+        List<AttendanceDTO> attendanceRecords = attendanceService.getAttendanceRecordsForLoggedInUser();
+        return new ResponseEntity<>(attendanceRecords, HttpStatus.OK);
     }
     @PostMapping("/checkin")
     public AttendanceDTO checkIn(HttpServletRequest request) {

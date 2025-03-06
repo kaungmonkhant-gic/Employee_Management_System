@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,11 +35,5 @@ public interface LeaveRepository extends JpaRepository<Leave, String > {
     List<Object[]> getStatusCountByManagerId(@Param("managerId") String managerId);
 
     List<Leave> findByManagerId(String managerId);
-
-
-
-
-
-
 
 }

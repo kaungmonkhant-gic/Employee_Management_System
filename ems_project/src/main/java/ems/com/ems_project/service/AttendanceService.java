@@ -13,5 +13,6 @@ public interface AttendanceService {
     AttendanceDTO checkOut(String loggedInUsername);
 
     String generateAttendanceId();
+    List<AttendanceDTO> getAttendanceRecordsForLoggedInUser();
 }
 
