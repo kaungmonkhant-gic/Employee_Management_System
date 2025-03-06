@@ -1,29 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import leaveController from "../Manager/Controller/LeaveApprovalController";
+import leaveController from "../Manager/Controller/EmpLeaveRecordController";
+import { useNavigate } from "react-router-dom";
 import DataTable from "../common/DataTable";
 
-const ConfirmedRequests = () => {
-  const [confirmedRequests, setConfirmedRequests] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchApprovedRequests = async () => {
-      try {
-        setIsLoading(true);
-        const response = await leaveController.fetchLeaveRequests();
-        setConfirmedRequests(response.filter((record) => record.otStatus !== "PENDING"));
-      } catch (error) {
-        console.error("Error fetching leave requests:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchApprovedRequests();
-  }, []);
+function EmpLeaveRecords() {
+  const navigate = useNavigate(); // Initialize the navigate function
 
   const columns = [
     { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
@@ -58,34 +40,27 @@ const ConfirmedRequests = () => {
     },
   ];
 
-  return (
-    <div className="container mt-4 vh-100">
-      <h3 className="mb-3">Confirmed Leave Requests</h3>
-      <button className="btn btn-secondary mb-3 ms-3 mt-3" onClick={() => navigate("/manager-dashboard/manager-leave")}>
-        Return
-      </button>
-      <button className="btn btn-secondary mb-3 ms-3 mt-3" onClick={() => navigate("/manager-dashboard/manager-leave-approval")}>
-        View Pending Requests
-      </button>
 
+
+  return (
+    <div className="container mt-5 vh-100">
+
+      <h2 className="text-center mb-4">Leave </h2>
+      
       <DataTable
-        fetchData={() =>
-          leaveController.fetchLeaveRequests().then((data) =>
-            Array.isArray(data) ? data.filter((request) => request.status !== "PENDING") : []
-          )
-        }
-        columns={columns}
-        keyField="id"
-        responsive
-        fixedHeader
-        fixedHeaderScrollHeight="400px"
-        noDataComponent="No confirmed overtime requests"
-        progressPending={isLoading}
-        highlightOnHover
-        pagination
-      />
+          fetchData={leaveController.fetchLeaveRecord}
+          columns={columns}
+          keyField="employeeId"
+          responsive
+          fixedHeader
+          fixedHeaderScrollHeight="400px"
+          noDataComponent="No employees found"
+          highlightOnHover
+          pagination
+        />
+
     </div>
   );
-};
+}
 
-export default ConfirmedRequests;
+export default EmpLeaveRecords;

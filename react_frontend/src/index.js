@@ -35,7 +35,7 @@ import ShowLeave from "./components/ShowLeave";
 import ManagerLeave from "./components/Manager/ManagerLeave";
 import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
-
+import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -97,6 +97,7 @@ root.render(
         <Route path="manager-leave" element={<ManagerLeave />} />
         <Route path="manager-leave-Approval" element={<ManagerLeaveApproval />} />
         <Route path="leave-confirmed" element={<LeavveConfirmedRequest />}/>
+        <Route path="employee-leave-record" element={<EmployeeLeaveRecord />} />
         <Route path="overtime-history" element={<OvertimeHistory />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
         <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />

@@ -1,70 +1,90 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-
 function ManagerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showSubMenu, setShowSubMenu] = React.useState(false);
+  const [managerName, setManagerName] = useState("");
+  const [showSubMenu, setShowSubMenu] = useState(false);
+
+  useEffect(() => {
+    const storedManagerName = localStorage.getItem("managerName");
+    setManagerName(storedManagerName || "Manager");
+  }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("managerName");
     navigate("/login");
   };
 
   return (
-    <div
-      className="d-flex min-vh-100"
-      style={{
-        overflowY: "hidden", // Prevent vertical scroll on the main layout
-        height: "100vh", // Make sure the container takes full height of the viewport
-      }}
-    >
+    <div className="d-flex" style={{ minHeight: "100vh" }}>
       {/* Sidebar */}
-      <div
-        className="d-flex flex-column bg-dark text-light p-3"
-        style={{
-          width: "250px",
-          minHeight: "100vh", // Ensure the sidebar covers full height
-          overflowY: "auto", // Allow vertical scrolling within sidebar if needed
-        }}
-      >
+      <div className="d-flex flex-column p-3" style={{ width: "250px", backgroundColor: "#2980B9", color: "#FFFFFF" }}>
         <h2 className="text-center mb-4">Manager Dashboard</h2>
         <nav className="nav flex-column">
 
           <Link to="/manager-dashboard" className="nav-link text-light">
-            Dashboard
+          🏠 Dashboard
           </Link>
+
+          <div className="nav-link text-light" 
+                        onClick={() => setShowSubMenu(!showSubMenu)} 
+                        style={{ cursor: "pointer" }}>
+                        Employee
+                             <i
+                              className={`bi ms-2 ${
+                                showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+                              }`}
+                              style={{ color: "white" }}
+                            />
+                   </div>
+          
+                    {/* Dropdown Submenu */}
+                    {showSubMenu && (
+                      <div className="ms-3">
+                        <Link to="/manager-dashboard/employee-list" className="nav-link text-dark">
+                          Employee List
+                        </Link>
+                        <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">
+                          Employee Leave
+                        </Link>
+                        <Link to="/manager-dashboard/salary" className="nav-link text-light">
+                          Salary
+                        </Link>
+                      </div>
+                    )}
+
+                    <div className="nav-link text-light" 
+                                onClick={() => setShowSubMenu(!showSubMenu)} 
+                                style={{ cursor: "pointer" }}
+                              >
+                                📝 Attendance
+                                <i
+                                  className={`bi ms-2 ${
+                                    showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+                                  }`}
+                                  style={{ color: "white" }}
+                                />
+                              </div>
+                    
+                              {/* Dropdown Submenu */}
+                              {showSubMenu && (
+                                <div className="ms-3">
+                                  <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-dark">
+                                    Daily Attendance
+                                  </Link>
+                                  <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-dark">
+                                    Attendance Record
+                                  </Link>
+                                </div>
+                              )}
+                      
+                      
           
 
-<div className="nav-link text-light" 
-        onClick={() => setShowSubMenu(!showSubMenu)} 
-        style={{ cursor: "pointer" }}
-      >
-        Overtime
-        <i
-          className={`bi ms-2 ${
-            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-          }`}
-          style={{ color: "white" }}
-        />
-      </div>
-
-      {/* Dropdown Submenu */}
-      {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
-            Pending Requests
-          </Link>
-          {/* <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
-            Overtime History
-          </Link> */}
-          <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">
-            Confirmed Requests
-          </Link>
-        </div>
-      )}
       
           
           {/* <div className="nav-link text-light" 
@@ -95,6 +115,35 @@ function ManagerDashboard() {
       <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">
            leave
           </Link>
+
+          
+<div className="nav-link text-light" 
+        onClick={() => setShowSubMenu(!showSubMenu)} 
+        style={{ cursor: "pointer" }}
+      >
+        🕒 Overtime
+        <i
+          className={`bi ms-2 ${
+            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
+          }`}
+          style={{ color: "white" }}
+        />
+      </div>
+
+      {/* Dropdown Submenu */}
+      {showSubMenu && (
+        <div className="ms-3">
+          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
+            Pending Requests
+          </Link>
+          {/* <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
+            Overtime History
+          </Link> */}
+          <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">
+            Confirmed Requests
+          </Link>
+        </div>
+      )}
           {/* <div className="nav-link text-light" 
         onClick={() => setShowSubMenu(!showSubMenu)} 
         style={{ cursor: "pointer" }}
@@ -123,28 +172,51 @@ function ManagerDashboard() {
         </div>
       )} */}
 
-          <Link to="/manager-dashboard/profile" className="nav-link text-light">Profile</Link>
+          <Link to="/manager-dashboard/profile" className="nav-link text-light"> 👤 Profile</Link>
+          <Link to="/manager-dashboard/payroll" className="nav-link text-light"> 💼 Payroll</Link>
           <button onClick={handleLogout} className="btn btn-danger mt-4">
             Logout
           </button>
         </nav>
       </div>
 
-      {/* Main Content */}
-      <div
-        className="flex-grow-1"
-        style={{
-          overflowY: "auto", // Allow vertical scrolling within the content area if needed
-        }}
-      >
+      <div className="flex-grow-1 p-4" style={{ backgroundColor: "#f8f9fa" }}>
+        {/* Header */}
+        <header className="p-3 d-flex justify-content-between align-items-center rounded" style={{ backgroundColor: "#2980B9", color: "#FFFFFF" }}>
+          <h4>👋 Welcome, {managerName}</h4>
+          <button onClick={handleLogout} className="btn btn-light btn-sm">Logout</button>
+        </header>
+
+        {/* Show Dashboard Content ONLY on /manager-dashboard */}
         {location.pathname === "/manager-dashboard" && (
-          <header className="bg-light p-3 border-bottom">
-            <h1>Welcome to the Manager Dashboard</h1>
-          </header>
+          <>
+            <div className="row my-4">
+              <div className="col-md-6">
+                <div className="card shadow-sm p-3">
+                  <h5 className="text-center">📊 Overtime Summary</h5>
+                  <ul>
+                    <li>Pending Requests: 10</li>
+                    <li>Approved Requests: 20</li>
+                    <li>Rejected Requests: 5</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="col-md-6">
+                <div className="card shadow-sm p-3">
+                  <h5>🔔 Recent Activities</h5>
+                  <ul>
+                    <li>✔ Manager approved an OT request</li>
+                    <li>📢 New OT request submitted</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </>
         )}
-        <div className="p-4">
-          <Outlet />
-        </div>
+
+        {/* Show the requested page */}
+        <Outlet />
       </div>
     </div>
   );

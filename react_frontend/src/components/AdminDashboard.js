@@ -48,13 +48,6 @@ function AdminDashboard() {
       },
     ],
   };
-
-  // const [counts, setCounts] = useState({
-  //   totalEmployees: 0,
-  //   totalDepartments: 0,
-  //   totalManagers: 0,
-  // });
-
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [totalDepartments, setTotalDepartments] = useState(0);
   const [totalManagers, setTotalManagers] = useState(0);

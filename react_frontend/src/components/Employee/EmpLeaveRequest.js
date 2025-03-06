@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
 import { Modal, Button } from "react-bootstrap";
 import LeaveForm from "../common/LeaveForm";
 import apiClient from "../api/apiclient";
+import { useNavigate } from "react-router-dom";
 
 const LeaveRequests = () => {
   const [pending, setPending] = useState([]);
@@ -10,6 +11,7 @@ const LeaveRequests = () => {
   const [rejected, setRejected] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [availableLeaveDays, setAvailableLeaveDays] = useState(0);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -64,8 +66,11 @@ const LeaveRequests = () => {
       <div className="p-3 border rounded shadow-sm bg-white">
         <h5 className="mb-3">Leave Requests</h5>
         <p>Available Leave Balance: {availableLeaveDays} days</p>
-        <Button variant="secondary" onClick={() => setShowModal(true)}>
+        <Button variant="secondary ms-3" onClick={() => setShowModal(true)}>
           Apply for leave
+        </Button>
+        <Button variant="secondary ms-3" onClick={() => navigate("/employee-dashboard/employee-leave-records")}>
+          View Leave Records
         </Button>
       </div>
 

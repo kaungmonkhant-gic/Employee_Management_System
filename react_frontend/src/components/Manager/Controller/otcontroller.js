@@ -10,6 +10,7 @@ const managerOTController = {
       throw new Error("Failed to fetch overtime records. Please try again later.");
     }
   },
+  
 
   // Approve an overtime request
   approveRequest: async (id, token) => {
@@ -40,6 +41,37 @@ const managerOTController = {
       throw new Error("Failed to add overtime record. Please try again later.");
     }
   },
+
+  fetchOvertimeSelf: async (token) => {
+    try {
+      const records = await otservice.fetchOvertimeSelf(token);
+      return records;
+    } catch (error) {
+      throw new Error("Failed to fetch overtime records. Please try again later.");
+    }
+  },
+
+    // getOTCounts: async (setPending, setApproved, setRejected) => {
+    //     try {
+    //       const data = await OTRequestService.getOTCounts();
+    //       setPending(data.PENDING);
+    //       setApproved(data.APPROVED);
+    //       setRejected(data.REJECTED);
+    //     } catch (error) {
+    //       console.error("Failed to fetch leave counts", error);
+    //     }
+    //   },
+
+    //   getOTCounts: async (setPending, setApproved, setRejected) => {
+    //     try {
+    //       const data = await otservice.getOTCounts();
+    //       setPending(data.PENDING);
+    //       setApproved(data.APPROVED);
+    //       setRejected(data.REJECTED);
+    //     } catch (error) {
+    //       console.error("Failed to fetch leave counts", error);
+    //     }
+    //   },
 };
 
 export default managerOTController;
