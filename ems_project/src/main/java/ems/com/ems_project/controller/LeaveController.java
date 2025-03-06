@@ -18,11 +18,11 @@ public class LeaveController {
     @Autowired
     private LeaveService leaveService;
 
-    // Get all OT records with employee and manager names
-    @GetMapping("/all")
-    public List<LeaveDTO> getAllLeave() {
-        return leaveService.getAllLeave();
-    }
+//    // Get all OT records with employee and manager names
+//    @GetMapping("/all")
+//    public List<LeaveDTO> getAllLeave() {
+//        return leaveService.getAllLeave();
+//    }
 
     @GetMapping("/self")
     public ResponseEntity<List<LeaveDTO>> getLoggedInUserLeaveRecords() {
@@ -61,6 +61,15 @@ public class LeaveController {
     public ResponseEntity<Map<String, Long>> getLeaveStatusCount() {
         Map<String, Long> statusCount = leaveService.getLeaveStatusCountForLoggedInUser();
         return ResponseEntity.ok(statusCount);
+    }
+    @GetMapping("/role/records")
+    public ResponseEntity<List<LeaveDTO>> getLeavesForManager(
+            @RequestHeader("Authorization") String token) {
+        // Extract actual token (remove "Bearer ")
+        String actualToken = token.replace("Bearer ", "");
+
+        List<LeaveDTO> leaveDTOs = leaveService.getLeavesForManager(actualToken);
+        return ResponseEntity.ok(leaveDTOs);
     }
 
 

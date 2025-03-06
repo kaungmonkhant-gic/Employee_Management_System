@@ -33,6 +33,11 @@ public interface LeaveRepository extends JpaRepository<Leave, String > {
     @Query("SELECT l.status, COUNT(l) FROM Leave l WHERE l.employee.manager.id = :managerId GROUP BY l.status")
     List<Object[]> getStatusCountByManagerId(@Param("managerId") String managerId);
 
+    List<Leave> findByManagerId(String managerId);
+
+
+
+
 
 
 

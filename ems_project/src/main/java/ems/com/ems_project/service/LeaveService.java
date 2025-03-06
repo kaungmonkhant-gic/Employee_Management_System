@@ -27,11 +27,41 @@ public class LeaveService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    // Method to get all Leave records with employee and manager
-    public List<LeaveDTO> getAllLeave() {
-        return leaveRepository.findAll().stream()
-                .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))  // Pass Employee and Manager to DTO constructor
-                .collect(Collectors.toList()); // Collect the list of DTOs
+    @Autowired
+    private JWTUtils jwtutils;
+
+//    // Method to get all Leave records with employee and manager
+//    public List<LeaveDTO> getAllLeave() {
+//        return leaveRepository.findAll().stream()
+//                .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))  // Pass Employee and Manager to DTO constructor
+//                .collect(Collectors.toList()); // Collect the list of DTOs
+//    }
+
+    public List<LeaveDTO> getLeavesForManager(String token) {
+        // Extract user details from the token
+        String email = jwtutils.extractUsername(token);
+        String roleName = jwtutils.extractRole(token);
+
+        // Get the logged-in employee details (who is the manager)
+        Employee manager = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Leave> leaves = new ArrayList<>();
+
+        if ("Admin".equals(roleName)) {
+            // Admin: Get all leave records
+            leaves = leaveRepository.findAll();
+        } else if ("Manager".equals(roleName)) {
+            // Manager: Get leave requests where they are assigned as the manager
+            leaves = leaveRepository.findByManagerId(manager.getId());
+        } else {
+            return Collections.emptyList(); // Other roles don't have access
+        }
+
+        // Convert to DTO and return
+        return leaves.stream()
+                .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))
+                .collect(Collectors.toList());
     }
 
 
