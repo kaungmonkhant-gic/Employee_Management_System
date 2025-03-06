@@ -6,11 +6,10 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 function EmployeeDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showSubMenu, setShowSubMenu] = useState(false);
+  const [showOvertimeSubMenu, setShowOvertimeSubMenu] = useState(false);
   const [employeeName, setEmployeeName] = useState("");
 
   useEffect(() => {
-    // Retrieve the employee's name from local storage or an API
     const storedEmployeeName = localStorage.getItem("employeeName");
     setEmployeeName(storedEmployeeName || "Employee"); // Fallback to "Employee" if no name is found
   }, []);
@@ -23,90 +22,105 @@ function EmployeeDashboard() {
   return (
     <div className="d-flex min-vh-100" style={{ overflowY: "hidden", height: "100vh" }}>
       {/* Sidebar */}
-      <div
-        className="d-flex flex-column bg-dark text-light p-3"
-        style={{
-          width: "250px",
-          minHeight: "100vh",
-          overflowY: "auto",
-        }}
-      >
+      <div className="d-flex flex-column p-3" style={{ width: "250px", backgroundColor: "#2980B9", color: "#FFFFFF" }}>
         <h2 className="text-center mb-4">Employee Dashboard</h2>
         <nav className="nav flex-column">
-          <Link to="/employee-dashboard" className="nav-link text-light">
-            Dashboard
+          <Link to="/employee-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>
+            🏠 Dashboard
           </Link>
 
           <div
-            className="nav-link text-light"
-            onClick={() => setShowSubMenu(!showSubMenu)}
-            style={{ cursor: "pointer" }}
+            className="nav-link"
+            onClick={() => setShowOvertimeSubMenu(!showOvertimeSubMenu)}
+            style={{ cursor: "pointer", color: "#FFFFFF" }}
           >
-            Overtime
+            🕒 Overtime
             <i
-              className={`bi ms-2 ${showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
+              className={`bi ms-2 ${showOvertimeSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
               style={{ color: "white" }}
             />
           </div>
 
-       {/* Dropdown Submenu  */}
-       {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/employee-dashboard/overtime/otrequest" className="nav-link text-light">
-            Overtime Request
+          {showOvertimeSubMenu && (
+            <div className="ms-3">
+              <Link to="/employee-dashboard/overtime/otrequest" className="nav-link" style={{ color: "#FFFFFF" }}>
+                Overtime Request
+              </Link>
+              <Link to="/employee-dashboard/overtime/otrecord" className="nav-link" style={{ color: "#FFFFFF" }}>
+                Overtime Record
+              </Link>
+            </div>
+          )}
+
+          <Link to="/employee-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>
+            👤 Profile
           </Link>
-          <Link to="/employee-dashboard/overtime/otrecord" className="nav-link text-light">
-            Overtime Record
+          <Link to="/employee-dashboard/attendance" className="nav-link" style={{ color: "#FFFFFF" }}>
+            📝 Attendance
           </Link>
-        </div>
-      )} 
-      
-       
-               
-                <Link to="/employee-dashboard/profile" className="nav-link text-light">
-                  Profile
-                </Link>
-                <Link to="/employee-dashboard/attendance" className="nav-link text-light">
-                  Attendance
-                </Link>
-                <Link to= "/employee-dashboard/leave" className = "nav-link text-light">
-                Leave
-                </Link>
-                <Link to="/employee-dashboard/profile" className="nav-link text-light">
-                  Profile
-                </Link>
-                <Link to="/employee-dashboard/payroll" className="nav-link text-light">
-                  Payroll
-                </Link>
-          
-          <button onClick={handleLogout} className="btn btn-danger mt-4">
+          <Link to="/employee-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>
+            ✉️ Leave
+          </Link>
+          <Link to="/employee-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
+            💼 Payroll
+          </Link>
+
+          <button onClick={handleLogout} className="btn btn-secondary mt-4">
             Logout
           </button>
         </nav>
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow-1" style={{ overflowY: "auto" }}>
-        {/* Top Bar */}
-        <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
-          <h4 className="m-0">Welcome, {employeeName}</h4>
-          <button
-            onClick={handleLogout}
-            className="btn btn-light btn-sm"
-            style={{ fontWeight: "bold" }}
-          >
-            Logout
-          </button>
+      <div className="flex-grow-1 p-4" style={{ backgroundColor: "#f8f9fa" }}>
+        {/* Header */}
+        <header className="p-3 d-flex justify-content-between align-items-center rounded" style={{ backgroundColor: "#2980B9", color: "#FFFFFF" }}>
+          <h4>👋 Welcome, {employeeName}</h4>
+          <button onClick={handleLogout} className="btn btn-light btn-sm">Logout</button>
         </header>
 
+        {/* Employee Dashboard Content */}
         {location.pathname === "/employee-dashboard" && (
-          <header className="bg-light p-3 border-bottom">
-            <h1>Welcome to the Employee Dashboard</h1>
-          </header>
+          <>
+            <div className="row my-4">
+              <div className="col-md-6">
+                <div className="card shadow-sm p-3">
+                  <h5>🕒 Overtime Requests</h5>
+                  <p>Manage your overtime requests here.</p>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="card shadow-sm p-3">
+                  <h5>📝 Attendance</h5>
+                  <p>View your attendance records.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="row my-4">
+              <div className="col-md-6">
+                <div className="card shadow-sm p-3">
+                  <h5>📅 Upcoming Leave</h5>
+                  <ul>
+                    <li>John Doe - March 5</li>
+                    <li>Jane Smith - March 10</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="card shadow-sm p-3">
+                  <h5>💼 Payroll Overview</h5>
+                  <p>Your latest payroll details will be displayed here.</p>
+                </div>
+              </div>
+            </div>
+          </>
         )}
-        <div className="p-4">
-          <Outlet />
-        </div>
+
+        {/* Show the requested page */}
+        <Outlet />
       </div>
     </div>
   );
