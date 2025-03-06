@@ -35,7 +35,7 @@ const ConfirmedRequests = () => {
     { field: "status", headerName: "Status", minWidth: 120, flex: 1, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Employee Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
     { field: "managerName", headerName: "Manager Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
-    { field: "rejectionReason", headerName: "Reject Reason", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    // { field: "rejectionReason", headerName: "Reject Reason", minWidth: 120, flex: 1, cellClassName: "text-center" },
     {
       field: "status",
       headerName: "Status",
