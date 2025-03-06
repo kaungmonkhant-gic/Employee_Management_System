@@ -6,7 +6,7 @@ const leaveService = {
 
      fetchLeaves : async () => {
         try {
-            const response = await apiClient.get("/leave/all"); // Replace "/leaves" with your actual endpoint
+            const response = await apiClient.get("/empleave"); // Replace "/leaves" with your actual endpoint
             return Array.isArray(response.data) ? response.data : [];
         } catch (error) {
             console.error("Error fetching leaves:", error);

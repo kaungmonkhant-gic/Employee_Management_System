@@ -3,19 +3,33 @@ import apiClient from "../components/api/apiclient";
 
 const employeeService = {
 
-  getEmployees: async () => {
-        try {
-          console.log("Service call to /admin/all");
-          const response = await apiClient.get("/employee/all");
+  getActiveEmployees: async () => {
+    try {
+      console.log("Fetching active employees...");
+      const response = await apiClient.get("/employee/active");
 
-            if (Array.isArray(response.data.employeeList)) {
-              return response.data.employeeList;
-            } 
-          } catch (error) {
-            console.error("Error in getEmployees:", error);
-            throw error;
-          }
-      },
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error in getActiveEmployees:", error);
+      throw error;
+    }
+  },
+
+  getResignedEmployees: async () => {
+    try {
+      console.log("Fetching resigned employees...");
+      const response = await apiClient.get("/employee/resigned");
+
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error in getResignedEmployees:", error);
+      throw error;
+    }
+  },
 
   getPositions: async () => {
     try {
@@ -94,10 +108,43 @@ deleteEmployee: async (employeeId) => {
     console.error("Error deleting employee:", error);
     throw error;
   }
-}
+},
 
-  
-  
+fetchEmployeeCount: async (token) => {
+  try {
+    const response = await apiClient.get("/employee/active-count", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data; // Expecting a numeric value from the backend
+  } catch (error) {
+    console.error("Error fetching active employee count:", error);
+    return 0;
+  }
+},
+
+fetchManagerCount: async (token) => {
+  try {
+    const response = await apiClient.get("/edmployee/manager-count", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data; // Expecting a numeric value from the backend
+  } catch (error) {
+    console.error("Error fetching active manager count:", error);
+    return 0;
+  }
+},
+
+fetchDepartmentCount: async (token) => {
+  try {
+    const response = await apiClient.get("/departments/count", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data; // Expecting a numeric value from the backend
+  } catch (error) {
+    console.error("Error fetching department count:", error);
+    return 0;
+  }
+},
 };
 
 export default employeeService;

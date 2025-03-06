@@ -12,7 +12,7 @@ public class EmployeeProfile {
     private String Id;
     private String name;
     
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dob;
  
     private String nrc;

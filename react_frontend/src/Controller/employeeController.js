@@ -1,14 +1,32 @@
 import employeeService from "../services/employeeService";
 const employeeController = {
   // Fetch all employees
-  fetchUsers: async () => {
+  // fetchUsers: async () => {
+  //   try {
+  //     const employees = await employeeService.getEmployees();
+  //     return employees;
+  //   } catch (error) {
+  //     throw new Error("Failed to fetch users. Please try again later.");
+  //   }
+  // },
+
+  fetchActiveUsers: async () => {
     try {
-      const employees = await employeeService.getEmployees();
+      const employees = await employeeService.getActiveEmployees();
       return employees;
     } catch (error) {
-      throw new Error("Failed to fetch users. Please try again later.");
+      throw new Error("Failed to fetch active employees. Please try again later.");
     }
   },
+  fetchResignedUsers: async () => {
+    try {
+      const employees = await employeeService.getResignedEmployees();
+      return employees;
+    } catch (error) {
+      throw new Error("Failed to fetch resigned employees. Please try again later.");
+    }
+  },
+
 
   // Fetch employees with salary details
   fetchUsersWithSalary: async () => {
@@ -83,8 +101,35 @@ const employeeController = {
     } catch (error) {
       throw new Error("Failed to delete employee. Please try again later.");
     }
-  }
+  },
   
+  // Fetch employee, department, and manager counts
+  fetchEmployeeCount: async (token) => {
+    try {
+      return await employeeService.fetchEmployeeCount(token);
+    } catch (error) {
+      console.error("Failed to fetch active employee count:", error);
+      return 0;
+    }
+  },
+  fetchDepartmentCount: async () => {
+    try {
+      const data = await employeeService.fetchDepartmentCount();
+      return data.totalDepartments; // Extract the number directly
+    } catch (error) {
+      console.error("Failed to fetch department count:", error);
+      return 0;
+    }
+  },
+  fetchManagerCount: async () => {
+    try {
+      const data = await employeeService.fetchManagerCount();
+      return data.totalManagers; // Extract the number directly
+    } catch (error) {
+      console.error("Failed to fetch manager count:", error);
+      return 0;
+    }
+  },
  
 };
 
