@@ -433,7 +433,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
           {/* Second Row */}
           <div className="row gx-3 mt-3">
             {/* Salary & Allowance */}
-            <div className="col-md-6">
+            {/* <div className="col-md-6">
               <h5 className="fw-bold text-secondary">Salary & Allowance</h5>
               <hr />
               <div className="mb-2">
@@ -472,10 +472,10 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                 />
               </div>
 
-            </div>
+            </div> */}
 
             {/* Leave Information */}
-            <div className="col-md-6">
+            {/* <div className="col-md-6">
               <h5 className="fw-bold text-secondary">Leave Information</h5>
               <hr />
               <div className="mb-2">
@@ -514,7 +514,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                 />
               </div>
 
-            </div>
+            </div> */}
           </div>
 
           {/* Buttons */}

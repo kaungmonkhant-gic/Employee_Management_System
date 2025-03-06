@@ -21,7 +21,7 @@ function Salary() {
   return (
     <div className="container mt-5 vh-100">
 
-      <h2 className="text-center mb-4">Salary Management</h2>
+      <h2 className="text-center mb-4">Salary Allowlance</h2>
       {/* <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
             Add Leave
           </button> */}
