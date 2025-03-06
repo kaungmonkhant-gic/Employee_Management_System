@@ -28,7 +28,7 @@ import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
-import OvertimeHistory from "./components/Manager/OvertimeHistory";
+import ManagerOT from "./components/Manager/ManagerOT";
 import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
 import ConfirmOtRequest from "./components/Manager/ConfirmOtRequest";
 import ShowLeave from "./components/ShowLeave";
@@ -36,7 +36,7 @@ import ManagerLeave from "./components/Manager/ManagerLeave";
 import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
 import ViewEmployee from "./components/Manager/ViewEmployee";
-
+import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -99,7 +99,7 @@ root.render(
         <Route path="manager-leave-Approval" element={<ManagerLeaveApproval />} />
         <Route path="leave-confirmed" element={<LeavveConfirmedRequest />}/>
         <Route path="employee-leave-record" element={<EmployeeLeaveRecord />} />
-        <Route path="overtime-history" element={<OvertimeHistory />} />
+        <Route path="manager-ot-self" element={<ManagerOT />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
         <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />
       </Route>

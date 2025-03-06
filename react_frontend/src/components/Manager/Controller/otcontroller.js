@@ -51,6 +51,26 @@ const managerOTController = {
     }
   },
 
+  // Submit a new overtime request
+  submitOTRequest: async (otData) => {
+    try {
+      const response = await otservice.submitOTRequest(otData);
+      return response;
+    } catch (error) {
+      throw new Error("Failed to submit overtime request. Please try again.");
+    }
+  },
+
+  // Get overtime status counts (Pending, Approved, Rejected)
+  getOTCounts: async () => {
+    try {
+      const counts = await otservice.getOTCounts();
+      return counts;
+    } catch (error) {
+      throw new Error("Failed to fetch overtime request counts.");
+    }
+  },
+
     // getOTCounts: async (setPending, setApproved, setRejected) => {
     //     try {
     //       const data = await OTRequestService.getOTCounts();

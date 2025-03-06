@@ -76,6 +76,26 @@ fetchOvertimeSelf: async () => {
   }
 },
 
+// Fetch manager leave count
+getOTCounts: async () => {
+  try {
+    const response = await apiClient.get("/ot/status-count");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching ot request counts:", error);
+    throw error;
+  }
+},
+
+// applyForLeave: async (leaveData) => {
+//   try {
+//     const response = await apiClient.post("/leave/submit", leaveData);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error applying for leave:", error);
+//     throw error;
+//   }
+// },
 
 };
 export default managerOTService;

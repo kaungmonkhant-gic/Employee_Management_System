@@ -45,7 +45,7 @@ function ManagerDashboard() {
                     {/* Dropdown Submenu */}
                     {showSubMenu && (
                       <div className="ms-3">
-                        <Link to="/manager-dashboard/employee-list" className="nav-link text-dark">
+                        <Link to="/manager-dashboard/view-employeelist" className="nav-link text-light">
                           Employee List
                         </Link>
                         <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">
@@ -73,10 +73,10 @@ function ManagerDashboard() {
                               {/* Dropdown Submenu */}
                               {showSubMenu && (
                                 <div className="ms-3">
-                                  <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-dark">
+                                  <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-light">
                                     Daily Attendance
                                   </Link>
-                                  <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-dark">
+                                  <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-light">
                                     Attendance Record
                                   </Link>
                                 </div>
@@ -136,9 +136,9 @@ function ManagerDashboard() {
           <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
             Pending Requests
           </Link>
-          {/* <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
-            Overtime History
-          </Link> */}
+          <Link to="/manager-dashboard/manager-ot-self" className="nav-link text-light">
+            View OT 
+          </Link>
           <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">
             Confirmed Requests
           </Link>

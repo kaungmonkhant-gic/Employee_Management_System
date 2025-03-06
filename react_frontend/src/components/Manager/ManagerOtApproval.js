@@ -39,16 +39,23 @@ const PendingRequests = () => {
 
   // Reject request
   const rejectRequest = async (id) => {
-    const comment = prompt("Enter rejection reason:");
-    if (!comment) return;
-
+    let comment = prompt("Enter rejection reason:");
+  
+    // Ensure the comment is not empty or just spaces
+    if (comment === null || comment.trim() === "") {
+      alert("Rejection reason is required.");
+      return;
+    }
+  
     try {
-      await otcontroller.rejectRequest(id, comment);
-      setPendingRequests((prev) => prev.filter((record) => record.id !== id)); // Remove from pending
+      await otcontroller.rejectRequest(id, comment.trim());
+      setPendingRequests((prev) => prev.filter((record) => record.id !== id)); // Remove from pending list
     } catch (error) {
       console.error("Error rejecting request:", error);
+      alert("Failed to reject request. Please try again.");
     }
   };
+  
 
   const columns = [
     { field: "employeeName", headerName: "Employee", minWidth: 150, flex: 1, cellClassName: "text-center" },
