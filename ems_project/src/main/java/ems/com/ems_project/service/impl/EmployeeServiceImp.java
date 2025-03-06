@@ -78,11 +78,11 @@ public class EmployeeServiceImp implements EmployeeService {
         } else {
             return Collections.emptyList(); // Other roles don't have access
         }
-
-        // Exclude logged-in employee from the list
-        employees = employees.stream()
-                .filter(emp -> !emp.getId().equals(employee.getId()))
-                .collect(Collectors.toList());
+//
+//        // Exclude logged-in employee from the list
+//        employees = employees.stream()
+//                .filter(emp -> !emp.getId().equals(employee.getId()))
+//                .collect(Collectors.toList());
 
         // Convert to DTO and return
         return employees.stream()
@@ -385,13 +385,13 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public ReqRes updateEmployee(String Id, EmployeeDTO employeeDTO) {
+    public ReqRes updateEmployee(String id, EmployeeDTO employeeDTO) {
         ReqRes reqRes = new ReqRes();
 
-        Optional<Employee> existingEmployee = employeeRepository.findById(Id);
+        Optional<Employee> existingEmployee = employeeRepository.findById(id);
         if (existingEmployee.isEmpty()) {
             reqRes.setStatusCode(404);
-            reqRes.setMessage("Employee not found with ID: " + Id);
+            reqRes.setMessage("Employee not found with ID: " + id);
             return reqRes;
         }
 
@@ -449,6 +449,7 @@ public class EmployeeServiceImp implements EmployeeService {
             if (employeeDTO.getRoleName() != null) {
                 roleRepository.findByRoleName(employeeDTO.getRoleName()).ifPresent(employee::setRole);
             }
+
             // Hash and update the password if provided
             if (employeeDTO.getPassword() != null && !employeeDTO.getPassword().isEmpty()) {
                 String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employeeDTO.getPassword());

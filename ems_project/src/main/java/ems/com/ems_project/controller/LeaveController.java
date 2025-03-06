@@ -68,7 +68,7 @@ public class LeaveController {
         // Extract actual token (remove "Bearer ")
         String actualToken = token.replace("Bearer ", "");
 
-        List<LeaveDTO> leaveDTOs = leaveService.getLeavesForManager(actualToken);
+        List<LeaveDTO> leaveDTOs = leaveService.getLeavesRecordRoleBased(actualToken);
         return ResponseEntity.ok(leaveDTOs);
     }
 

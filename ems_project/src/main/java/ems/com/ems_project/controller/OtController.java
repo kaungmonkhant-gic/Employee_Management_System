@@ -1,5 +1,6 @@
 package ems.com.ems_project.controller;
 
+import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.service.OtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,14 @@ public class OtController {
     @Autowired
     private OtService otService;
 
-    // Get all OT records with employee and manager names
-    @GetMapping("/all")
-    public List<OtDTO> getAllOt() {
-        return otService.getAllOt();
+    @GetMapping("/role/records")
+    public ResponseEntity<List<OtDTO>> getLeavesForManager(
+            @RequestHeader("Authorization") String token) {
+        // Extract actual token (remove "Bearer ")
+        String actualToken = token.replace("Bearer ", "");
+
+        List<OtDTO> otList = otService.getOtRecordRoleBased(actualToken);
+        return ResponseEntity.ok(otList);
     }
 
     @GetMapping("/self")
@@ -69,6 +74,12 @@ public class OtController {
     public ResponseEntity<Map<String, Long>> getOtStatusCount() {
         Map<String, Long> statusCount = otService.getOtStatusCountForLoggedInUser();
         return ResponseEntity.ok(statusCount);
+    }
+
+    // Get leave status count based on role (Admin/Manager)
+    @GetMapping("/role-status-count")
+    public Map<String, Long> getLeaveStatusForRoleBased() {
+        return otService.getOTStatusCountByRole();
     }
 
 }

@@ -30,6 +30,11 @@ public class EmployeeSalary {
     //@JsonIgnore
     private Employee employee;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "position_id", referencedColumnName = "id",nullable = false,unique = true)
+    //@JsonIgnore
+    private Positions positions;
+
     public Double getTotalSalary() {
         return (basicSalary != null ? basicSalary : 0.0) +
                 (houseAllowance != null ? houseAllowance : 0.0) +
@@ -74,5 +79,13 @@ public class EmployeeSalary {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public Positions getPositions() {
+        return positions;
+    }
+
+    public void setPositions(Positions positions) {
+        this.positions = positions;
     }
 }

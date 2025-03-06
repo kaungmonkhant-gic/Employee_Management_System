@@ -37,7 +37,7 @@ public class LeaveService {
 //                .collect(Collectors.toList()); // Collect the list of DTOs
 //    }
 
-    public List<LeaveDTO> getLeavesForManager(String token) {
+    public List<LeaveDTO> getLeavesRecordRoleBased(String token) {
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);
         String roleName = jwtutils.extractRole(token);

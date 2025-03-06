@@ -1,7 +1,9 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
+import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.Ots;
 import ems.com.ems_project.model.RequestStatus;
 import ems.com.ems_project.repository.EmployeeRepository;
@@ -13,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,13 +27,37 @@ public class OtService {
     private GenerateId generateId;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private JWTUtils jwtutils;
 
-    // Method to get all OT records with employee and manager names
-    public List<OtDTO> getAllOt() {
-        return otRepository.findAll().stream()
-                .map(ot -> new OtDTO(ot, ot.getEmployee(), ot.getManager()))  // Pass Employee and Manager to DTO constructor
-                .collect(Collectors.toList()); // Collect the list of DTOs
+
+    public List<OtDTO> getOtRecordRoleBased(String token) {
+        // Extract user details from the token
+        String email = jwtutils.extractUsername(token);
+        String roleName = jwtutils.extractRole(token);
+
+        // Get the logged-in employee details (who is the manager)
+        Employee manager = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Ots> otList = new ArrayList<>();
+
+        if ("Admin".equals(roleName)) {
+            // Admin: Get all leave records
+            otList = otRepository.findAll();
+        } else if ("Manager".equals(roleName)) {
+            // Manager: Get leave requests where they are assigned as the manager
+            otList = otRepository.findByManagerId(manager.getId());
+        } else {
+            return Collections.emptyList(); // Other roles don't have access
+        }
+
+        // Convert to DTO and return
+        return otList.stream()
+                .map(ot -> new OtDTO(ot, ot.getEmployee(), ot.getManager()))
+                .collect(Collectors.toList());
     }
+
 
     public List<OtDTO> getOtRecordsForLoggedInUser() {
         // Find the logged-in employee using the authenticated email
@@ -163,6 +186,42 @@ public class OtService {
 
         return statusCountMap;
     }
+
+    public Map<String, Long> getOTStatusCountByRole() {
+        // Get logged-in user from the security context
+        Employee employee = employeeRepository.findByEmail(
+                        SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+
+        List<Object[]> results;
+
+        if (employee.getRoleName().equals("Admin")) {
+            // Admin: Fetch status count for all employees
+            results = otRepository.getStatusCountForAllEmployees();
+        } else if (employee.getRoleName().equals("Manager")) {
+            // Manager: Fetch status count for employees they manage
+            results = otRepository.getStatusCountByManagerId(employee.getId());
+        } else {
+            // If the role is not Admin or Manager, you could either throw an exception or return an empty map
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
+        }
+
+        // Convert results to a map
+        Map<String, Long> statusCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        row -> ((RequestStatus) row[0]).name(),  // Convert Enum to String
+                        row -> ((Number) row[1]).longValue()     // Convert count properly
+                ));
+
+        // Ensure all statuses are included with a count of 0 if missing
+        for (RequestStatus status : RequestStatus.values()) {
+            statusCountMap.putIfAbsent(status.name(), 0L);
+        }
+
+        return statusCountMap;
+    }
+
+
 
 
     // Helper method to get logged-in username (email) from JWT

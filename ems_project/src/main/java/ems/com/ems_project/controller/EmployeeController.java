@@ -128,9 +128,11 @@ public class EmployeeController {
 
 
     @PutMapping("/update/{id}") // Ensure the variable name matches
-    public ResponseEntity<ReqRes> updateEmployee(@PathVariable("id") String employeeId,
-                                                 @Valid @RequestBody EmployeeDTO employeeDTO) {
-        ReqRes reqRes = employeeService.updateEmployee(employeeId, employeeDTO); // ✅ Now using the correct variable
+    public ResponseEntity<ReqRes> updateEmployee(@PathVariable String id,
+                                                 @RequestBody EmployeeDTO employeeDTO) {
+
+        System.out.println("Received employeeDTO: " + employeeDTO);
+        ReqRes reqRes = employeeService.updateEmployee(id, employeeDTO); // ✅ Now using the correct variable
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);

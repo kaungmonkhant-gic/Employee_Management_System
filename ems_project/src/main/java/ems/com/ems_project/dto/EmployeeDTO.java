@@ -1,6 +1,7 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import ems.com.ems_project.model.*;
 import lombok.Data;
 import java.util.Date;
@@ -34,6 +35,9 @@ public class EmployeeDTO {
     private String roleName;
     private String positionName;
     private String departmentName;
+
+    public EmployeeDTO() {
+    }
 
     // Constructor to initialize the DTO using Employee, Leave, and Salary
     public EmployeeDTO(Employee employee) {

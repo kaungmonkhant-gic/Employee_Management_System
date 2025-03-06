@@ -40,24 +40,26 @@ public class SecurityConfig {
                         // Public routes
                         .requestMatchers("/auth/**").permitAll()
 
-                        // All logged-in users can view their profile
-                        .requestMatchers(HttpMethod.GET,"/employee/profile").authenticated()
+                        // Routes for all authenticated users (view profile, records, reset password, check-in/checkout)
+                        .requestMatchers(HttpMethod.GET, "/employee/profile", "/attendance/self", "/salary-history/self",
+                                "/leave/self", "ot/self","/departments","/positions","/roles").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/employee/reset-password", "/attendance/checkin", "/attendance/checkout").authenticated()
+                        // Allow all authenticated users to update their profile
+                        .requestMatchers(HttpMethod.PUT, "/employee/profile/update").authenticated()
 
-                        .requestMatchers(HttpMethod.PUT, "/employee/profile/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
 
                         // Employee management: Admin (CRUD), Manager (View)
                         .requestMatchers(HttpMethod.GET, "/employee/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
                         .requestMatchers(HttpMethod.POST, "/employee/register").hasAuthority("ROLE_Admin")
-                        .requestMatchers(HttpMethod.PUT, "/employee/update/**").hasAuthority("ROLE_Admin")
-                        .requestMatchers(HttpMethod.DELETE, "/employee/delete/**").hasAuthority("ROLE_Admin")
+                        .requestMatchers(HttpMethod.PUT, "/employee/update").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
+                        .requestMatchers(HttpMethod.DELETE, "/employee/delete").hasAuthority("ROLE_Admin")
 
                         // Salary management: Admin only
-                        .requestMatchers(HttpMethod.GET,"/departments/**").authenticated()
                         .requestMatchers("/salary/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
                         // Attendance management: Admin & Manager
                         .requestMatchers("/attendance/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager")
 
-
+                        .requestMatchers("/departments/**").hasAnyAuthority("ROLE_Admin", "ROLE_Manager")
                         // OT management: Admin & Manager
                         .requestMatchers("/ot/**").hasAnyAuthority("ROLE_Admin","ROLE_Manager","ROLE_Employee")
 
