@@ -41,7 +41,6 @@ rejectOvertimeRequest: async (id, token) => {
       alert("Rejection reason is required!");
       return;
     }
-
     const response = await apiClient.put(
       `/ot/reject/${id}`,
       { reason: reason },
@@ -54,5 +53,29 @@ rejectOvertimeRequest: async (id, token) => {
     throw error;
   }
 },
+
+fetchOvertimeSelf: async () => {
+  try {
+    const response = await apiClient.get("/ot/self"); // Base URL is already set in apiClient
+    console.log("OT Records Response:", response.data);
+    return response.data; // Axios already parses JSON automatically
+  } catch (error) {
+    console.error("Error fetching overtime records:", error);
+    throw error; // Handle errors where this function is called
+  }
+},
+
+ // Submit a new overtime request
+ submitOTRequest: async (otData) => {
+  try {
+    const response = await apiClient.post("/ot/submit", otData);
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting overtime request:", error);
+    throw error;
+  }
+},
+
+
 };
 export default managerOTService;
