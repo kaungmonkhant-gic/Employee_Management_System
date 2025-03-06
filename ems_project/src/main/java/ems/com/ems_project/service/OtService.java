@@ -137,42 +137,53 @@ public class OtService {
         String loggedInUsername = getLoggedInUsername();
 
         // Fetch the logged-in employee (manager)
-        Employee manager = employeeRepository.findByEmail(loggedInUsername)
+        Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found"));
 
         // Fetch the OT request by ID
         Ots ot = otRepository.findById(otId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OT request not found"));
 
-        // Check if OT request is already approved or rejected
-        if (!ot.getStatus().equals(RequestStatus.PENDING)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This OT request has already been processed.");
-        }
-
-        // Check if the logged-in user is the assigned manager
-        if (!ot.getManager().getEmail().equals(loggedInUsername)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to process this OT request.");
-        }
-
-        // Process based on action type
-        if ("approve".equalsIgnoreCase(action)) {
-            ot.setStatus(RequestStatus.APPROVED);
-            ot.setRejectionReason(null);  // Clear rejection reason if approving
-        } else if ("reject".equalsIgnoreCase(action)) {
-            if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
+        // Check if Manager is approving/rejecting OT
+        if ("approve".equalsIgnoreCase(action) || "reject".equalsIgnoreCase(action)) {
+            // Ensure only the assigned manager can approve/reject
+            if (!ot.getManager().getEmail().equals(loggedInUsername)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the assigned manager can process this OT request.");
             }
-            ot.setStatus(RequestStatus.REJECTED);
-            ot.setRejectionReason(rejectionReason);  // Set rejection reason
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve' or 'reject'.");
-        }
 
+            if ("approve".equalsIgnoreCase(action)) {
+                ot.setStatus(RequestStatus.APPROVED);
+                ot.setRejectionReason(null);  // Clear rejection reason if approving
+            } else {
+                if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
+                }
+                ot.setStatus(RequestStatus.REJECTED);
+                ot.setRejectionReason(rejectionReason);  // Set rejection reason
+            }
+        }
+        // Check if Admin is marking OT as paid
+        else if ("paid".equalsIgnoreCase(action)) {
+            // Ensure only Admin can mark as paid
+            if (!"Admin".equalsIgnoreCase(employee.getRoleName())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin can mark OT as paid.");
+            }
+
+            // Ensure OT is already approved before marking as paid
+            if (!RequestStatus.APPROVED.equals(ot.getStatus())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only approved OT requests can be marked as paid.");
+            }
+
+            ot.setPaid(true); // Mark OT as paid
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve', 'reject', or 'paid'.");
+        }
         // Save the updated OT request to the database
         Ots updatedOt = otRepository.save(ot);
 
         // Return updated OT DTO with rejection reason
-        return new OtDTO(updatedOt, ot.getEmployee(), manager);
+        return new OtDTO(updatedOt, ot.getEmployee(), ot.getManager());
     }
     public Map<String, Long> getOtStatusCountForLoggedInUser() {
         // Find employee by email from SecurityContext
