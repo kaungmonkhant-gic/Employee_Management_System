@@ -59,10 +59,10 @@ const ConfirmedRequests = () => {
   ];
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 vh-100">
       <h3 className="mb-3">Confirmed Leave Requests</h3>
       <button className="btn btn-secondary mb-3 ms-3 mt-3" onClick={() => navigate("/manager-dashboard/manager-leave")}>
-        Apply for Leave
+        Return
       </button>
       <button className="btn btn-secondary mb-3 ms-3 mt-3" onClick={() => navigate("/manager-dashboard/manager-leave-approval")}>
         View Pending Requests

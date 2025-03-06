@@ -4,6 +4,8 @@ import { Modal, Button } from "react-bootstrap";
 import LeaveForm from "../common/LeaveForm";
 import apiClient from "../api/apiclient";
 import { useNavigate } from "react-router-dom";
+import DataTable from "../common/DataTable";
+import leaveController from "../Manager/Controller/EmpLeaveRecordController";
 
 const LeaveRequests = () => {
   const [pending, setPending] = useState([]);
@@ -28,11 +30,44 @@ const LeaveRequests = () => {
 
     fetchLeaveRequests();
   }, []);
+
+  const columns = [
+    { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "leaveType", headerName: "Leave Type", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "startDate", headerName: "Start Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "endDate", headerName: "End Date", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "totalDays", headerName: "Total Days", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "reason", headerName: "Reason", minWidth: 200, flex: 2, cellClassName: "text-center" },
+    { field: "status", headerName: "Status", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "employeeName", headerName: "Employee Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "managerName", headerName: "Manager Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    // { field: "rejectionReason", headerName: "Reject Reason", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 120,
+      flex: 1,
+      cellClassName: "text-center",
+      render: (row) => (
+        <span className={`badge ${row.status === "APPROVED" ? "bg-success" : "bg-danger"}`}>
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      field: "rejectionReason",
+      headerName: "Rejection Reason",
+      minWidth: 200,
+      flex: 2,
+      cellClassName: "text-center",
+      render: (row) => (row.status === "REJECTED" ? row.rejectionReason || "No reason given" : "N/A"),
+    },
+  ];
   
   return (
-    <div className="container mt-4">
-      <div className="row mb-4">
-        <div className="col-md-4">
+    <div className="container mt-3 vh-100">
+      <div className="row mb-3">
+        <div className="col-md-3">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
             <div className="ms-3">
@@ -92,6 +127,18 @@ const LeaveRequests = () => {
            {/* called the leave form in common file */}
         </Modal.Body>
       </Modal>
+
+      <DataTable
+          fetchData={leaveController.fetchLeaveRecord}
+          columns={columns}
+          keyField="employeeId"
+          responsive
+          fixedHeader
+          fixedHeaderScrollHeight="400px"
+          noDataComponent="No employees found"
+          highlightOnHover
+          pagination
+        />
     </div>
   );
 };
