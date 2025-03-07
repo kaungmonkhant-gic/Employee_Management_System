@@ -37,6 +37,8 @@ import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
 import ViewEmployee from "./components/Manager/ViewEmployee";
 import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
+import Leave from "./components/Manager/Leave";
+import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
 import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
