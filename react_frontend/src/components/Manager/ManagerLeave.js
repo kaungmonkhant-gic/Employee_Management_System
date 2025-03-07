@@ -5,13 +5,16 @@ import LeaveForm from "../common/LeaveForm";
 import apiClient from "../api/apiclient";
 import { useNavigate } from "react-router-dom";
 import DataTable from "../common/DataTable";
-import leaveController from "../Manager/Controller/EmpLeaveRecordController";
+import leaveController from "../Manager/Controller/ManagerLeaveController";
 
 const LeaveRequests = () => {
   const [pending, setPending] = useState([]);
   const [approved, setApproved] = useState([]);
   const [rejected, setRejected] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [leaveRecords, setLeaveRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [availableLeaveDays, setAvailableLeaveDays] = useState(0);
   const navigate = useNavigate();
 
@@ -30,6 +33,12 @@ const LeaveRequests = () => {
 
     fetchLeaveRequests();
   }, []);
+
+  useEffect(() => {
+    setLeaveRecords();
+  }, []);
+
+
 
   const columns = [
     { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
@@ -129,7 +138,7 @@ const LeaveRequests = () => {
       </Modal>
 
       <DataTable
-          fetchData={leaveController.fetchLeaveRecord}
+          fetchData={leaveController.fetchLeaveRecords}
           columns={columns}
           keyField="employeeId"
           responsive
