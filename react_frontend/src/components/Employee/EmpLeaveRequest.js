@@ -69,7 +69,7 @@ const LeaveRequests = () => {
         <Button variant="secondary ms-3" onClick={() => setShowModal(true)}>
           Apply for leave
         </Button>
-        <Button variant="secondary ms-3" onClick={() => navigate("/employee-dashboard/employee-leave-records")}>
+        <Button variant="secondary ms-3" onClick={() => navigate("/employee-dashboard/self-leave-record")}>
           View Leave Records
         </Button>
       </div>

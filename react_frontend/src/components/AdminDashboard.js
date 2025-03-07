@@ -91,7 +91,7 @@ function AdminDashboard() {
             onClick={() => setShowSubMenu(!showSubMenu)}
             style={{ cursor: "pointer", color: "#FFFFFF" }}
           >
-            Employee
+            👤 Employee
             <i
               className={`bi ms-2 ${showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
               style={{ color: "white" }}
@@ -111,7 +111,7 @@ function AdminDashboard() {
             onClick={() => setShowSubMenu(!showSubMenu)}
             style={{ cursor: "pointer", color: "#FFFFFF" }}
           >
-            Attendance
+            📝 Attendance
             <i
               className={`bi ms-2 ${showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
               style={{ color: "white" }}
@@ -124,15 +124,15 @@ function AdminDashboard() {
                 Daily Attendance
               </Link>
               <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link" style={{ color: "#FFFFFF" }}>
-                Attendance Record
+               Attendance Record
               </Link>
             </div>
           )}
 
-          <Link to="/admin-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
-          <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>OT (Overtime)</Link>
-          <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>Profile</Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Payroll</Link>
+          <Link to="/admin-dashboard/admin-leave" className="nav-link" style={{ color: "#FFFFFF" }}>💼 Leave</Link>
+          <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>🕒 Overtime</Link>
+          <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>👤 Profile</Link>
+          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>💼 Payroll</Link>
 
           <button onClick={handleLogout} className="btn btn-secondary mt-4">Logout</button>
         </nav>

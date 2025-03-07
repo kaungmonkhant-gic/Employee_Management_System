@@ -22,7 +22,7 @@ import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
-import Leave from "./components/Leave";
+import AdminLeave from "./components/AdminLeave";
 // import ViewSalary from "./components/Employee/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
@@ -36,6 +36,9 @@ import ManagerLeave from "./components/Manager/ManagerLeave";
 import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
 import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
+import Leave from "./components/Manager/Leave";
+import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
+
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -72,7 +75,7 @@ root.render(
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
         <Route path="showleave" element={<ShowLeave/>} />
         <Route path="salary" element={<Salary />} />
-        <Route path="leave" element={<Leave />} />
+        <Route path="admin-leave" element={<AdminLeave />} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
         <Route path="profile" element={<Profile />} />
@@ -84,6 +87,7 @@ root.render(
         <Route path="attendance" element={<EmpAttendance />} />
         <Route path="attendance-list" element={<EmpAttendanceList />} />
         <Route path="leave" element={<EmpLeave />}/>
+        <Route path="self-leave-record" element={<SelfLeaveRecords />} />
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />

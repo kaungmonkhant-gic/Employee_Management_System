@@ -4,6 +4,14 @@ import { getRemainingLeaveDays } from "../Service/LeaveRequestService";
 
 
 const EmpLeaveRequestController = {
+  fetchLeaveSelf: async (token) => {
+    try {
+      const records = await leaveService.fetchLeaveSelf(token);
+      return records;
+    } catch (error) {
+      throw new Error("Failed to fetch leave records. Please try again later.");
+    }
+  },
 
     fetchLeaveCounts: async (setPending, setApproved, setRejected) => {
         try {
