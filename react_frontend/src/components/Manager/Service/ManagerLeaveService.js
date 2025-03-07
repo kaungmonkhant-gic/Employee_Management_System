@@ -28,7 +28,7 @@ const ManagerLeaveService = {
 
     fetchLeaves : async () => {
        try {
-           const response = await apiClient.get("/leave/role/records"); // Replace "/leaves" with your actual endpoint
+           const response = await apiClient.get("/empleave/role/records"); // Replace "/leaves" with your actual endpoint
            return Array.isArray(response.data) ? response.data : [];
        } catch (error) {
            console.error("Error fetching leaves:", error);

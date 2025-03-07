@@ -1,153 +1,165 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { BellFill, CheckCircleFill, PlusCircleFill } from "react-bootstrap-icons";
+import { Modal, Button } from "react-bootstrap";
+import OTRequestForm from "./common/OTRequestForm"; // Assuming this component handles the OT request form
+import apiClient from "./api/apiclient";
+import { useNavigate } from "react-router-dom";
+import DataTable from "./common/DataTable";
+import overtimeController from "../Controller/overtimeController";
 
-const OvertimeAdminDashboard = () => {
-  const [overtimeRequests, setOvertimeRequests] = useState([]);
-  const [filteredStatus, setFilteredStatus] = useState("All");
+const OvertimeRequests = () => {
+  const [pending, setPending] = useState([]);
+  const [approved, setApproved] = useState([]);
+  const [paid, setPaid] = useState([]);
+  const [rejected, setRejected] = useState([]);
+  const [showModal, setShowModal] = useState(false); // Modal state for adding OT request
+  // const [newOTRequest, setNewOTRequest] = useState({}); // State for new OT request form
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchOvertimeRequests = async () => {
+      try {
+        const response = await apiClient.get("/ot/status-count");
+        const data = response.data || {}; 
+        setPending(Array.isArray(data.PENDING) ? data.PENDING : []);
+        setApproved(Array.isArray(data.APPROVED) ? data.APPROVED : []);
+        setPaid(Array.isArray(data.PAID) ? data.PAID : []);
+        setRejected(Array.isArray(data.REJECTED) ? data.REJECTED : []);
+      } catch (error) {
+        console.error("Error fetching overtime requests:", error);
+        setPending([]);
+        setApproved([]);
+        setPaid([]);
+        setRejected([]);
+      }
+    };
     fetchOvertimeRequests();
   }, []);
 
-  // Sample data fetching (replace with actual API call)
-  const fetchOvertimeRequests = () => {
-    const requests = [
-      { id: 1, employee: "John Doe", date: "2025-02-10", hours: 3, status: "Pending" },
-      { id: 2, employee: "Jane Smith", date: "2025-02-05", hours: 5, status: "Approved" },
-      { id: 3, employee: "Michael Brown", date: "2025-02-08", hours: 2, status: "Rejected" },
-      { id: 4, employee: "Emma Wilson", date: "2025-02-11", hours: 4, status: "Pending" },
-    ];
-    setOvertimeRequests(requests);
+  const handlePay = async (id) => {
+    const result = await overtimeController.markAsPaid(id);
+    if (result.success) {
+      setApproved((prev) => prev.filter((record) => record.id !== id));
+      setPaid((prev) => [...prev, { id, status: "PAID" }]);
+      alert(result.message);
+    } else {
+      alert(result.message);
+    }
   };
 
-  const updateRequestStatus = (id, status) => {
-    setOvertimeRequests((prevRequests) =>
-      prevRequests.map((request) =>
-        request.id === id ? { ...request, status } : request
-      )
-    );
-  };
+  // Handle opening the modal to add an overtime request
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
-  const filteredRequests =
-    filteredStatus === "All"
-      ? overtimeRequests
-      : overtimeRequests.filter((request) => request.status === filteredStatus);
+  // // Handle submitting a new overtime request
+  // const handleAddOTRequest = async (data) => {
+  //   try {
+  //     const response = await apiClient.post("/ot/request", data);
+  //     if (response.data.success) {
+  //       alert("Overtime request submitted successfully!");
+  //       // Refresh data after submitting
+  //       OvertimeRequests();
+  //       handleCloseModal(); // Close the modal
+  //     } else {
+  //       alert("Failed to submit overtime request.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting overtime request:", error);
+  //     alert("An error occurred. Please try again.");
+  //   }
+  // };
+
+  const columns = [
+    { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "date", headerName: "Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "startTime", headerName: "Start Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "endTime", headerName: "End Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "otTime", headerName: "Duration", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "reason", headerName: "Reason", minWidth: 200, flex: 2, cellClassName: "text-center" },
+    { field: "otStatus", headerName: "Status", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    {
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 200,
+      flex: 2,
+      cellClassName: "text-center",
+      render: (row) => (
+        <div className="d-flex justify-content-center gap-2">
+          {row.otStatus === "APPROVED" && (
+            <Button variant="success" onClick={() => handlePay(row.id)}>Pay</Button>
+          )}
+          {row.otStatus === "PENDING" && <span>Pending</span>}
+          {row.otStatus === "PAID" && <span>Paid</span>}
+        </div>
+      ),
+    },
+    { field: "state", headerName: "State", minWidth: 120, flex: 1, cellClassName: "text-center", render: (row) => (row.otStatus === "PAID" ? "Paid" : "Pending") },
+  ];
 
   return (
-    <div className="container mt-4">
-      <h1 className="mb-4">Overtime Management - Admin Dashboard</h1>
+    <div className="container mt-3 vh-100">
+      <div className="row mb-3">
+        <div className="col-md-3">
+          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
+            <BellFill size={32} color="orange" />
+            <div className="ms-3">
+              <p className="text-muted mb-1">Pending Requests</p>
+              <p className="fw-bold mb-0">{pending.length}</p>
+            </div>
+          </div>
+        </div>
 
-      {/* Metrics Section */}
-      <div className="row mb-4">
         <div className="col-md-4">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Total Requests</h5>
-              <p className="card-text display-6">{overtimeRequests.length}</p>
+          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
+            <CheckCircleFill size={32} color="green" />
+            <div className="ms-3">
+              <p className="text-muted mb-1">Approved Requests</p>
+              <p className="fw-bold mb-0">{approved.length}</p>
             </div>
           </div>
         </div>
+
         <div className="col-md-4">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Pending Requests</h5>
-              <p className="card-text display-6">
-                {overtimeRequests.filter((req) => req.status === "Pending").length}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Approved Requests</h5>
-              <p className="card-text display-6">
-                {overtimeRequests.filter((req) => req.status === "Approved").length}
-              </p>
+          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
+            <CheckCircleFill size={32} color="blue" />
+            <div className="ms-3">
+              <p className="text-muted mb-1">Paid Requests</p>
+              <p className="fw-bold mb-0">{paid.length}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Status Filter */}
-      <div className="mb-4">
-        <label htmlFor="statusFilter" className="form-label">
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className="form-select"
-          value={filteredStatus}
-          onChange={(e) => setFilteredStatus(e.target.value)}
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-      </div>
+      {/* Button to trigger overtime request modal */}
+      {/* <Button variant="primary" onClick={handleShowModal}>
+        <PlusCircleFill size={20} className="me-2" />
+        Add Overtime Request
+      </Button> */}
 
-      {/* Overtime Requests Table */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="card-title mb-0">Overtime Requests</h2>
-        </div>
-        <div className="card-body">
-          <table className="table table-bordered table-hover">
-            <thead className="table-light">
-              <tr>
-                <th>Employee</th>
-                <th>Date</th>
-                <th>Hours</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRequests.map((request) => (
-                <tr key={request.id}>
-                  <td>{request.employee}</td>
-                  <td>{request.date}</td>
-                  <td>{request.hours}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        request.status === "Pending"
-                          ? "bg-warning"
-                          : request.status === "Approved"
-                          ? "bg-success"
-                          : "bg-danger"
-                      }`}
-                    >
-                      {request.status}
-                    </span>
-                  </td>
-                  <td>
-                    {request.status === "Pending" && (
-                      <>
-                        <button
-                          className="btn btn-success btn-sm me-2"
-                          onClick={() => updateRequestStatus(request.id, "Approved")}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => updateRequestStatus(request.id, "Rejected")}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Modal for overtime request form
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Overtime Request</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <OTRequestForm onSubmit={handleAddOTRequest} />
+        </Modal.Body>
+      </Modal> */}
+
+      {/* Data table for showing overtime requests */}
+      <DataTable
+        fetchData={overtimeController.fetchOvertimeRecords}
+        columns={columns}
+        keyField="id"
+        responsive
+        fixedHeader
+        fixedHeaderScrollHeight="400px"
+        noDataComponent="No overtime records found"
+        highlightOnHover
+        pagination
+      />
     </div>
   );
 };
 
-export default OvertimeAdminDashboard;
+export default OvertimeRequests;

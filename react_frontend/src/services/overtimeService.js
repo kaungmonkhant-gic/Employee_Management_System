@@ -5,7 +5,7 @@ const overtimeService = {
   getOvertimeRecords: async () => {
     try {
       console.log("Fetching overtime records...");
-      const response = await apiClient.get("/overtime");
+      const response = await apiClient.get("/ot/role/records");
       console.log("Overtime Records:", response.data);
       return response.data;
     } catch (error) {
@@ -24,6 +24,14 @@ const overtimeService = {
     } catch (error) {
       console.error("Error adding overtime record:", error);
       throw error;
+    }
+  },
+  markAsPaid : async (id) => {
+    try {
+      const response = await apiClient.put(`/ot/paid/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to mark as paid: " + error.response?.data?.message || error.message);
     }
   },
 };
