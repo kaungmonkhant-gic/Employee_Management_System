@@ -12,8 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeLeaveService {
@@ -24,9 +27,12 @@ public class EmployeeLeaveService {
     private GenerateId generateId;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private JWTUtils jwtutils;
 
     public List<EmployeeLeaveDTO> getAllLeavesWithEmployeeName() {
         return employeeLeaveRepository.findAll().stream()
+                .filter(employeeLeave -> employeeLeave.getEmployee().getResignDate() == null) // Exclude resigned employees
                 .map(employeeLeave -> new EmployeeLeaveDTO(employeeLeave, employeeLeave.getEmployee().getName()))
                 .toList();
     }
@@ -72,7 +78,50 @@ public class EmployeeLeaveService {
         // Save updated leave balance
         employeeLeaveRepository.save(employeeLeave);
     }
+    public List<EmployeeLeaveDTO> getEmployeeLeaveRecordRoleBased(String token) {
+        // Extract user details from the token
+        String email = jwtutils.extractUsername(token);
+        String roleName = jwtutils.extractRole(token);
 
+        // Get the logged-in employee (who might be a manager)
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<EmployeeLeave> employeeLeaves = new ArrayList<>();
+
+        if ("Admin".equals(roleName)) {
+            // Admin: Get leave records of **only active employees**
+            List<Employee> activeEmployees = employeeRepository.findAll()
+                    .stream()
+                    .filter(emp -> emp.getResignDate() == null) // Exclude resigned employees
+                    .collect(Collectors.toList());
+
+            // Fetch leave records for active employees
+            for (Employee activeEmployee : activeEmployees) {
+                Optional<EmployeeLeave> employeeLeave = employeeLeaveRepository.findByEmployeeId(activeEmployee.getId());
+                employeeLeave.ifPresent(employeeLeaves::add);
+            }
+        } else if ("Manager".equals(roleName)) {
+            // Manager: Fetch employees in the same department **who have NOT resigned**
+            List<Employee> activeEmployees = employeeRepository.findByDepartment(employee.getDepartment())
+                    .stream()
+                    .filter(emp -> emp.getResignDate() == null) // Exclude resigned employees
+                    .collect(Collectors.toList());
+
+            // Fetch leave records for active employees
+            for (Employee activeEmployee : activeEmployees) {
+                Optional<EmployeeLeave> employeeLeave = employeeLeaveRepository.findByEmployeeId(activeEmployee.getId());
+                employeeLeave.ifPresent(employeeLeaves::add);
+            }
+        } else {
+            return Collections.emptyList(); // Other roles don't have access
+        }
+
+        // Convert to DTO and return
+        return employeeLeaves.stream()
+                .map(employeeLeave -> new EmployeeLeaveDTO(employeeLeave, employeeLeave.getEmployee().getName()))
+                .collect(Collectors.toList());
+    }
 
 
 //    public void createEmployeeLeave(Employee savedEmployee, RegisterDTO registerDTO) {

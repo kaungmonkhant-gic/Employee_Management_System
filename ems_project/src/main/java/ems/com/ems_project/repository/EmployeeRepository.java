@@ -16,6 +16,7 @@ import org.springframework.data.repository.query.Param;
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	Optional<Employee> findByEmail(String email);
 	Optional<Employee> findById(String Id);
+	List<Employee> findByManager(Employee manager);
 
 
 	// Check if email already exists
@@ -63,6 +64,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	@Query("SELECT COUNT(e) FROM Employee e WHERE e.role.id = :roleId AND e.resignDate IS NULL")
 	long countActiveManagers(@Param("roleId") String roleId);
 
+	List<Employee> findByDepartment(Departments department);
 }
 
 
