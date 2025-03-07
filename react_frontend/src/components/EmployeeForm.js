@@ -345,10 +345,10 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
             <div className="col-md-6">
               <h5 className="fw-bold text-secondary">Job Details</h5>
               <hr />
-              <div className="mb-2">
+              {/* <div className="mb-2">
                 <label className="form-label fw-semibold">Employee ID</label>
                 <input type="text" name="id" value={employeeData.id} onChange={handleChange} className="form-control form-control-lg" required />
-              </div>
+              </div> */}
 
               <div className="mb-2">
                 <label className="form-label fw-semibold">Position</label>
