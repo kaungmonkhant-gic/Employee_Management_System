@@ -29,11 +29,11 @@ public class Leave {
     private Boolean halfLeave = false;
 
     @Column(name = "start_date")
-    @JsonFormat(pattern = "MM-dd-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @Column(name = "end_date")
-    @JsonFormat(pattern = "MM-dd-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
     @Column(name = "total_days")

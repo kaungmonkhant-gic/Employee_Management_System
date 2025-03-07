@@ -16,7 +16,7 @@ public class OtDTO {
 
     private String id;
     private String employeeName;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;

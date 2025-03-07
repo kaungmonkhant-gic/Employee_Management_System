@@ -27,9 +27,11 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
     @Override
     public List<EmployeeSalaryDTO> getAllSalaries() {
         return salaryRepository.findAll().stream()
+                .filter(employeeSalary -> employeeSalary.getEmployee().getResignDate() == null) // Exclude resigned employees
                 .map(employeeSalary -> new EmployeeSalaryDTO(employeeSalary, employeeSalary.getEmployee().getName()))
                 .toList();
     }
+
 
     public EmployeeSalaryDTO getEmployeeSalaryById(String employeeId) {
         EmployeeSalary employeeSalary = salaryRepository.findByEmployeeId(employeeId)
