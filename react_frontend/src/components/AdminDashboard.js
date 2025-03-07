@@ -23,12 +23,19 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation(); // ✅ Get current page URL
   const [employeeName, setEmployeeName] = useState("");
-  const [showSubMenu, setShowSubMenu] = useState(false);
-  useEffect(() => {
-    const storedEmployeeName = localStorage.getItem("employeeName");
-    console.log(storedEmployeeName); // Log it for debugging
-    setEmployeeName(storedEmployeeName || "Admin"); // If not found, default to "Admin"
-  }, []);
+  // Separate state for each submenu
+  const [menuState, setMenuState] = useState({
+    employee: false,
+    attendance: false,
+    overtime: false,
+  });
+  const toggleMenu = (menu) => {
+    setMenuState((prevState) => ({
+      ...prevState,
+      [menu]: !prevState[menu], // Toggle only the clicked menu
+    }));
+  };
+
 
   const handleLogout = () => {
     localStorage.removeItem("employeeName");
@@ -85,8 +92,45 @@ function AdminDashboard() {
         <h2 className="text-center mb-4">Admin Dashboard</h2>
         <nav className="nav flex-column">
           <Link to="/admin-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>🏠 Dashboard</Link>
-
-          <div
+        {/* Employee Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("employee")} style={{ cursor: "pointer" }}>
+            Employee
+            <i className={`bi ms-2 ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          </div>
+          {menuState.employee && (
+            <div className="ms-3">
+             <Link to="/admin-dashboard/employee" className="nav-link" style={{ color: "#FFFFFF" }}>Employee List</Link>
+              <Link to="/admin-dashboard/showleave" className="nav-link" style={{ color: "#FFFFFF" }}>Show Leave</Link>
+              <Link to="/admin-dashboard/salary" className="nav-link" style={{ color: "#FFFFFF" }}>Show Salary</Link>
+            
+            </div>
+              )}
+             {/* Attendance Dropdown */}
+                       <div className="nav-link text-light" onClick={() => toggleMenu("attendance")} style={{ cursor: "pointer" }}>
+                         📝 Attendance
+                         <i className={`bi ms-2 ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+                       </div>
+                       {menuState.attendance && (
+                         <div className="ms-3">
+                           <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-light">Daily Attendance</Link>
+                           <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-light">Attendance Record</Link>
+                         </div>
+                       )}
+             
+                       {/* Overtime Dropdown */}
+                       <div className="nav-link text-light" onClick={() => toggleMenu("overtime")} style={{ cursor: "pointer" }}>
+                         🕒 Overtime
+                         <i className={`bi ms-2 ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+                       </div>
+                       {menuState.overtime && (
+                         <div className="ms-3">
+                           <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">Pending Requests</Link>
+                           <Link to="/manager-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
+                           <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link>
+                         </div>
+                       )}
+          
+          {/* <div
             className="nav-link"
             onClick={() => setShowSubMenu(!showSubMenu)}
             style={{ cursor: "pointer", color: "#FFFFFF" }}
@@ -127,7 +171,7 @@ function AdminDashboard() {
                 Attendance Record
               </Link>
             </div>
-          )}
+          )} */}
 
           <Link to="/admin-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
           <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>OT (Overtime)</Link>
