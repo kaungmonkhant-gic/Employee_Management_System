@@ -21,7 +21,6 @@ public interface EmployeeService extends UserDetailsService {
     ReqRes getProfile(String email);
     ReqRes updateProfile(String Id, EmployeeProfile updatedProfile);
 
-    //ReqRes registerEmployee(Employee employee);
     ReqRes registerEmployee(RegisterDTO registerDTO);
 
     // Update an existing employee

@@ -51,25 +51,34 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
 //    }
 
     public EmployeeSalary createEmployeeSalary(Employee employee) {
+        System.out.println("Creating salary entry for employee: " + employee.getEmail());
+
         // Fetch salary details based on position
-        EmployeeSalary positionSalary = salaryRepository.findByPositionId(employee.getPositionId());
-        System.out.println("Fetching salary details for position ID: " + employee.getPositionId());
+        EmployeeSalary positionSalary = salaryRepository.findByPositionId(employee.getPosition().getId());
+        System.out.println("Fetching salary details for position ID: " + employee.getPosition().getId());
 
         if (positionSalary == null) {
             throw new RuntimeException("Salary details not found for position: " + employee.getPosition().getPositionName());
         }
 
-        // Create new salary entry for the employee
+        // Create new EmployeeSalary entry for the registered employee
         EmployeeSalary employeeSalary = new EmployeeSalary();
         employeeSalary.setId(generateEmployeeSalaryId()); // Generate unique ID
         employeeSalary.setEmployee(employee);
         employeeSalary.setPositions(employee.getPosition()); // Assign position
+
+        // Assign salary details from the position-based salary structure
         employeeSalary.setBasicSalary(positionSalary.getBasicSalary());
         employeeSalary.setHouseAllowance(positionSalary.getHouseAllowance());
         employeeSalary.setTransportation(positionSalary.getTransportation());
 
+//        // 🚀 Automatically calculate total salary using entity method
+//        employeeSalary.setTotalSalary(employeeSalary.getTotalSalary());
+
+        // Save salary details
         return salaryRepository.save(employeeSalary);
     }
+
 
     @Override
     public String generateEmployeeSalaryId() {

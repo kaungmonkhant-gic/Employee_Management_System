@@ -68,18 +68,21 @@ public class RegisterDTO {
     private String roleId;
     private String managerId;
 
-    // Salary details
-    private Double basicSalary;
-    private Double houseAllowance;
-    private Double transportation;
-    private Double totalSalary;
+//    // Salary details
+//    private Double basicSalary;
+//    private Double houseAllowance;
+//    private Double transportation;
+//    private Double totalSalary;
+//
+//    // Leave details
+//    private Double annualLeave;
+//    private Double casualLeave;
+//    private Double medicalLeave;
+//    private Double totalLeave;
 
-    // Leave details
-    private Double annualLeave;
-    private Double casualLeave;
-    private Double medicalLeave;
-    private Double totalLeave;
 
+    public RegisterDTO() {
+    }
 
     public String getId() {
         return id;
@@ -210,69 +213,69 @@ public class RegisterDTO {
         this.roleId = roleId;
     }
 
-    public Double getBasicSalary() {
-        return basicSalary;
-    }
-
-    public void setBasicSalary(Double basicSalary) {
-        this.basicSalary = basicSalary;
-    }
-
-    public Double getHouseAllowance() {
-        return houseAllowance;
-    }
-
-    public void setHouseAllowance(Double houseAllowance) {
-        this.houseAllowance = houseAllowance;
-    }
-
-    public Double getTransportation() {
-        return transportation;
-    }
-
-    public void setTransportation(Double transportation) {
-        this.transportation = transportation;
-    }
-
-    public Double getTotalSalary() {
-        return totalSalary;
-    }
-
-    public void setTotalSalary(Double totalSalary) {
-        this.totalSalary = totalSalary;
-    }
-
-    public Double getAnnualLeave() {
-        return annualLeave;
-    }
-
-    public void setAnnualLeave(Double annualLeave) {
-        this.annualLeave = annualLeave;
-    }
-
-    public Double getCasualLeave() {
-        return casualLeave;
-    }
-
-    public void setCasualLeave(Double casualLeave) {
-        this.casualLeave = casualLeave;
-    }
-
-    public Double getMedicalLeave() {
-        return medicalLeave;
-    }
-
-    public void setMedicalLeave(Double medicalLeave) {
-        this.medicalLeave = medicalLeave;
-    }
-
-    public Double getTotalLeave() {
-        return totalLeave;
-    }
-
-    public void setTotalLeave(Double totalLeave) {
-        this.totalLeave = totalLeave;
-    }
+//    public Double getBasicSalary() {
+//        return basicSalary;
+//    }
+//
+//    public void setBasicSalary(Double basicSalary) {
+//        this.basicSalary = basicSalary;
+//    }
+//
+//    public Double getHouseAllowance() {
+//        return houseAllowance;
+//    }
+//
+//    public void setHouseAllowance(Double houseAllowance) {
+//        this.houseAllowance = houseAllowance;
+//    }
+//
+//    public Double getTransportation() {
+//        return transportation;
+//    }
+//
+//    public void setTransportation(Double transportation) {
+//        this.transportation = transportation;
+//    }
+//
+//    public Double getTotalSalary() {
+//        return totalSalary;
+//    }
+//
+//    public void setTotalSalary(Double totalSalary) {
+//        this.totalSalary = totalSalary;
+//    }
+//
+//    public Double getAnnualLeave() {
+//        return annualLeave;
+//    }
+//
+//    public void setAnnualLeave(Double annualLeave) {
+//        this.annualLeave = annualLeave;
+//    }
+//
+//    public Double getCasualLeave() {
+//        return casualLeave;
+//    }
+//
+//    public void setCasualLeave(Double casualLeave) {
+//        this.casualLeave = casualLeave;
+//    }
+//
+//    public Double getMedicalLeave() {
+//        return medicalLeave;
+//    }
+//
+//    public void setMedicalLeave(Double medicalLeave) {
+//        this.medicalLeave = medicalLeave;
+//    }
+//
+//    public Double getTotalLeave() {
+//        return totalLeave;
+//    }
+//
+//    public void setTotalLeave(Double totalLeave) {
+//        this.totalLeave = totalLeave;
+//    }
 
     public Date getResignDate() {
         return resignDate;
