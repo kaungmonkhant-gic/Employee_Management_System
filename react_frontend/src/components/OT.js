@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BellFill, CheckCircleFill, PlusCircleFill } from "react-bootstrap-icons";
 import { Modal, Button } from "react-bootstrap";
-import OTRequestForm from "./common/OTRequestForm"; // Assuming this component handles the OT request form
 import apiClient from "./api/apiclient";
 import { useNavigate } from "react-router-dom";
 import DataTable from "./common/DataTable";
@@ -37,40 +36,45 @@ const OvertimeRequests = () => {
   }, []);
 
   const handlePay = async (id) => {
-    const result = await overtimeController.markAsPaid(id);
-    if (result.success) {
-      setApproved((prev) => prev.filter((record) => record.id !== id));
-      setPaid((prev) => [...prev, { id, status: "PAID" }]);
-      alert(result.message);
-    } else {
-      alert(result.message);
+    try {
+      const result = await overtimeController.markAsPaid(id);
+      if (result.success) {
+        // Find the paid OT request in the approved list
+        const paidRequest = approved.find((record) => record.id === id);
+        // Remove it from the approved list
+        setApproved((prev) => prev.filter((record) => record.id !== id));
+        // Add it to the paid list
+        setPaid((prev) => [...prev, { ...paidRequest, otStatus: "PAID" }]);
+        alert(result.message);
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error('Error response:', error.response);
+        alert(`Failed to mark OT request ${id} as paid. Server responded with status code ${error.response.status}: ${error.response.data.message || error.response.statusText}`);
+      } else if (error.request) {
+        console.error('Error request:', error.request);
+        alert('No response received from the server. Please try again later.');
+      } else {
+        console.error('Error message:', error.message);
+        alert(`An error occurred: ${error.message}`);
+      }
     }
   };
+  
+  
+  
 
   // Handle opening the modal to add an overtime request
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
-  // // Handle submitting a new overtime request
-  // const handleAddOTRequest = async (data) => {
-  //   try {
-  //     const response = await apiClient.post("/ot/request", data);
-  //     if (response.data.success) {
-  //       alert("Overtime request submitted successfully!");
-  //       // Refresh data after submitting
-  //       OvertimeRequests();
-  //       handleCloseModal(); // Close the modal
-  //     } else {
-  //       alert("Failed to submit overtime request.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting overtime request:", error);
-  //     alert("An error occurred. Please try again.");
-  //   }
-  // };
 
   const columns = [
-    { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "employeeName", headerName: "Employee Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    // { field: "managerName", headerName: "Manager Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    
     { field: "date", headerName: "Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
     { field: "startTime", headerName: "Start Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
     { field: "endTime", headerName: "End Time", minWidth: 120, flex: 1, cellClassName: "text-center" },
@@ -103,13 +107,13 @@ const OvertimeRequests = () => {
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
             <div className="ms-3">
-              <p className="text-muted mb-1">Pending Requests</p>
+              <p className="text-muted mb-1">Pending </p>
               <p className="fw-bold mb-0">{pending.length}</p>
             </div>
           </div>
         </div>
 
-        <div className="col-md-4">
+        {/* <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <CheckCircleFill size={32} color="green" />
             <div className="ms-3">
@@ -117,7 +121,7 @@ const OvertimeRequests = () => {
               <p className="fw-bold mb-0">{approved.length}</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
@@ -129,22 +133,6 @@ const OvertimeRequests = () => {
           </div>
         </div>
       </div>
-
-      {/* Button to trigger overtime request modal */}
-      {/* <Button variant="primary" onClick={handleShowModal}>
-        <PlusCircleFill size={20} className="me-2" />
-        Add Overtime Request
-      </Button> */}
-
-      {/* Modal for overtime request form
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Overtime Request</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <OTRequestForm onSubmit={handleAddOTRequest} />
-        </Modal.Body>
-      </Modal> */}
 
       {/* Data table for showing overtime requests */}
       <DataTable

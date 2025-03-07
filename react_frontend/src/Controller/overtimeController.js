@@ -10,12 +10,12 @@ const overtimeController = {
     }
   },
 
-  markAsPaid : async (id) => {
+  markAsPaid: async (id, token) => {
     try {
-      await overtimeService.markAsPaid(id);
-      return { success: true, message: "Overtime marked as paid successfully!" };
+      const updatedRecord = await overtimeService.markAsPaid(id, token);
+      return updatedRecord;
     } catch (error) {
-      return { success: false, message: error.message };
+      throw new Error(`Failed to approve request. Error: ${error.message}`);
     }
   },
   // addOvertimeRecord: async (overtimeData) => {

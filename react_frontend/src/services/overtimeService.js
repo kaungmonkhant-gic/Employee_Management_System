@@ -26,14 +26,30 @@ const overtimeService = {
       throw error;
     }
   },
+  // markAsPaid : async (id, token) => {
+  //   try {
+  //     const response = await apiClient.put(
+  //       `/ot/paid/${id}`,
+  //       {},  // No body needed for approval
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     console.log("paid OT:", response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error paid OT:", error);
+  //     throw error;
+  //   }
+  // },
+  // In overtimeController.js
   markAsPaid : async (id) => {
-    try {
-      const response = await apiClient.put(`/ot/paid/${id}`);
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to mark as paid: " + error.response?.data?.message || error.message);
-    }
-  },
+  try {
+    const response = await apiClient.put(`/ot/paid/${id}`);
+    return { success: true, message: 'OT request marked as paid.' };
+  } catch (error) {
+    return { success: false, message: error.response?.data?.message || 'An error occurred.' };
+  }
+},
+
 };
 
 export default overtimeService
