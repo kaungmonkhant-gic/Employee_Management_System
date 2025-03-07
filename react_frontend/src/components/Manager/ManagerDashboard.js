@@ -50,7 +50,7 @@ function ManagerDashboard() {
             <div className="ms-3">
               <Link to="/manager-dashboard/view-employeelist" className="nav-link text-light">Employee List</Link>
               <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">Employee Leave</Link>
-              <Link to="/manager-dashboard/salary" className="nav-link text-light">Salary</Link>
+             
             </div>
           )}
 
