@@ -7,7 +7,6 @@ import ems.com.ems_project.dto.ReqRes;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
-import java.util.Map;
 
 public interface EmployeeService extends UserDetailsService {
 
@@ -22,7 +21,6 @@ public interface EmployeeService extends UserDetailsService {
     ReqRes getProfile(String email);
     ReqRes updateProfile(String Id, EmployeeProfile updatedProfile);
 
-    //ReqRes registerEmployee(Employee employee);
     ReqRes registerEmployee(RegisterDTO registerDTO);
 
     // Update an existing employee

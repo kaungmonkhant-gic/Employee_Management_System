@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import employeeController from "../Controller/employeeController";
-import DataTable from "./common/DataTable";
+import employeeController from "../Controller/employeeController.js";
+import DataTable from "./common/DataTable.js";
 import EmployeeForm from "./EmployeeForm.js";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
@@ -106,12 +106,17 @@ function Employee() {
   const handleDelete = async (employee) => {
     try {
       await employeeController.deleteEmployee(employee.id);
-      setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+  
+      // Remove the employee from both active and resigned lists
+      setActiveEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+      setResignedEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+  
     } catch (error) {
       console.error("Error deleting employee:", error);
       alert("Failed to delete employee.");
     }
   };
+  
 
   const handleSubmit = async (employeeData) => {
     if (editingEmployee) {
@@ -146,12 +151,12 @@ function Employee() {
 
           {/* Buttons to toggle active and resigned employees */}
           <div>
-            <button className="btn btn-outline-primary mb-3" onClick={() => setShowActive(true)}>
+            {/* <button className="btn btn-outline-primary mb-3" onClick={() => setShowActive(true)}>
               Show Active Employees
-            </button>
-            <button className="btn btn-outline-secondary mb-3" onClick={() => setShowActive(false)}>
+            </button> */}
+            {/* <button className="btn btn-outline-secondary mb-3" onClick={() => setShowActive(false)}>
               Show Resigned Employees
-            </button>
+            </button> */}
           </div>          
           {/* Show Active Employees */}
           {showActive ? (
@@ -175,16 +180,16 @@ function Employee() {
     <p className="text-center">Loading resigned employees...</p>
   ) : (
     <DataTable
-      fetchData={() => resignedEmployees} // Pass resigned employees
-      columns={columns}
-      keyField="number"
-      responsive
-      fixedHeader
-      fixedHeaderScrollHeight="400px"
-      noDataComponent="No resigned employees found"
-      highlightOnHover
-      pagination
-    />
+    fetchData={() => resignedEmployees} // Pass active employees
+    columns={columns}
+    keyField="number"
+    responsive
+    fixedHeader
+    fixedHeaderScrollHeight="400px"
+    noDataComponent="No active employees found"
+    highlightOnHover
+    pagination
+  />
   )
 )}
         </>

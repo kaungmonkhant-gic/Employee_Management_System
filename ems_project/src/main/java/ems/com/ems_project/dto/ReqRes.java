@@ -3,6 +3,8 @@ package ems.com.ems_project.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.EmployeeLeave;
+import ems.com.ems_project.model.EmployeeSalary;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +26,9 @@ public class ReqRes {
     private List<EmployeeProfile> employeeProfiles;
     private EmployeeDTO employeeDTO;
     private RegisterDTO registerDTO;
-    private Employee employee;// Change type from Employee to RegisterDTO
+    private Employee employee;
+    private EmployeeSalary employeeSalary;
+    private EmployeeLeave employeeLeave;
 
     public int getStatusCode() {
         return statusCode;
@@ -105,4 +109,19 @@ public class ReqRes {
         return registerDTO;
     }
 
+    public EmployeeSalary getEmployeeSalary() {
+        return employeeSalary;
+    }
+
+    public void setEmployeeSalary(EmployeeSalary employeeSalary) {
+        this.employeeSalary = employeeSalary;
+    }
+
+    public EmployeeLeave getEmployeeLeave() {
+        return employeeLeave;
+    }
+
+    public void setEmployeeLeave(EmployeeLeave employeeLeave) {
+        this.employeeLeave = employeeLeave;
+    }
 }

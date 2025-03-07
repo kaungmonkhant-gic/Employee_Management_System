@@ -8,6 +8,7 @@ public interface DailyAttendanceService {
 
     // Method to get all attendance records
     List<EmpDailyAtts> getAllAttendances();
+    List<AttendanceDTO> getAttendanceRecordsForLoggedInUser();
 
 }
 

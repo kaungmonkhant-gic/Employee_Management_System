@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public interface LeaveRepository extends JpaRepository<Leave, String > {
     // Native query to count the number of leaves for a given employee and status
     @Query(value = "SELECT COUNT(*) FROM leaves WHERE employee_id = :employeeId AND status = :status", nativeQuery = true)
     long countByEmployeeIdAndStatus(@Param("employeeId") String employeeId, @Param("status") String status);
-//
+
 //    @Query(value = "SELECT status, COUNT(*) FROM leaves WHERE employee_id = :employeeId GROUP BY status", nativeQuery = true)
 //    List<Object[]> getStatusCountByEmployeeId(@Param("employeeId") String employeeId);
 
@@ -34,11 +35,5 @@ public interface LeaveRepository extends JpaRepository<Leave, String > {
     List<Object[]> getStatusCountByManagerId(@Param("managerId") String managerId);
 
     List<Leave> findByManagerId(String managerId);
-
-
-
-
-
-
 
 }

@@ -7,7 +7,18 @@ function ManagerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [managerName, setManagerName] = useState("");
-  const [showSubMenu, setShowSubMenu] = useState(false);
+  // Separate state for each submenu
+  const [menuState, setMenuState] = useState({
+    employee: false,
+    attendance: false,
+    overtime: false,
+  });
+  const toggleMenu = (menu) => {
+    setMenuState((prevState) => ({
+      ...prevState,
+      [menu]: !prevState[menu], // Toggle only the clicked menu
+    }));
+  };
 
   useEffect(() => {
     const storedManagerName = localStorage.getItem("managerName");
@@ -30,153 +41,50 @@ function ManagerDashboard() {
           🏠 Dashboard
           </Link>
 
-          <div className="nav-link text-light" 
-                        onClick={() => setShowSubMenu(!showSubMenu)} 
-                        style={{ cursor: "pointer" }}>
-                        Employee
-                             <i
-                              className={`bi ms-2 ${
-                                showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-                              }`}
-                              style={{ color: "white" }}
-                            />
-                   </div>
-          
-                    {/* Dropdown Submenu */}
-                    {showSubMenu && (
-                      <div className="ms-3">
-                        <Link to="/manager-dashboard/employee-list" className="nav-link text-dark">
-                          Employee List
-                        </Link>
-                        <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">
-                          Employee Leave
-                        </Link>
-                        <Link to="/manager-dashboard/salary" className="nav-link text-light">
-                          Salary
-                        </Link>
-                      </div>
-                    )}
+          {/* Employee Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("employee")} style={{ cursor: "pointer" }}>
+            Employee
+            <i className={`bi ms-2 ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          </div>
+          {menuState.employee && (
+            <div className="ms-3">
+              <Link to="/manager-dashboard/view-employeelist" className="nav-link text-light">Employee List</Link>
+              <Link to="/manager-dashboard/view-leave-balance" className="nav-link text-light">View Leave Balance</Link>
+              <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">Employee Leave</Link>
+             
+            </div>
+          )}
 
-                    <div className="nav-link text-light" 
-                                onClick={() => setShowSubMenu(!showSubMenu)} 
-                                style={{ cursor: "pointer" }}
-                              >
-                                📝 Attendance
-                                <i
-                                  className={`bi ms-2 ${
-                                    showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-                                  }`}
-                                  style={{ color: "white" }}
-                                />
-                              </div>
-                    
-                              {/* Dropdown Submenu */}
-                              {showSubMenu && (
-                                <div className="ms-3">
-                                  <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-dark">
-                                    Daily Attendance
-                                  </Link>
-                                  <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-dark">
-                                    Attendance Record
-                                  </Link>
-                                </div>
-                              )}
-                      
-                      
-          
+          {/* Attendance Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("attendance")} style={{ cursor: "pointer" }}>
+            📝 Attendance
+            <i className={`bi ms-2 ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          </div>
+          {menuState.attendance && (
+            <div className="ms-3">
+              <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-light">Daily Attendance</Link>
+              <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-light">Attendance Record</Link>
+            </div>
+          )}
 
-      
-          
-          {/* <div className="nav-link text-light" 
-        onClick={() => setShowSubMenu(!showSubMenu)} 
-        style={{ cursor: "pointer" }}
-      >
-        Attendance
-        <i
-          className={`bi ms-2 ${
-            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-          }`}
-          style={{ color: "white" }}
-        />
-      </div> */}
+          {/* Overtime Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("overtime")} style={{ cursor: "pointer" }}>
+            🕒 Overtime
+            <i className={`bi ms-2 ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          </div>
+          {menuState.overtime && (
+            <div className="ms-3">
+              <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">Pending Requests</Link>
+              <Link to="/manager-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
+              <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link>
+            </div>
+          )}
 
-      {/* Dropdown Submenu */}
-      {/* {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-light">
-            Daily Attendance
-          </Link>
-          <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-light">
-            Attendance Record
-          </Link>
-        </div>
-      )}
-      */}
-      <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">
-           leave
-          </Link>
+          <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">📅 Leave</Link>
+          <Link to="/manager-dashboard/profile" className="nav-link text-light">👤 Profile</Link>
+          <Link to="/manager-dashboard/payroll" className="nav-link text-light">💼 Payroll</Link>
 
-          
-<div className="nav-link text-light" 
-        onClick={() => setShowSubMenu(!showSubMenu)} 
-        style={{ cursor: "pointer" }}
-      >
-        🕒 Overtime
-        <i
-          className={`bi ms-2 ${
-            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-          }`}
-          style={{ color: "white" }}
-        />
-      </div>
-
-      {/* Dropdown Submenu */}
-      {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">
-            Pending Requests
-          </Link>
-          {/* <Link to="/manager-dashboard/overtime-history" className="nav-link text-light">
-            Overtime History
-          </Link> */}
-          <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">
-            Confirmed Requests
-          </Link>
-        </div>
-      )}
-          {/* <div className="nav-link text-light" 
-        onClick={() => setShowSubMenu(!showSubMenu)} 
-        style={{ cursor: "pointer" }}
-      >
-        Leave
-        <i
-          className={`bi ms-2 ${
-            showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"
-          }`}
-          style={{ color: "white" }}
-        />
-      </div> */}
-
-      {/* Dropdown Submenu */}
-      {/* {showSubMenu && (
-        <div className="ms-3">
-          <Link to="/manager-dashboard/manager-leave" className="nav-link text-light">
-           Apply Leave
-          </Link>
-          <Link to="/manager-dashboard/leave-history" className="nav-link text-light">
-            Leave History
-          </Link>
-          <Link to="/manager-dashboard/manager-leave-approval" className="nav-link text-light">
-            View Leave Request
-          </Link>
-        </div>
-      )} */}
-
-          <Link to="/manager-dashboard/profile" className="nav-link text-light"> 👤 Profile</Link>
-          <Link to="/manager-dashboard/payroll" className="nav-link text-light"> 💼 Payroll</Link>
-          <button onClick={handleLogout} className="btn btn-danger mt-4">
-            Logout
-          </button>
+          <button onClick={handleLogout} className="btn btn-danger mt-4">Logout</button>
         </nav>
       </div>
 

@@ -1,41 +1,38 @@
-import apiClient from "../../api/apiclient";
+import apiClient from "../components/api/apiclient";
 
-const ManagerLeaveService = {
-  
-  fetchLeaveRecord: async () => {
+const AdminLeaveService = {
+    fetchLeaveRequests: async (token) => {
+        try {
+          console.log("Fetching Leave records...");
+          const response = await apiClient.get("/leave/role/records", {
+            headers: {
+              Authorization: `Bearer ${token}`, // Add token to the headers
+            },
+          });
+          console.log("Leave Records:", response.data);
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching leave records:", error);
+          throw error;
+        }
+      },
+       // Fetch all leave records
+  fetchLeaveRecord: async (token) => {
     try {
-      const response = await apiClient.get("/leave/self");
-      if (!response.data) {
-        throw new Error("Failed to fetch leave");
-      }
-      return await response.data;
-    } catch (error) {
-      console.error("Error fetching leave :", error);
-      return null;
-    }
-  },
-  fetchLeaveSelf: async () => {
-    try {
-      const response = await apiClient.get("/leave/self"); // Base URL is already set in apiClient
-      console.log("leave Records Response:", response.data);
-      return response.data; // Axios already parses JSON automatically
+      console.log("Fetching Leave records...");
+      const response = await apiClient.get("/leave/role/records", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to the headers
+        },
+      });
+      console.log("Leave Records:", response.data);
+      return response.data;
     } catch (error) {
       console.error("Error fetching leave records:", error);
-      throw error; // Handle errors where this function is called
+      throw error;
     }
   },
   // Fetch manager leave count
-
-    fetchLeaves : async () => {
-       try {
-           const response = await apiClient.get("/leave/role/records"); // Replace "/leaves" with your actual endpoint
-           return Array.isArray(response.data) ? response.data : [];
-       } catch (error) {
-           console.error("Error fetching leaves:", error);
-           return [];
-       }
-   },
-
   getLeaveCounts: async () => {
     try {
       const response = await apiClient.get("/leave/status-count");
@@ -80,6 +77,4 @@ const ManagerLeaveService = {
   }
   
 };
-
-
-export default ManagerLeaveService;
+export default AdminLeaveService;

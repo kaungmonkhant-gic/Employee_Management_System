@@ -56,7 +56,6 @@ public class EmployeeServiceImp implements EmployeeService {
     @Autowired
     private JWTUtils jwtutils;
 
-
     public List<EmployeeDTO> getActiveEmployeesBasedOnRole(String token) {
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);
@@ -89,7 +88,6 @@ public class EmployeeServiceImp implements EmployeeService {
                 .map(EmployeeDTO::new)
                 .collect(Collectors.toList());
     }
-
 
     public List<EmployeeDTO> getResignedEmployeesBasedOnRole(String token) {
         // Extract user details from the token
@@ -383,86 +381,88 @@ public class EmployeeServiceImp implements EmployeeService {
 //        }
 //        return reqRes;
 //    }
-@Override
-public ReqRes registerEmployee(RegisterDTO registerDTO) {
-    System.out.println("Employee Registration Start");
-    ReqRes reqRes = new ReqRes();
+    @Override
+    public ReqRes registerEmployee(RegisterDTO registerDTO) {
+        System.out.println("Employee Registration Start");
+        ReqRes reqRes = new ReqRes();
 
-    try {
-        // Validate email
-        if (registerDTO.getEmail() == null || registerDTO.getEmail().trim().isEmpty()) {
-            return createErrorResponse(400, "Email is required.");
+        try {
+            // Validate email
+            if (registerDTO.getEmail() == null || registerDTO.getEmail().trim().isEmpty()) {
+                return createErrorResponse(400, "Email is required.");
+            }
+
+            // Check if employee already exists
+            if (employeeRepository.findByEmail(registerDTO.getEmail()).isPresent()) {
+                return createErrorResponse(409, "Employee with email " + registerDTO.getEmail() + " already exists.");
+            }
+
+            // Fetch related entities
+            Roles role = roleRepository.findById(registerDTO.getRoleId())
+                    .orElseThrow(() -> new RuntimeException("Role not found for ID: " + registerDTO.getRoleId()));
+
+            Departments department = departmentRepository.findById(registerDTO.getDepartmentId())
+                    .orElseThrow(() -> new RuntimeException("Department not found for ID: " + registerDTO.getDepartmentId()));
+
+            Positions position = positionRepository.findById(registerDTO.getPositionId())
+                    .orElseThrow(() -> new RuntimeException("Position not found for ID: " + registerDTO.getPositionId()));
+
+            // Create new Employee
+            Employee employee = new Employee();
+            employee.setId(generateEmployeeId());
+            employee.setEmail(registerDTO.getEmail().trim());
+            employee.setName(registerDTO.getName());
+            employee.setPhone(registerDTO.getPhone());
+            employee.setGender(registerDTO.getGender());
+            employee.setDob(registerDTO.getDob());
+            employee.setNrc(registerDTO.getNrc());
+            employee.setMaritalStatus(registerDTO.getMaritalStatus());
+            employee.setAddress(registerDTO.getAddress());
+            employee.setWorkExp(registerDTO.getWorkExp());
+            employee.setEducation(registerDTO.getEducation());
+            employee.setJoinDate(registerDTO.getJoinDate());
+
+            // Set related entities
+            employee.setRole(role);
+            employee.setDepartment(department);
+            employee.setPosition(position);
+
+            // Encode password
+            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
+            employee.setPassword(hashedPassword);
+
+            // Assign Manager (if applicable)
+            Employee manager = null;
+            if (!role.getRoleName().equalsIgnoreCase("Manager")) {
+                manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2").orElse(null);
+            }
+            employee.setManager(manager);
+
+            // Save Employee
+            Employee savedEmployee = employeeRepository.save(employee);
+
+            // 🚀 Immediately create salary for the registered employee
+            EmployeeSalary employeeSalary = employeeSalaryService.createEmployeeSalary(savedEmployee);
+            EmployeeLeave employeeLeave =employeeLeaveService.createEmployeeLeave(savedEmployee);
+
+            // Success Response
+            reqRes.setEmployee(savedEmployee);
+            reqRes.setEmployeeSalary(employeeSalary);
+            reqRes.setEmployeeLeave(employeeLeave);
+            reqRes.setStatusCode(201);
+            reqRes.setMessage("Employee registered successfully.");
+            System.out.println("Employee Registration Successful: " + savedEmployee.getEmail());
+
+        } catch (RuntimeException e) {
+            System.err.println("Validation Error during registration: " + e.getMessage());
+            return createErrorResponse(400, e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected Error during registration: " + e.getMessage());
+            e.printStackTrace();
+            return createErrorResponse(500, "An internal error occurred during registration.");
         }
-
-        // Check if employee already exists
-        if (employeeRepository.findByEmail(registerDTO.getEmail()).isPresent()) {
-            return createErrorResponse(409, "Employee with email " + registerDTO.getEmail() + " already exists.");
-        }
-
-        // Fetch related entities
-        Roles role = roleRepository.findById(registerDTO.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Role not found for ID: " + registerDTO.getRoleId()));
-
-        Departments department = departmentRepository.findById(registerDTO.getDepartmentId())
-                .orElseThrow(() -> new RuntimeException("Department not found for ID: " + registerDTO.getDepartmentId()));
-
-        Positions position = positionRepository.findById(registerDTO.getPositionId())
-                .orElseThrow(() -> new RuntimeException("Position not found for ID: " + registerDTO.getPositionId()));
-
-        // Create new Employee
-        Employee employee = new Employee();
-        employee.setId(generateEmployeeId());
-        employee.setEmail(registerDTO.getEmail().trim());
-        employee.setName(registerDTO.getName());
-        employee.setPhone(registerDTO.getPhone());
-        employee.setGender(registerDTO.getGender());
-        employee.setDob(registerDTO.getDob());
-        employee.setNrc(registerDTO.getNrc());
-        employee.setMaritalStatus(registerDTO.getMaritalStatus());
-        employee.setAddress(registerDTO.getAddress());
-        employee.setWorkExp(registerDTO.getWorkExp());
-        employee.setEducation(registerDTO.getEducation());
-        employee.setJoinDate(registerDTO.getJoinDate());
-
-        // Set related entities
-        employee.setRole(role);
-        employee.setDepartment(department);
-        employee.setPosition(position);
-
-        // Encode password
-        String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
-        employee.setPassword(hashedPassword);
-
-        // Assign Manager (if applicable)
-        Employee manager = null;
-        if (!role.getRoleName().equalsIgnoreCase("Manager")) {
-            manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2").orElse(null);
-        }
-        employee.setManager(manager);
-
-        // Save Employee
-        Employee savedEmployee = employeeRepository.save(employee);
-
-        // Save Employee Salary and Leave Data
-        employeeSalaryService.createEmployeeSalary(savedEmployee);
-        employeeLeaveService.createEmployeeLeave(savedEmployee);
-
-        // Success Response
-        reqRes.setEmployee(savedEmployee);
-        reqRes.setStatusCode(201);
-        reqRes.setMessage("Employee registered successfully.");
-        System.out.println("Employee Registration Successful: " + savedEmployee.getEmail());
-
-    } catch (RuntimeException e) {
-        System.err.println("Validation Error during registration: " + e.getMessage());
-        return createErrorResponse(400, e.getMessage());
-    } catch (Exception e) {
-        System.err.println("Unexpected Error during registration: " + e.getMessage());
-        e.printStackTrace();
-        return createErrorResponse(500, "An internal error occurred during registration.");
+        return reqRes;
     }
-    return reqRes;
-}
 
     /**
      * Helper method to create an error response.

@@ -28,18 +28,23 @@ import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import ManagerProfile from "./components/Manager/ManagerProfile";
-import OvertimeHistory from "./components/Manager/OvertimeHistory";
+import ManagerOT from "./components/Manager/ManagerOT";
 import ManagerOtApproval from "./components/Manager/ManagerOtApproval";
 import ConfirmOtRequest from "./components/Manager/ConfirmOtRequest";
 import ShowLeave from "./components/ShowLeave";
 import ManagerLeave from "./components/Manager/ManagerLeave";
 import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
+import ViewEmployee from "./components/Manager/ViewEmployee";
 import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
+<<<<<<< HEAD
 import Leave from "./components/Manager/Leave";
 import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
 
 
+=======
+import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
+>>>>>>> d9019fde5f46f8ed9591f1a41daf974d1bc5ef58
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -54,13 +59,13 @@ root.render(
       <Route path="/" element={<App />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/"
+      {/* <Route path="/"
              element={
                <PrivateRoute>
                  <App/>
                </PrivateRoute>
              }
-      />
+      /> */}
         <Route
             path="/admin-dashboard"
             element={
@@ -96,13 +101,15 @@ root.render(
       </Route>
 
       <Route path="/manager-dashboard/*" element={<ManagerDashboard />}>
+      <Route path="view-employeelist" element={<ViewEmployee />} />
+      <Route path="view-leave-balance" element={<ViewLeaveBalance />} />
         <Route path="profile" element={<ManagerProfile />} />
         <Route path="leave" element={<Leave />} />
         <Route path="manager-leave" element={<ManagerLeave />} />
         <Route path="manager-leave-Approval" element={<ManagerLeaveApproval />} />
         <Route path="leave-confirmed" element={<LeavveConfirmedRequest />}/>
         <Route path="employee-leave-record" element={<EmployeeLeaveRecord />} />
-        <Route path="overtime-history" element={<OvertimeHistory />} />
+        <Route path="manager-ot-self" element={<ManagerOT />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
         <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />
       </Route>

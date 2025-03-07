@@ -33,7 +33,7 @@ public class Employee implements UserDetails {
     private String name;
 
     @Column(name = "dob")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dob;
 
     @Column(name = "nrc", unique = true)
@@ -65,11 +65,10 @@ public class Employee implements UserDetails {
     private String workExp;
 
     @Column(name = "join_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
-
     @Column(name = "resign_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date resignDate;
 
     @ManyToOne

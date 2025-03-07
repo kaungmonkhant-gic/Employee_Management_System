@@ -1,6 +1,5 @@
 package ems.com.ems_project.service;
 
-import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeSalaryDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;

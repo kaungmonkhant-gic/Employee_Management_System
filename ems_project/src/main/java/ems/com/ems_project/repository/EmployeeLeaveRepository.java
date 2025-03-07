@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 //import java.util.List;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +22,5 @@ public interface EmployeeLeaveRepository extends JpaRepository<EmployeeLeave, St
 
     // Delete all leaves of an employee
     void deleteByEmployeeId(String employeeId);
+
 }

@@ -1,10 +1,11 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.LeaveDTO;
-import ems.com.ems_project.dto.OtDTO;
+import ems.com.ems_project.model.EmployeeLeave;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.RequestStatus;
+import ems.com.ems_project.repository.EmployeeLeaveRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,13 @@ public class LeaveService {
     private GenerateId generateId;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private EmployeeLeaveService employeeLeaveService;
+    @Autowired
+    private EmployeeLeaveRepository employeeLeaveRepository;
 
     @Autowired
     private JWTUtils jwtutils;
-
 
     public List<LeaveDTO> getLeavesRecordRoleBased(String token) {
         // Extract user details from the token
@@ -156,6 +160,13 @@ public class LeaveService {
         if ("approve".equalsIgnoreCase(action)) {
             leave.setStatus(RequestStatus.APPROVED);
             leave.setRejectionReason(null);
+
+            //Reduce leave balance using EmployeeLeaveService
+            EmployeeLeave employeeLeave = employeeLeaveRepository.findByEmployeeId(leave.getEmployee().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee's leave balance not found"));
+
+            employeeLeaveService.updateLeaveBalance(employeeLeave, leave.getLeaveType(), leave.getTotalDays());
+
         } else if ("reject".equalsIgnoreCase(action)) {
             if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
