@@ -2,6 +2,17 @@ import apiClient from "../../api/apiclient";
 
 const ManagerLeaveService = {
   // Fetch manager leave count
+
+    fetchLeaves : async () => {
+       try {
+           const response = await apiClient.get("/leave/role/records"); // Replace "/leaves" with your actual endpoint
+           return Array.isArray(response.data) ? response.data : [];
+       } catch (error) {
+           console.error("Error fetching leaves:", error);
+           return [];
+       }
+   },
+
   getLeaveCounts: async () => {
     try {
       const response = await apiClient.get("/leave/status-count");
@@ -46,4 +57,6 @@ const ManagerLeaveService = {
   }
   
 };
+
+
 export default ManagerLeaveService;

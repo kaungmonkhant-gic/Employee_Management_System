@@ -49,6 +49,7 @@ function ManagerDashboard() {
           {menuState.employee && (
             <div className="ms-3">
               <Link to="/manager-dashboard/view-employeelist" className="nav-link text-light">Employee List</Link>
+              <Link to="/manager-dashboard/view-leave-balance" className="nav-link text-light">View Leave Balance</Link>
               <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-light">Employee Leave</Link>
              
             </div>
