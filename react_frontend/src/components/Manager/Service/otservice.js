@@ -97,5 +97,14 @@ getOTCounts: async () => {
 //   }
 // },
 
+markAsPaid : async (id) => {
+  try {
+    const response = await apiClient.put(`/ot/paid/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to mark as paid: " + error.response?.data?.message || error.message);
+  }
+},
+
 };
 export default managerOTService;

@@ -105,9 +105,9 @@ const OvertimeRequests = () => {
 
       {/* Overtime Request Button */}
       <div className="text-center mt-4">
-        <Button variant="primary" size="lg" onClick={() => setShowModal(true)}>
+        {/* <Button variant="primary" size="lg" onClick={() => setShowModal(true)}>
           Request Overtime
-        </Button>
+        </Button> */}
       </div>
 
       {/* Overtime Form Modal */}

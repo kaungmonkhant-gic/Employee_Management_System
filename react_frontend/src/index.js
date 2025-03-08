@@ -43,8 +43,12 @@ import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
 import Leave from "./components/Manager/Leave";
 import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
 import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
+<<<<<<< HEAD
 
 
+=======
+import SubmitOT from "./components/SubmitOT";
+>>>>>>> 576afdd096a37513116f91d02b66d58eaab8b531
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 function PrivateRoute({ children }) {
@@ -84,6 +88,7 @@ root.render(
         <Route path="admin-leave-approval" element={<AdminLeaveApproval/>} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
+        <Route path="submit-ot" element={<SubmitOT />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
       </Route>

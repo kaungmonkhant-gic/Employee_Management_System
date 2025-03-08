@@ -10,14 +10,22 @@ const overtimeController = {
     }
   },
 
-  addOvertimeRecord: async (overtimeData) => {
+  markAsPaid: async (id, token) => {
     try {
-      const newRecord = await overtimeService.createOvertimeRecord(overtimeData);
-      return newRecord;
+      const updatedRecord = await overtimeService.markAsPaid(id, token);
+      return updatedRecord;
     } catch (error) {
-      throw new Error("Failed to add overtime record. Please try again later.");
+      throw new Error(`Failed to approve request. Error: ${error.message}`);
     }
   },
+  // addOvertimeRecord: async (overtimeData) => {
+  //   try {
+  //     const newRecord = await overtimeService.createOvertimeRecord(overtimeData);
+  //     return newRecord;
+  //   } catch (error) {
+  //     throw new Error("Failed to add overtime record. Please try again later.");
+  //   }
+  // },
 };
 
 export default overtimeController;
