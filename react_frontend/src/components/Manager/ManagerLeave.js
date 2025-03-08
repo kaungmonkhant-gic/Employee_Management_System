@@ -74,9 +74,9 @@ const LeaveRequests = () => {
   ];
   
   return (
-    <div className="container mt-3 vh-100">
+    <div className="container mt-3 vh-100" >
       <div className="row mb-3">
-        <div className="col-md-3">
+        <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
             <div className="ms-3">

@@ -80,10 +80,11 @@ const Attendance = () => {
       {!isCheckedIn ? (
         <Button variant="primary" onClick={handleCheckIn} disabled={isCheckingIn}>
           {isCheckingIn ? "Checking in..." : "Check In"}
+          
         </Button>
       ) : (
         <Button variant="danger" onClick={handleCheckOut}>
-          Check Out
+          Check in 
         </Button>
       )}
 

@@ -6,6 +6,7 @@ const EmployeeDashboard = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPending, setShowPending] = useState(true);
 
   useEffect(() => {
     fetchLeaveRecords();
@@ -23,6 +24,9 @@ const EmployeeDashboard = () => {
       setLoading(false);
     }
   };
+   const filteredRecords = showPending
+    ? leaveRecords.filter(record => record.status === "PENDING")
+    : leaveRecords.filter(record => record.status === "APPROVED" || record.status === "REJECTED");
   const columns = [
     { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
     { field: "leaveType", headerName: "Leave Type", minWidth: 150, flex: 1, cellClassName: "text-center" },
@@ -69,7 +73,7 @@ const EmployeeDashboard = () => {
       
 
     
-        <DataTable
+        {/* <DataTable
         fetchData={leavecontroller.fetchLeaveSelf}
         columns={columns}
         keyField="employeeId"
@@ -79,11 +83,30 @@ const EmployeeDashboard = () => {
         noDataComponent="No employees found"
         highlightOnHover
         pagination
-      />
-    
-
+      /> */}
+      {/* Buttons to toggle between Pending and Confirmed Overtime */}
       
-    </div>
+      {/* Leave Records Table using DataTable */}
+      {/* <div className="mt-4 p-3 border rounded shadow-sm bg-white">
+        <h5 className="mb-3">{showPending ? "Pending Leave" : "Confirmed Leave"}</h5> */}
+
+        {/* Only show DataTable once data is loaded */}
+         {!loading ? (
+          <DataTable
+            fetchData={() => filteredRecords}
+            columns={columns}
+            keyField="number"
+            responsive
+            fixedHeader
+            fixedHeaderScrollHeight="400px"
+            noDataComponent="No Leave records found"
+            highlightOnHover
+            pagination
+          />
+        ) : (
+          <p>Loading leave records...</p> 
+        )}
+      </div>
   );
 };
 

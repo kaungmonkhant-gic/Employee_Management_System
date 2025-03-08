@@ -5,7 +5,7 @@ import { getLeaveBalance, fetchRemainingLeaveDays } from "../Employee/Controller
 import EmpLeaveRequestController from "../Employee/Controller/LeaveRequestController";
 import EmpLeaveService from "../Employee/Service/LeaveRequestService";
 
-const LeaveForm = ({ onLeaveSubmit }) => {
+const LeaveForm = ({ }) => {
   const [formData, setFormData] = useState({
     leaveType: "",
     startDate: "",  // Empty initially
@@ -115,6 +115,7 @@ useEffect(() => {
   
     try {
       const response = await EmpLeaveService.applyForLeave(leaveRequestData);
+      alert("Leave request submitted successfully!");
       console.log("Leave request submitted successfully:", response);
   
       // Optionally show a success message to the user

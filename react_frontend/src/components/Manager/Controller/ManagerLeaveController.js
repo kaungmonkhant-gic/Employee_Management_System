@@ -1,10 +1,7 @@
 // Code for Leave Request Controller
 import leaveService from "../Service/ManagerLeaveService";
-<<<<<<< HEAD
 
 const ManagerLeaveRequestController = {
-
-
 
   fetchLeaveRecords : async () => {
     try {
@@ -13,26 +10,19 @@ const ManagerLeaveRequestController = {
       return response;
     } catch (err) {
       console.error("Error fetching leave records:", err);
-      return [];
-    } 
-=======
-// import { getRemainingLeaveDays } from "../Service/LeaveRequestService";
-import ManagerLeaveService from "../Service/ManagerLeaveService";
+      return [];}
+     } ,
 
-
-const ManagerLeaveRequestController = {
-
-  fetchLeaveData : async () => {
-    try {
-      const leaves = await ManagerLeaveService.fetchLeaves();
-      // Add any additional business logic here if needed
-      return leaves;
-    } catch (error) {
-      console.error("Error in leaveController:", error);
-      return [];
-    }
->>>>>>> d9019fde5f46f8ed9591f1a41daf974d1bc5ef58
-  },
+     fetchLeaveData : async () => {
+      try {
+        const leaves = await leaveService.fetchLeaves();
+        // Add any additional business logic here if needed
+        return leaves;
+      } catch (error) {
+        console.error("Error in leaveController:", error);
+        return [];
+      }
+    },
 
     fetchLeaveCounts: async (setPending, setApproved, setRejected) => {
         try {

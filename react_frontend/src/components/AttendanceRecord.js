@@ -52,7 +52,7 @@ const AttendanceRecord = () => {
       <div className="mt-3">
         
         <DataTable fetchData={attendanceRecordController.fetchAttendance} columns={columns} keyField="id" />
-        <AttendanceForm/>
+        {/* <AttendanceForm/> */}
       </div>
     </div>
   );

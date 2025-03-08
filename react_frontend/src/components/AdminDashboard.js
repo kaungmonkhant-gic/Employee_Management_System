@@ -112,8 +112,8 @@ function AdminDashboard() {
                        </div>
                        {menuState.attendance && (
                          <div className="ms-3">
-                           <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-light">Daily Attendance</Link>
-                           <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-light">Attendance Record</Link>
+                           <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-light">Daily Attendance</Link>
+                           <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-light">Attendance Record</Link>
                          </div>
                        )}
              
@@ -124,9 +124,9 @@ function AdminDashboard() {
                        </div>
                        {menuState.overtime && (
                          <div className="ms-3">
-                           <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-light">Pending Requests</Link>
-                           <Link to="/manager-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
-                           <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link>
+                           <Link to="/admin-dashboard/manager-ot-approval" className="nav-link text-light">Pending Requests</Link>
+                           <Link to="/admin-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
+                           <Link to="/admin-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link>
                          </div>
                        )}
           
@@ -173,8 +173,8 @@ function AdminDashboard() {
             </div>
           )} */}
 
-          <Link to="/admin-dashboard/admin-leave" className="nav-link" style={{ color: "#FFFFFF" }}>💼 Leave</Link>
-          <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>🕒 Overtime</Link>
+          <Link to="/admin-dashboard/admin-leave" className="nav-link" style={{ color: "#FFFFFF" }}>📅 Leave</Link>
+          <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>⏳ Overtime</Link>
           <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>👤 Profile</Link>
           <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>💼 Payroll</Link>
 
