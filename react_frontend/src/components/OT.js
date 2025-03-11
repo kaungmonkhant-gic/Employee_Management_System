@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BellFill, CheckCircleFill, PlusCircleFill } from "react-bootstrap-icons";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Card } from "react-bootstrap";
 import apiClient from "./api/apiclient";
 import { useNavigate } from "react-router-dom";
 import DataTable from "./common/DataTable";
@@ -35,34 +35,34 @@ const OvertimeRequests = () => {
     fetchOvertimeRequests();
   }, []);
 
-  const handlePay = async (id) => {
-    try {
-      const result = await overtimeController.markAsPaid(id);
-      if (result.success) {
-        // Find the paid OT request in the approved list
-        const paidRequest = approved.find((record) => record.id === id);
-        // Remove it from the approved list
-        setApproved((prev) => prev.filter((record) => record.id !== id));
-        // Add it to the paid list
-        setPaid((prev) => [...prev, { ...paidRequest, otStatus: "PAID" }]);
-        alert(result.message);
-      } else {
-        alert(result.message);
-      }
-    } catch (error) {
-      if (error.response) {
-        console.error('Error response:', error.response);
-        alert(`Failed to mark OT request ${id} as paid. Server responded with status code ${error.response.status}: ${error.response.data.message || error.response.statusText}`);
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-        alert('No response received from the server. Please try again later.');
-      } else {
-        console.error('Error message:', error.message);
-        alert(`An error occurred: ${error.message}`);
-      }
+ const handlePay = async (id) => {
+  try {
+    const result = await overtimeController.markAsPaid(id);
+    if (result.success) {
+      // Find the paid OT request in the approved list
+      const paidRequest = approved.find((record) => record.id === id);
+      // Remove it from the approved list
+      setApproved((prev) => prev.filter((record) => record.id !== id));
+      // Add it to the paid list
+      setPaid((prev) => [...prev, { ...paidRequest, otStatus: "PAID" }]);
+      alert(result.message);
+    } else {
+      alert(result.message);
     }
-  };
-  
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response:', error.response);
+      alert(`Failed to mark OT request ${id} as paid. Server responded with status code ${error.response.status}: ${error.response.data.message || error.response.statusText}`);
+    } else if (error.request) {
+      console.error('Error request:', error.request);
+      alert('No response received from the server. Please try again later.');
+    } else {
+      console.error('Error message:', error.message);
+      alert(`An error occurred: ${error.message}`);
+    }
+  }
+};
+
   
   
 
@@ -103,7 +103,7 @@ const OvertimeRequests = () => {
   return (
     <div className="container mt-3 vh-100">
       <div className="row mb-3">
-        <div className="col-md-3">
+        {/* <div className="col-md-3">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
             <div className="ms-3">
@@ -111,7 +111,7 @@ const OvertimeRequests = () => {
               <p className="fw-bold mb-0">{pending.length}</p>
             </div>
           </div>
-        </div>
+        </div>  */}
 
         {/* <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>

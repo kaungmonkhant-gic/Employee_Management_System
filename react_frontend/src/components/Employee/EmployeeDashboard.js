@@ -39,13 +39,8 @@ function EmployeeDashboard() {
           <Link to="/employee-dashboard/attendance" className="nav-link text-white">
             📝 Attendance
           </Link>
-<<<<<<< HEAD
-          <Link to="/employee-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>
-            📅 Leave
-=======
           <Link to="/employee-dashboard/leave" className="nav-link text-white">
             ✉️ Leave
->>>>>>> 576afdd096a37513116f91d02b66d58eaab8b531
           </Link>
           <Link to="/employee-dashboard/payroll" className="nav-link text-white">
             💼 Payroll
