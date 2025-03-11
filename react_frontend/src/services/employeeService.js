@@ -1,5 +1,6 @@
 
 import apiClient from "../components/api/apiclient";
+import addRowNumbers from "../components/common/AddRowNumbers";
 
 const employeeService = {
 
@@ -8,14 +9,7 @@ const employeeService = {
       console.log("Fetching active employees...");
       const response = await apiClient.get("/employee/active");
   
-      if (Array.isArray(response.data)) {
-        return response.data.map((employee, index) => ({
-          ...employee,
-          number: index + 1, // Adds a sequential number starting from 1
-        }));
-      }
-  
-      return []; // Return an empty array if data is not an array
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error in getActiveEmployees:", error);
       throw error;
@@ -28,14 +22,7 @@ const employeeService = {
       console.log("Fetching resigned employees...");
       const response = await apiClient.get("/employee/resigned");
   
-      if (Array.isArray(response.data)) {
-        return response.data.map((employee, index) => ({
-          ...employee,
-          number: index + 1, // Assigns a sequential number starting from 1
-        }));
-      }
-  
-      return []; // Return an empty array if data is not an array
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error in getResignedEmployees:", error);
       throw error;
@@ -78,13 +65,12 @@ const employeeService = {
       console.log("Service call to /salary");
       const response = await apiClient.get("/salary");
       console.log("Response:", response);
-      return response.data;
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error in getEmployeesWithSalary:", error);
       throw error;
     }
   },
-
   registerEmployee: async (employeeData) => {
     try {
       console.log("Service call to /register", employeeData);
