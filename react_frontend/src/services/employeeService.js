@@ -7,29 +7,41 @@ const employeeService = {
     try {
       console.log("Fetching active employees...");
       const response = await apiClient.get("/employee/active");
-
+  
       if (Array.isArray(response.data)) {
-        return response.data;
+        return response.data.map((employee, index) => ({
+          ...employee,
+          number: index + 1, // Adds a sequential number starting from 1
+        }));
       }
+  
+      return []; // Return an empty array if data is not an array
     } catch (error) {
       console.error("Error in getActiveEmployees:", error);
       throw error;
     }
   },
+  
 
   getResignedEmployees: async () => {
     try {
       console.log("Fetching resigned employees...");
       const response = await apiClient.get("/employee/resigned");
-
+  
       if (Array.isArray(response.data)) {
-        return response.data;
+        return response.data.map((employee, index) => ({
+          ...employee,
+          number: index + 1, // Assigns a sequential number starting from 1
+        }));
       }
+  
+      return []; // Return an empty array if data is not an array
     } catch (error) {
       console.error("Error in getResignedEmployees:", error);
       throw error;
     }
   },
+  
 
   getPositions: async () => {
     try {
