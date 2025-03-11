@@ -116,11 +116,11 @@ const LeaveRequests = () => {
         {/* <button className="btn btn-primary mb-3">
         View Confirmed Requests
       </button> */}
-        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/leave-confirmed")}
+        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}
         >
           Incoming Leave Requests
         </Button>
-        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}>
+        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/leave-confirmed")}>
           Confirmed Requests
         </Button>
 

@@ -109,21 +109,6 @@ function AdminDashboard() {
               <Link to="/admin-dashboard/showleave" className="nav-link" style={{ color: "#FFFFFF" }}>Show Leave</Link>
               <Link to="/admin-dashboard/salary" className="nav-link" style={{ color: "#FFFFFF" }}>Show Salary</Link>
             </div>
-<<<<<<< HEAD
-              )}
-             {/* Attendance Dropdown */}
-                       <div className="nav-link text-light" onClick={() => toggleMenu("attendance")} style={{ cursor: "pointer" }}>
-                         📝 Attendance
-                         <i className={`bi ms-2 ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
-                       </div>
-                       {menuState.attendance && (
-                         <div className="ms-3">
-                           <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link text-light">Daily Attendance</Link>
-                           <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link text-light">Attendance Record</Link>
-                         </div>
-                       )}
-             
-=======
           )}
           {/* Attendance Dropdown */}
           <div className="nav-link text-light" onClick={() => toggleMenu("attendance")} style={{ cursor: "pointer" }}>
@@ -143,7 +128,6 @@ function AdminDashboard() {
 
           
 
->>>>>>> 576afdd096a37513116f91d02b66d58eaab8b531
                        {/* Overtime Dropdown */}
                        <div className="nav-link text-light" onClick={() => toggleMenu("overtime")} style={{ cursor: "pointer" }}>
                          🕒 Overtime
@@ -151,16 +135,10 @@ function AdminDashboard() {
                        </div>
                        {menuState.overtime && (
                          <div className="ms-3">
-<<<<<<< HEAD
-                           <Link to="/admin-dashboard/manager-ot-approval" className="nav-link text-light">Pending Requests</Link>
-                           <Link to="/admin-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
-                           <Link to="/admin-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link>
-=======
                            <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>OT (Overtime)</Link>
                            <Link to="/admin-dashboard/submit-ot" className="nav-link" style={{ color: "#FFFFFF" }}>Request OT</Link>
                            {/* <Link to="/admin-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
                            <Link to="/admin-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link> */}
->>>>>>> 576afdd096a37513116f91d02b66d58eaab8b531
                          </div>
                        )}
           
@@ -207,16 +185,9 @@ function AdminDashboard() {
             </div>
           )} */}
 
-<<<<<<< HEAD
-          <Link to="/admin-dashboard/admin-leave" className="nav-link" style={{ color: "#FFFFFF" }}>📅 Leave</Link>
-          <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>⏳ Overtime</Link>
-          <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>👤 Profile</Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>💼 Payroll</Link>
-=======
-          <Link to="/admin-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
+          <Link to="/admin-dashboard/admin-Leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
           <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>Profile</Link>
           <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Payroll</Link>
->>>>>>> 576afdd096a37513116f91d02b66d58eaab8b531
 
           <button onClick={handleLogout} className="btn btn-secondary mt-4">Logout</button>
         </nav>
