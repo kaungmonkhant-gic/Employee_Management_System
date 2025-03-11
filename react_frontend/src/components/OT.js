@@ -72,6 +72,15 @@ const OvertimeRequests = () => {
 
 
   const columns = [
+    { 
+      field: "number", 
+      headerName: "No.", 
+      minWidth: 50, 
+      flex: 0.5, 
+      cellClassName: "text-center",  // Ensures text alignment in Bootstrap
+      headerClassName: "text-center" // Centers the header text as well
+    },
+    
     { field: "employeeName", headerName: "Employee Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
     // { field: "managerName", headerName: "Manager Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
     
@@ -112,16 +121,6 @@ const OvertimeRequests = () => {
             </div>
           </div>
         </div>  */}
-
-        {/* <div className="col-md-4">
-          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
-            <CheckCircleFill size={32} color="green" />
-            <div className="ms-3">
-              <p className="text-muted mb-1">Approved Requests</p>
-              <p className="fw-bold mb-0">{approved.length}</p>
-            </div>
-          </div>
-        </div> */}
 
         <div className="col-md-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>

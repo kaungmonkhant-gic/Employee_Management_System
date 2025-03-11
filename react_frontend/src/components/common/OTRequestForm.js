@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import apiClient from "../api/apiclient";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 
-const OvertimeRequestForm = ({ checkInTime }) => { // assuming checkInTime is passed as a prop
+const OvertimeRequestForm = ({ checkInTime }) => {
   const [formData, setFormData] = useState({
     id: "",
     employeeName: "",
@@ -15,26 +15,51 @@ const OvertimeRequestForm = ({ checkInTime }) => { // assuming checkInTime is pa
     managerName: "",
     errorMessage: "",
   });
+
   // Handle input changes
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Validate that overtime start time is not earlier than check-in time
+  // Validate the overtime data
   const validateOvertime = () => {
-    const { startTime } = formData;
+    const { startTime, endTime, reason, date } = formData;
+    let error = "";
 
-    if (startTime && checkInTime) {
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    // Check if the date is earlier than today
+    if (date && date < today) {
+      error = "Overtime date cannot be earlier than today.";
+    }
+
+    // Ensure both start and end time are provided
+    if (!startTime || !endTime) {
+      error = "Start time and End time are required.";
+    } else {
       const overtimeStart = new Date(`1970-01-01T${startTime}:00`);
+      const overtimeEnd = new Date(`1970-01-01T${endTime}:00`);
       const checkIn = new Date(`1970-01-01T${checkInTime}:00`);
 
+      // Check if start time is earlier than check-in time
       if (overtimeStart < checkIn) {
-        return "Overtime start time cannot be earlier than check-in time.";
+        error = "Overtime start time cannot be earlier than check-in time.";
+      }
+      // Check if end time is before start time
+      else if (overtimeEnd <= overtimeStart) {
+        error = "End time must be later than start time.";
       }
     }
-    return ""; // No error
-  }
-  // Calculate duration based on startTime and endTime
+
+    // Check if reason is provided
+    if (!reason) {
+      error = "Please provide a reason for overtime.";
+    }
+
+    return error;
+  };
+
+  // Calculate overtime duration based on start and end time
   useEffect(() => {
     const error = validateOvertime();
     setFormData((prevData) => ({
@@ -42,11 +67,11 @@ const OvertimeRequestForm = ({ checkInTime }) => { // assuming checkInTime is pa
       errorMessage: error,
     }));
 
-    if (formData.startTime && formData.endTime && !error) {
+    if (!error && formData.startTime && formData.endTime) {
       const start = new Date(`1970-01-01T${formData.startTime}:00`);
       const end = new Date(`1970-01-01T${formData.endTime}:00`);
 
-      if (end >= start) {
+      if (end > start) {
         const otTimeInMinutes = (end - start) / 1000 / 60;
         setFormData((prevData) => ({
           ...prevData,
@@ -95,11 +120,10 @@ const OvertimeRequestForm = ({ checkInTime }) => { // assuming checkInTime is pa
       alert("Failed to submit the request. Please try again later.");
     }
   };
-  
+
   // Handle cancel button
   const handleCancel = () => {
     setFormData({
-      
       date: "",
       startTime: "",
       endTime: "",
@@ -111,12 +135,8 @@ const OvertimeRequestForm = ({ checkInTime }) => { // assuming checkInTime is pa
 
   return (
     <Card className="shadow-lg">
-      {/* <Card.Header className="text-white text-center" style={{ backgroundColor: "#001F3F" }}>
-        <h3 className="mb-0">Overtime Request Form</h3>
-      </Card.Header> */}
       <Card.Body className="p-5">
         <Form onSubmit={handleSubmit}>
-          
           {/* Overtime Date */}
           <Form.Group as={Row} className="mb-3 align-items-center">
             <Form.Label column sm={4} className="text-muted">
