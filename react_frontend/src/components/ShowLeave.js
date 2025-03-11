@@ -9,6 +9,15 @@ function Leave() {
   const navigate = useNavigate(); // Initialize the navigate function
 
   const [columns] = useState([
+    { 
+      field: "number", 
+      headerName: "No.", 
+      minWidth: 50, 
+      flex: 0.5, 
+      cellClassName: "text-center",  // Ensures text alignment in Bootstrap
+      headerClassName: "text-center" // Centers the header text as well
+    },
+    
     { field: "employeeId", headerName: "Emp ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Emp Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "annualLeave", headerName: "Annual Leave", minWidth: 50, flex: 0.5, cellClassName: "text-center" },

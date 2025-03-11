@@ -6,7 +6,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 function EmployeeDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showOvertimeSubMenu, setShowOvertimeSubMenu] = useState(false);
   const [employeeName, setEmployeeName] = useState("");
 
   useEffect(() => {
@@ -20,51 +19,32 @@ function EmployeeDashboard() {
   };
 
   return (
-    <div className="d-flex min-vh-100" style={{ overflowY: "hidden", height: "100vh" }}>
-      {/* Sidebar */}
-      <div className="d-flex flex-column p-3" style={{ width: "250px", backgroundColor: "#2980B9", color: "#FFFFFF" }}>
-        <h2 className="text-center mb-4">Employee Dashboard</h2>
-        <nav className="nav flex-column">
-          <Link to="/employee-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>
+    <div className="d-flex" style={{ minHeight: "100vh" }}>
+    {/* Sidebar */}
+   <div className="d-flex flex-column p-3" style={{ width: "250px", backgroundColor: "#2980B9", color: "#FFFFFF" }}>
+     <h2 className="text-center mb-4">Employee Dashboard</h2>
+     <nav className="nav flex-column">
+          <Link to="/employee-dashboard" className="nav-link text-white">
             🏠 Dashboard
           </Link>
-
-          <div
-            className="nav-link"
-            onClick={() => setShowOvertimeSubMenu(!showOvertimeSubMenu)}
-            style={{ cursor: "pointer", color: "#FFFFFF" }}
-          >
-            🕒 Overtime
-            <i
-              className={`bi ms-2 ${showOvertimeSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
-              style={{ color: "white" }}
-            />
-          </div>
-
-          {showOvertimeSubMenu && (
-            <div className="ms-3">
-              <Link to="/employee-dashboard/overtime/otrequest" className="nav-link" style={{ color: "#FFFFFF" }}>
-                Overtime Request
-              </Link>
-              <Link to="/employee-dashboard/overtime/otrecord" className="nav-link" style={{ color: "#FFFFFF" }}>
-                Overtime Record
-              </Link>
-            </div>
-          )}
-
-          <Link to="/employee-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>
+          {/* Overtime Section */}
+          <Link to="/employee-dashboard/overtime/otrequest" className="nav-link text-white">
+            🕒 Overtime 
+          </Link>
+          
+          {/* Other Links */}
+          <Link to="/employee-dashboard/profile" className="nav-link text-white">
             👤 Profile
           </Link>
-          <Link to="/employee-dashboard/attendance" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <Link to="/employee-dashboard/attendance" className="nav-link text-white">
             📝 Attendance
           </Link>
-          <Link to="/employee-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <Link to="/employee-dashboard/leave" className="nav-link text-white">
             ✉️ Leave
           </Link>
-          <Link to="/employee-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <Link to="/employee-dashboard/payroll" className="nav-link text-white">
             💼 Payroll
           </Link>
-
           <button onClick={handleLogout} className="btn btn-secondary mt-4">
             Logout
           </button>
@@ -72,54 +52,34 @@ function EmployeeDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow-1 p-4" style={{ backgroundColor: "#f8f9fa" }}>
+      <div className="main-content flex-grow-1 p-4 bg-light">
         {/* Header */}
-        <header className="p-3 d-flex justify-content-between align-items-center rounded" style={{ backgroundColor: "#2980B9", color: "#FFFFFF" }}>
+        <header className="d-flex justify-content-between align-items-center bg-primary text-white p-3 rounded">
           <h4>👋 Welcome, {employeeName}</h4>
-          <button onClick={handleLogout} className="btn btn-light btn-sm">Logout</button>
+          {/* <button onClick={handleLogout} className="btn btn-light btn-sm">
+            Logout
+          </button> */}
         </header>
 
-        {/* Employee Dashboard Content */}
+        {/* Dashboard Overview */}
         {location.pathname === "/employee-dashboard" && (
-          <>
-            <div className="row my-4">
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>🕒 Overtime Requests</h5>
-                  <p>Manage your overtime requests here.</p>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>📝 Attendance</h5>
-                  <p>View your attendance records.</p>
-                </div>
+          <div className="row my-4">
+            <div className="col-12 col-md-6 mb-4 mb-md-0">
+              <div className="card shadow-sm p-3">
+                <h5>🕒 Overtime Requests</h5>
+                <p>Manage your overtime requests here.</p>
               </div>
             </div>
-
-            <div className="row my-4">
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>📅 Upcoming Leave</h5>
-                  <ul>
-                    <li>John Doe - March 5</li>
-                    <li>Jane Smith - March 10</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>💼 Payroll Overview</h5>
-                  <p>Your latest payroll details will be displayed here.</p>
-                </div>
+            <div className="col-12 col-md-6">
+              <div className="card shadow-sm p-3">
+                <h5>📝 Attendance</h5>
+                <p>View your attendance records.</p>
               </div>
             </div>
-          </>
+          </div>
         )}
 
-        {/* Show the requested page */}
+        {/* Render the requested page */}
         <Outlet />
       </div>
     </div>

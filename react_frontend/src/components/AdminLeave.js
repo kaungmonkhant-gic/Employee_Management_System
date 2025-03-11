@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
 import { Modal, Button } from "react-bootstrap";
-import LeaveForm from "../common/LeaveForm";
-import apiClient from "../api/apiclient";
+import LeaveForm from "./common/LeaveForm";
+import apiClient from "./api/apiclient";
 import { useNavigate } from "react-router-dom";
-import DataTable from "../common/DataTable";
-import leaveController from "../Manager/Controller/ManagerLeaveController";
+import DataTable from "./common/DataTable";
+import leaveController from "../Controller/AdminLeaveController";
 
 const LeaveRequests = () => {
   const [pending, setPending] = useState([]);
@@ -116,11 +116,11 @@ const LeaveRequests = () => {
         {/* <button className="btn btn-primary mb-3">
         View Confirmed Requests
       </button> */}
-        <Button variant="secondary" className="ms-3" onClick={() => navigate("/manager-dashboard/manager-leave-approval")}
+        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/leave-confirmed")}
         >
           Incoming Leave Requests
         </Button>
-        <Button variant="secondary" className="ms-3" onClick={() => navigate("/manager-dashboard/leave-confirmed")}>
+        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}>
           Confirmed Requests
         </Button>
 

@@ -1,5 +1,6 @@
 
 import apiClient from "../components/api/apiclient";
+import addRowNumbers from "../components/common/AddRowNumbers";
 
 const employeeService = {
 
@@ -7,29 +8,27 @@ const employeeService = {
     try {
       console.log("Fetching active employees...");
       const response = await apiClient.get("/employee/active");
-
-      if (Array.isArray(response.data)) {
-        return response.data;
-      }
+  
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error in getActiveEmployees:", error);
       throw error;
     }
   },
+  
 
   getResignedEmployees: async () => {
     try {
       console.log("Fetching resigned employees...");
       const response = await apiClient.get("/employee/resigned");
-
-      if (Array.isArray(response.data)) {
-        return response.data;
-      }
+  
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error in getResignedEmployees:", error);
       throw error;
     }
   },
+  
 
   getPositions: async () => {
     try {
@@ -66,13 +65,12 @@ const employeeService = {
       console.log("Service call to /salary");
       const response = await apiClient.get("/salary");
       console.log("Response:", response);
-      return response.data;
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error in getEmployeesWithSalary:", error);
       throw error;
     }
   },
-
   registerEmployee: async (employeeData) => {
     try {
       console.log("Service call to /register", employeeData);

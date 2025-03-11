@@ -1,11 +1,9 @@
 // Code for Leave Request Controller
-import leaveService from "../Service/LeaveRequestService";
-// import { getRemainingLeaveDays } from "../Service/LeaveRequestService";
+import leaveService from "../services/AdminLeaveService";
 
+const ManagerLeaveRequestController = {
 
-const LeaveRequestController = {
-
-  fetchLeaveRecord : async () => {
+  fetchLeaveRecords : async () => {
     try {
       const response = await leaveService.fetchLeaveSelf();
       console.log("Leave Records:", response);
@@ -67,4 +65,4 @@ const LeaveRequestController = {
   
 };
 
-export default LeaveRequestController;
+export default ManagerLeaveRequestController;

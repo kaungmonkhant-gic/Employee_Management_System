@@ -7,6 +7,10 @@ import Employee from "./components/Employee"; // Employee component
 import Attendance from "./components/Attendance"; // Attendance component
 import OT from "./components/OT"; // OT component
 import Profile from "./components/Profile"; // Profile component
+import AdminLeave from "./components/AdminLeave";
+import LeaveConfirmedRequest from "./components/LeaveConfirmedRequest";
+import AdminLeaveApproval from "./components/AdminLeaveApproval";
+// import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
 import PayRoll from "./components/PayRoll"; // PayRoll component
 import LoginForm from "./components/LoginForm"; // Login component
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
@@ -22,7 +26,6 @@ import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
-import Leave from "./components/Leave";
 // import ViewSalary from "./components/Employee/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
@@ -37,7 +40,12 @@ import ManagerLeaveApproval from "./components/Manager/ManagerLeaveApproval";
 import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
 import ViewEmployee from "./components/Manager/ViewEmployee";
 import EmployeeLeaveRecord from "./components/Manager/EmployeeLeaveRecord";
+import Leave from "./components/Manager/Leave";
+import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
 import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
+import SubmitOT from "./components/SubmitOT";
+import ShowResignedEmployee from "./components/ShowResignedEmployee";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -71,11 +79,15 @@ root.render(
         <Route path="attendance" element={<Attendance />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
+        <Route path="show-resigned" element={<ShowResignedEmployee/>} />
         <Route path="showleave" element={<ShowLeave/>} />
         <Route path="salary" element={<Salary />} />
-        <Route path="leave" element={<Leave />} />
+        <Route path="admin-leave" element={<AdminLeave />} />
+        <Route path="leave-confirmed" element={<LeaveConfirmedRequest />} />
+        <Route path="admin-leave-approval" element={<AdminLeaveApproval/>} />
         <Route path="addleave" element={<AddLeave />} />
         <Route path="ot" element={<OT />} />
+        <Route path="submit-ot" element={<SubmitOT />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
       </Route>
@@ -85,6 +97,7 @@ root.render(
         <Route path="attendance" element={<EmpAttendance />} />
         <Route path="attendance-list" element={<EmpAttendanceList />} />
         <Route path="leave" element={<EmpLeave />}/>
+        <Route path="self-leave-record" element={<SelfLeaveRecords />} />
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />

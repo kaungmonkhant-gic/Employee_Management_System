@@ -9,6 +9,7 @@ function Salary() {
   const navigate = useNavigate(); // Initialize the navigate function
 
   const [columns] = useState([
+    
     { field: "employeeId", headerName: "Emp ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Emp Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "basicSalary", headerName: "Basic Salary", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
@@ -22,9 +23,7 @@ function Salary() {
     <div className="container mt-5 vh-100">
 
       <h2 className="text-center mb-4">Salary Allowlance</h2>
-      {/* <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
-            Add Leave
-          </button> */}
+     
       <DataTable
           fetchData={salaryController.fetchSalaryData}
           columns={columns}
