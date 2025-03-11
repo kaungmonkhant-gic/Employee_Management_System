@@ -1,7 +1,6 @@
 package ems.com.ems_project.service;
 
 import ems.com.ems_project.dto.EmployeeDTO;
-import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,16 +9,13 @@ import java.util.List;
 
 public interface EmployeeService extends UserDetailsService {
 
-
+    ReqRes getLoggedInEmployeeProfile();
     long getActiveEmployeeCountBasedOnRole(String token);
 
-
-//    List<EmployeeDTO> getAllEmployees();
-
     EmployeeDTO getEmployeeById(String Id);
+    ReqRes updateEmployeeProfile(EmployeeDTO updatedProfile);
 
-    ReqRes getProfile(String email);
-    ReqRes updateProfile(String Id, EmployeeProfile updatedProfile);
+//    ReqRes updateProfile(String Id, RegisterDTO updatedProfile);
 
     ReqRes registerEmployee(RegisterDTO registerDTO);
 

@@ -1,7 +1,6 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import ems.com.ems_project.model.*;
 import lombok.Data;
 import java.util.Date;
@@ -35,6 +34,8 @@ public class EmployeeDTO {
     private String positionName;
     private String departmentName;
 
+
+
     public EmployeeDTO() {
     }
 
@@ -59,14 +60,22 @@ public class EmployeeDTO {
             // Set manager name from Employee entity
             this.managerName = (employee.getManager() != null) ? employee.getManager().getName() : null;
 
-            // Extract role, position, and department from Employee entity
-            this.roleName = (employee.getRole() != null) ? employee.getRole().getRoleName() : null;
-            this.positionName = (employee.getPosition() != null) ? employee.getPosition().getPositionName() : null;
-            this.departmentName = (employee.getDepartment() != null) ? employee.getDepartment().getDepartmentName() : null;
+            if (employee.getRole() != null) {
+                this.roleName = employee.getRole().getRoleName();
+            }
+
+            // Extract position details
+            if (employee.getPosition() != null) {
+                this.positionName = employee.getPosition().getPositionName();
+            }
+
+            // Extract department details
+            if (employee.getDepartment() != null) {
+                this.departmentName = employee.getDepartment().getDepartmentName();
+            }
+
         }
     }
-
-
     public String getId() {
         return id;
     }
@@ -211,4 +220,5 @@ public class EmployeeDTO {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
+
 }

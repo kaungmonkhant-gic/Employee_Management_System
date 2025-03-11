@@ -9,12 +9,15 @@ import ems.com.ems_project.service.EmployeeService;
 import ems.com.ems_project.service.JWTUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ems.com.ems_project.config.PasswordEncoderConfig;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -153,32 +156,43 @@ public class EmployeeServiceImp implements EmployeeService {
         return new EmployeeDTO(employee);
     }
 
-    @Override
-    public ReqRes getProfile(String email) {
-        ReqRes reqRes = new ReqRes();
+    public ReqRes getLoggedInEmployeeProfile() {
+        // Get the logged-in user's email
+        String loggedInUsername = getLoggedInUsername();  // This method fetches the logged-in user's email
+
         try {
-            Optional<Employee> userOptional = employeeRepository.findByEmail(email);
-            if (userOptional.isPresent()) {
-                Employee employee = userOptional.get();
+            // Fetch employee details from the database
+            Employee employee = employeeRepository.findByEmail(loggedInUsername)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
-                // Use ModelMapper to map Employee to EmployeeProfile
-                EmployeeProfile employeeProfile = modelMapper.map(employee, EmployeeProfile.class);
+            // Convert Employee entity to EmployeeDTO
+            EmployeeDTO employeeProfile = new EmployeeDTO(employee);
 
-                // Prepare response
-                reqRes.setEmployeeProfile(employeeProfile);
-                reqRes.setStatusCode(200);
-                reqRes.setMessage("Profile retrieval successful.");
-            } else {
-                reqRes.setStatusCode(404);
-                reqRes.setMessage("Employee not found.");
-            }
+            // Create and return a ReqRes response with the employee profile
+            ReqRes response = new ReqRes();
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setMessage("Employee profile retrieved successfully.");
+            response.setEmployeeProfile(employeeProfile);  // Include the employeeDTO in the response
+
+            return response;
+        } catch (ResponseStatusException e) {
+            // Handle known errors, such as employee not found
+            throw e;
         } catch (Exception e) {
-            reqRes.setStatusCode(500);
-            reqRes.setMessage("An error occurred while retrieving profile: " + e.getMessage());
+            // Catch any unexpected errors and throw an exception for the controller to handle
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while retrieving the employee profile", e);
         }
-        return reqRes;
     }
 
+    // Helper method to get logged-in username (email) from JWT
+    private String getLoggedInUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Employee> employee = employeeRepository.findByEmail(username);
@@ -201,9 +215,6 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
 
-
-
-
     // Get Count of Active Employees (resignDate is null)
     public long getActiveEmployeeCount() {
         return employeeRepository.countActiveEmployees();
@@ -215,172 +226,70 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public ReqRes updateProfile(String loggedInUserId, EmployeeProfile updatedProfile) {
+    public ReqRes updateEmployeeProfile(EmployeeDTO employeeDTO) {
         ReqRes reqRes = new ReqRes();
-        try {
 
-            System.out.println("Logged-in User ID: " + loggedInUserId);
-            // Fetch logged-in employee by ID (username or user ID)
-            Optional<Employee> userOptional = employeeRepository.findByEmail(loggedInUserId);
-            if (userOptional.isPresent()) {
-                Employee employee = userOptional.get();
+        // Get the logged-in user's email
+       String loggedInUsername = getLoggedInUsername();  // Adjust as per your auth setup
 
-                if (employee.getResignDate() != null) {
-                    reqRes.setStatusCode(400);  // Bad Request
-                    reqRes.setMessage("Cannot update. Employee has already resigned on " + employee.getResignDate());
-                    return reqRes;
-                }
-
-                // Update fields only if they are provided in the request
-                if (updatedProfile.getName() != null) {
-                    employee.setName(updatedProfile.getName());
-                }
-                if (updatedProfile.getDob() != null) {
-                    employee.setDob(updatedProfile.getDob());
-                }
-                if (updatedProfile.getNrc() != null) {
-                    employee.setNrc(updatedProfile.getNrc());
-                }
-                if (updatedProfile.getGender() != null) {
-                    employee.setGender(updatedProfile.getGender());
-                }
-                if (updatedProfile.getMaritalStatus() != null) {
-                    employee.setMaritalStatus(updatedProfile.getMaritalStatus());
-                }
-                if (updatedProfile.getPhone() != null) {
-                    employee.setPhone(updatedProfile.getPhone());
-                }
-                if (updatedProfile.getEmail() != null) {
-                    employee.setEmail(updatedProfile.getEmail());
-                }
-                if (updatedProfile.getAddress() != null) {
-                    employee.setAddress(updatedProfile.getAddress());
-                }
-                if (updatedProfile.getEducation() != null) {
-                    employee.setEducation(updatedProfile.getEducation());
-                }
-                if (updatedProfile.getWorkExp() != null) {
-                    employee.setWorkExp(updatedProfile.getWorkExp());
-                }
-                if (updatedProfile.getJoinDate() != null) {
-                    employee.setJoinDate(updatedProfile.getJoinDate());
-                }
-                if (updatedProfile.getResignDate() != null) {
-                    employee.setResignDate(updatedProfile.getResignDate());
-                }
-
-                // Update Department if provided
-                if (updatedProfile.getDepartmentName() != null) {
-                    Optional<Departments> departmentOpt = departmentRepository.findByDepartmentName(updatedProfile.getDepartmentName());
-                    departmentOpt.ifPresent(employee::setDepartment);
-                }
-
-                // Update Position if provided
-                if (updatedProfile.getPositionName() != null) {
-                    Optional<Positions> positionOpt = positionRepository.findByPositionName(updatedProfile.getPositionName());
-                    positionOpt.ifPresent(employee::setPosition);
-                }
-
-                // Update Role if provided
-                if (updatedProfile.getRoleName() != null) {
-                    Optional<Roles> roleOpt = roleRepository.findByRoleName(updatedProfile.getRoleName());
-                    roleOpt.ifPresent(employee::setRole);
-                }
-
-                // Save updated employee to the database
-                Employee updatedEmployee = employeeRepository.save(employee);
-
-                // Convert updated entity to DTO
-                EmployeeProfile employeeProfile = modelMapper.map(updatedEmployee, EmployeeProfile.class);
-
-                reqRes.setEmployeeProfile(employeeProfile);
-                reqRes.setStatusCode(200);
-                reqRes.setMessage("Profile updated successfully.");
-            } else {
-                reqRes.setStatusCode(404);
-                reqRes.setMessage("Employee not found.");
-            }
-        } catch (Exception e) {
-            reqRes.setStatusCode(500);
-            reqRes.setMessage("An error occurred while updating profile: " + e.getMessage());
+        Optional<Employee> existingEmployee = employeeRepository.findByEmail(loggedInUsername);
+        if (existingEmployee.isEmpty()) {
+            reqRes.setStatusCode(404);
+            reqRes.setMessage("Employee not found with email: " + loggedInUsername);
+            return reqRes;
         }
+
+        try {
+            Employee employee = existingEmployee.get();
+
+            if (employee.getResignDate() != null) {
+                reqRes.setStatusCode(400);  // Bad Request
+                reqRes.setMessage("Cannot update. Employee has already resigned on " + employee.getResignDate());
+                return reqRes;
+            }
+
+            // Update employee details (only non-null values)
+            if (employeeDTO.getName() != null) employee.setName(employeeDTO.getName());
+            if (employeeDTO.getPhone() != null) employee.setPhone(employeeDTO.getPhone());
+            if (employeeDTO.getGender() != null) employee.setGender(employeeDTO.getGender());
+            if (employeeDTO.getDob() != null) employee.setDob(employeeDTO.getDob());
+            if (employeeDTO.getNrc() != null) employee.setNrc(employeeDTO.getNrc());
+            if (employeeDTO.getMaritalStatus() != null) employee.setMaritalStatus(employeeDTO.getMaritalStatus());
+            if (employeeDTO.getAddress() != null) employee.setAddress(employeeDTO.getAddress());
+            if (employeeDTO.getWorkExp() != null) employee.setWorkExp(employeeDTO.getWorkExp());
+            if (employeeDTO.getEducation() != null) employee.setEducation(employeeDTO.getEducation());
+            if (employeeDTO.getJoinDate() != null) employee.setJoinDate(employeeDTO.getJoinDate());
+
+            // Update department, position, and role if provided
+            if (employeeDTO.getDepartmentName() != null) {
+                departmentRepository.findByDepartmentName(employeeDTO.getDepartmentName()).ifPresent(employee::setDepartment);
+            }
+            if (employeeDTO.getPositionName() != null) {
+                positionRepository.findByPositionName(employeeDTO.getPositionName()).ifPresent(employee::setPosition);
+            }
+            if (employeeDTO.getRoleName() != null) {
+                roleRepository.findByRoleName(employeeDTO.getRoleName()).ifPresent(employee::setRole);
+            }
+
+            // Hash and update password if provided
+            if (employeeDTO.getPassword() != null && !employeeDTO.getPassword().isEmpty()) {
+                String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(employeeDTO.getPassword());
+                employee.setPassword(hashedPassword);
+            }
+
+            employeeRepository.save(employee);
+
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Profile updated successfully.");
+        } catch (Exception e) {
+            System.err.println("Error updating profile: " + e.getMessage());
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("An error occurred while updating the profile: " + e.getMessage());
+        }
+
         return reqRes;
     }
 
-//    @Override
-//    public ReqRes registerEmployee(RegisterDTO registerDTO) {
-//        System.out.println("Employee Register Start");
-//        ReqRes reqRes = new ReqRes();
-//
-//        // Check for missing email
-//        if (registerDTO.getEmail() == null || registerDTO.getEmail().isEmpty()) {
-//            reqRes.setStatusCode(400); // Bad Request
-//            reqRes.setMessage("Email is required.");
-//            return reqRes;
-//        }
-//
-//        // Check for duplicate email
-//        Optional<Employee> existingEmployee = employeeRepository.findByEmail(registerDTO.getEmail());
-//        if (existingEmployee.isPresent()) {
-//            reqRes.setStatusCode(409); // Conflict
-//            reqRes.setMessage("Employee with email " + registerDTO.getEmail() + " already exists.");
-//            return reqRes;
-//        }
-//
-//        try {
-//            // Fetch department, position, and role from repositories
-//            Roles role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(() -> new RuntimeException("Role not found"));
-//            Departments department = departmentRepository.findById(registerDTO.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department not found"));
-//            Positions position = positionRepository.findById(registerDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Position not found"));
-//
-//            // Create new Employee entity
-//            Employee employee = new Employee();
-//            employee.setId(generateEmployeeId());  // If ID is provided, use it; otherwise, auto-generate.
-//            employee.setEmail(registerDTO.getEmail());
-//            employee.setName(registerDTO.getName());
-//            employee.setPhone(registerDTO.getPhone());
-//            employee.setGender(registerDTO.getGender());
-//            employee.setDob(registerDTO.getDob());
-//            employee.setNrc(registerDTO.getNrc());
-//            employee.setMaritalStatus(registerDTO.getMaritalStatus());
-//            employee.setAddress(registerDTO.getAddress());
-//            employee.setWorkExp(registerDTO.getWorkExp());
-//            employee.setEducation(registerDTO.getEducation());
-//            employee.setJoinDate(registerDTO.getJoinDate());
-//
-//            // Set the role, department, and position
-//            employee.setRole(role);
-//            employee.setDepartment(department);
-//            employee.setPosition(position);
-//
-//            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
-//            employee.setPassword(hashedPassword);
-//
-//            Employee manager = null;
-//            if (!role.getRoleName().equalsIgnoreCase("Manager")) {
-//                manager = employeeRepository.findByDepartmentAndRole(department.getId(), "Role 2")
-//                        .orElse(null);
-//            }
-//            employee.setManager(manager);
-//
-//            // Save the employee
-//            Employee savedEmployee = employeeRepository.save(employee);
-//
-//            // Save EmployeeSalary and EmployeeLeave entities
-//            employeeSalaryService.createEmployeeSalary(savedEmployee);
-//            employeeLeaveService.createEmployeeLeave(savedEmployee);
-//
-//            reqRes.setEmployee(savedEmployee);
-//            reqRes.setStatusCode(201); // Created
-//            reqRes.setMessage("Employee registered successfully.");
-//        } catch (Exception e) {
-//            // Log the exception for debugging purposes
-//            System.err.println("Error during registration: " + e.getMessage());
-//            reqRes.setStatusCode(500); // Internal Server Error
-//            reqRes.setMessage("An error occurred during registration: " + e.getMessage());
-//        }
-//        return reqRes;
-//    }
     @Override
     public ReqRes registerEmployee(RegisterDTO registerDTO) {
         System.out.println("Employee Registration Start");

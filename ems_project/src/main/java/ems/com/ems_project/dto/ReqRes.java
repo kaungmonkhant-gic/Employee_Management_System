@@ -6,8 +6,6 @@ import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
 import ems.com.ems_project.model.EmployeeSalary;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -21,10 +19,8 @@ public class ReqRes {
     private String error;
     private String message;
     private String token;
-    private EmployeeProfile employeeProfile;
     private List<EmployeeDTO> employeeList;
-    private List<EmployeeProfile> employeeProfiles;
-    private EmployeeDTO employeeDTO;
+    private EmployeeDTO employeeProfile;
     private RegisterDTO registerDTO;
     private Employee employee;
     private EmployeeSalary employeeSalary;
@@ -62,14 +58,6 @@ public class ReqRes {
         this.token = token;
     }
 
-    public EmployeeProfile getEmployeeProfile() {
-        return employeeProfile;
-    }
-
-    public void setEmployeeProfile(EmployeeProfile employeeProfile) {
-        this.employeeProfile = employeeProfile;
-    }
-
     public List<EmployeeDTO> getEmployeeList() {
         return employeeList;
     }
@@ -78,20 +66,21 @@ public class ReqRes {
         this.employeeList = employeeList;
     }
 
-    public List<EmployeeProfile> getEmployeeProfiles() {
-        return employeeProfiles;
+
+    public EmployeeDTO getEmployeeProfile() {
+        return employeeProfile;
     }
 
-    public void setEmployeeProfiles(List<EmployeeProfile> employeeProfiles) {
-        this.employeeProfiles = employeeProfiles;
+    public void setEmployeeProfile(EmployeeDTO employeeProfile) {
+        this.employeeProfile = employeeProfile;
     }
 
-    public EmployeeDTO getEmployeeDTO() {
-        return employeeDTO;
+    public RegisterDTO getRegisterDTO() {
+        return registerDTO;
     }
 
-    public void setEmployeeDTO(EmployeeDTO employeeDTO) {
-        this.employeeDTO = employeeDTO;
+    public void setRegisterDTO(RegisterDTO registerDTO) {
+        this.registerDTO = registerDTO;
     }
 
     public Employee getEmployee() {
@@ -100,13 +89,6 @@ public class ReqRes {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
-
-    public void setRegisterDTO(RegisterDTO updatedEmployee) {
-    }
-
-    public RegisterDTO getRegisterDTO() {
-        return registerDTO;
     }
 
     public EmployeeSalary getEmployeeSalary() {
@@ -124,4 +106,5 @@ public class ReqRes {
     public void setEmployeeLeave(EmployeeLeave employeeLeave) {
         this.employeeLeave = employeeLeave;
     }
+
 }
