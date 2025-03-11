@@ -113,14 +113,6 @@ function Employee() {
     { field: "roleName", headerName: "Role", minWidth: 130, flex: 1, cellClassName: "text-center" },
     { field: "joinDate", headerName: "Join Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
     {
-      field: "resignDate",
-      headerName: "Resign Date",
-      minWidth: 150,
-      flex: 1,
-      cellClassName: "text-center",
-      render: (row) => (row.resignDate ? row.resignDate : <span className="text-muted">Not Set</span>),
-    },
-    {
       field: "actions",
       headerName: "Actions",
       minWidth: 120,
