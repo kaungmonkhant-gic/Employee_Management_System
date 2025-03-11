@@ -44,6 +44,11 @@ import Leave from "./components/Manager/Leave";
 import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
 import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
 import SubmitOT from "./components/SubmitOT";
+<<<<<<< HEAD
+=======
+import ShowResignedEmployee from "./components/ShowResignedEmployee";
+
+>>>>>>> 9bf3085d775802a7154d6657243ad876628da7ab
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -77,6 +82,7 @@ root.render(
         <Route path="attendance" element={<Attendance />} />
         <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
         <Route path="attendance/attendance-record" element={<AttendanceRecord />} />
+        <Route path="show-resigned" element={<ShowResignedEmployee/>} />
         <Route path="showleave" element={<ShowLeave/>} />
         <Route path="salary" element={<Salary />} />
         <Route path="admin-leave" element={<AdminLeave />} />

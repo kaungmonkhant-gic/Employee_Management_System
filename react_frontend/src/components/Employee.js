@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import employeeController from "../Controller/employeeController.js";
-import DataTable from "./common/DataTable.js";
+import employeeController from "../Controller/employeeController";
+import ShowResignedEmployee from "./ShowResignedEmployee"; // Import the ShowResignedEmployee component
+import DataTable from "./common/DataTable";
 import EmployeeForm from "./EmployeeForm.js";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
@@ -12,8 +13,10 @@ function Employee() {
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
   const [headerText, setHeaderText] = useState("Register New Employee");
-  const [showActive, setShowActive] = useState(true); // State for toggling tables
+  const [showActive, setShowActive] = useState(true); // State for toggling active employee table
+  const [showResigned, setShowResigned] = useState(false); // State for toggling resigned employee table
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -45,9 +48,53 @@ function Employee() {
   
     fetchEmployees();
   }, []);
-  
-    
 
+  const handleRegisterClick = () => {
+    setEditingEmployee(null);
+    setIsRegisterScreen(true);
+  };
+
+  const handleEdit = (employee) => {
+    setHeaderText("Edit Employee");
+    setEditingEmployee(employee);
+    setIsRegisterScreen(true);
+  };
+
+  const handleDelete = async (employee) => {
+    try {
+      await employeeController.deleteEmployee(employee.id);
+      setActiveEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+      setResignedEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      alert("Failed to delete employee.");
+    }
+  };
+
+  const handleSubmit = async (employeeData) => {
+    if (editingEmployee) {
+      try {
+        const updatedEmployee = await employeeController.updateEmployee(editingEmployee.id, employeeData);
+        setEmployees((prev) =>
+          prev.map((emp) => (emp.number === editingEmployee.number ? updatedEmployee : emp))
+        );
+        setIsRegisterScreen(false);
+      } catch (error) {
+        console.error("Error updating employee:", error);
+        alert("Failed to update employee.");
+      }
+    } else {
+      try {
+        setEmployees((prev) => [...prev, { ...employeeData, number: prev.length + 1 }]);
+        setIsRegisterScreen(false);
+      } catch (error) {
+        console.error("Error adding employee:", error);
+        alert("Failed to add new employee.");
+      }
+    }
+  };
+
+  // Define the columns for active employees
   const columns = [
     { field: "number", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "name", headerName: "Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
@@ -92,55 +139,6 @@ function Employee() {
     },
   ];
 
-  const handleRegisterClick = () => {
-    setEditingEmployee(null);
-    setIsRegisterScreen(true);
-  };
-
-  const handleEdit = (employee) => {
-    setHeaderText("Edit Employee");
-    setEditingEmployee(employee);
-    setIsRegisterScreen(true);
-  };
-
-  const handleDelete = async (employee) => {
-    try {
-      await employeeController.deleteEmployee(employee.id);
-  
-      // Remove the employee from both active and resigned lists
-      setActiveEmployees((prev) => prev.filter((e) => e.id !== employee.id));
-      setResignedEmployees((prev) => prev.filter((e) => e.id !== employee.id));
-  
-    } catch (error) {
-      console.error("Error deleting employee:", error);
-      alert("Failed to delete employee.");
-    }
-  };
-  
-
-  const handleSubmit = async (employeeData) => {
-    if (editingEmployee) {
-      try {
-        const updatedEmployee = await employeeController.updateEmployee(editingEmployee.id, employeeData);
-        setEmployees((prev) =>
-          prev.map((emp) => (emp.number === editingEmployee.number ? updatedEmployee : emp))
-        );
-        setIsRegisterScreen(false);
-      } catch (error) {
-        console.error("Error updating employee:", error);
-        alert("Failed to update employee.");
-      }
-    } else {
-      try {
-        setEmployees((prev) => [...prev, { ...employeeData, number: prev.length + 1 }]);
-        setIsRegisterScreen(false);
-      } catch (error) {
-        console.error("Error adding employee:", error);
-        alert("Failed to add new employee.");
-      }
-    }
-  };
-
   return (
     <div className="container mt-5 vh-100">
       {!isRegisterScreen ? (
@@ -151,47 +149,32 @@ function Employee() {
 
           {/* Buttons to toggle active and resigned employees */}
           <div>
-            {/* <button className="btn btn-outline-primary mb-3" onClick={() => setShowActive(true)}>
+            <button className="btn btn-outline-primary mb-3" onClick={() => { setShowActive(true); setShowResigned(false); }}>
               Show Active Employees
-            </button> */}
-            {/* <button className="btn btn-outline-secondary mb-3" onClick={() => setShowActive(false)}>
+            </button>
+            <button className="btn btn-outline-secondary mb-3" onClick={() => { setShowResigned(true); setShowActive(false); }}>
               Show Resigned Employees
-            </button> */}
-          </div>          
-          {/* Show Active Employees */}
-          {showActive ? (
-  loading ? ( // Show loading message while fetching data
-    <p className="text-center">Loading active employees...</p>
-  ) : (
-    <DataTable
-      fetchData={() => activeEmployees} // Pass active employees
-      columns={columns}
-      keyField="number"
-      responsive
-      fixedHeader
-      fixedHeaderScrollHeight="400px"
-      noDataComponent="No active employees found"
-      highlightOnHover
-      pagination
-    />
-  )
-) : (
-  loading ? ( // Show loading message while fetching resigned employees
-    <p className="text-center">Loading resigned employees...</p>
-  ) : (
-    <DataTable
-    fetchData={() => resignedEmployees} // Pass active employees
-    columns={columns}
-    keyField="number"
-    responsive
-    fixedHeader
-    fixedHeaderScrollHeight="400px"
-    noDataComponent="No active employees found"
-    highlightOnHover
-    pagination
-  />
-  )
-)}
+            </button>
+          </div>
+
+          {/* Conditionally render active or resigned employees based on button clicks */}
+          {showActive && !loading ? (
+            <DataTable
+              fetchData={employeeController.fetchActiveUsers}
+              columns={columns}
+              keyField="number"
+              responsive
+              fixedHeader
+              fixedHeaderScrollHeight="400px"
+              noDataComponent="No active employees found"
+              highlightOnHover
+              pagination
+            />
+          ) : showResigned && !loading ? (
+            <ShowResignedEmployee /> // Render the ShowResignedEmployee component for resigned employees
+          ) : (
+            <p className="text-center">Loading...</p>
+          )}
         </>
       ) : (
         <EmployeeForm onSubmit={handleSubmit} onCancel={() => setIsRegisterScreen(false)} editingEmployee={editingEmployee} headerText={headerText} />

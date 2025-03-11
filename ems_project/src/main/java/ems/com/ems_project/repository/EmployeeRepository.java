@@ -1,5 +1,4 @@
 package ems.com.ems_project.repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +14,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	Optional<Employee> findByEmail(String email);
+
 	Optional<Employee> findById(String Id);
+
 	List<Employee> findByManager(Employee manager);
 
 
@@ -27,6 +28,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
 	// Check if NRC already exists
 	boolean existsByNrc(String nrc);
+
 	boolean existsByManagerId(String managerId);
 
 
@@ -50,6 +52,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
 	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId AND e.resignDate IS NULL")
 	List<Employee> findActiveEmployeesByDepartmentId(@Param("departmentId") String departmentId);
+
 	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId AND e.resignDate IS NOT NULL")
 	List<Employee> findResignedEmployeesByDepartmentId(@Param("departmentId") String departmentId);
 
@@ -61,10 +64,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 	// Count resigned employees using JPQL
 	@Query("SELECT COUNT(e) FROM Employee e WHERE e.resignDate IS NULL")
 	long countActiveEmployees();
+
 	@Query("SELECT COUNT(e) FROM Employee e WHERE e.role.id = :roleId AND e.resignDate IS NULL")
 	long countActiveManagers(@Param("roleId") String roleId);
 
 	List<Employee> findByDepartment(Departments department);
+
 }
 
 

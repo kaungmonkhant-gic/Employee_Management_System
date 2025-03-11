@@ -1,5 +1,5 @@
 import apiClient from "../components/api/apiclient";
-
+import addRowNumbers from "../components/common/AddRowNumbers";
 const overtimeService = {
   // Fetch all overtime records
   getOvertimeRecords: async () => {
@@ -7,7 +7,7 @@ const overtimeService = {
       console.log("Fetching overtime records...");
       const response = await apiClient.get("/ot/role/records");
       console.log("Overtime Records:", response.data);
-      return response.data;
+      return addRowNumbers(response.data); // Apply numbering utility
     } catch (error) {
       console.error("Error fetching overtime records:", error);
       throw error;
@@ -15,32 +15,18 @@ const overtimeService = {
   },
 
   // Add a new overtime record
-  addOvertimeRecord: async (record) => {
-    try {
-      console.log("Adding overtime record:", record);
-      const response = await apiClient.post("/overtime", record);
-      console.log("Added Overtime Record:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error adding overtime record:", error);
-      throw error;
-    }
-  },
-  // markAsPaid : async (id, token) => {
+  // addOvertimeRecord: async (record) => {
   //   try {
-  //     const response = await apiClient.put(
-  //       `/ot/paid/${id}`,
-  //       {},  // No body needed for approval
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     console.log("paid OT:", response.data);
+  //     console.log("Adding overtime record:", record);
+  //     const response = await apiClient.post("/overtime", record);
+  //     console.log("Added Overtime Record:", response.data);
   //     return response.data;
   //   } catch (error) {
-  //     console.error("Error paid OT:", error);
+  //     console.error("Error adding overtime record:", error);
   //     throw error;
   //   }
   // },
-  // In overtimeController.js
+ 
   markAsPaid : async (id) => {
   try {
     const response = await apiClient.put(`/ot/paid/${id}`);

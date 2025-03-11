@@ -1,22 +1,16 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.EmployeeDTO;
-import ems.com.ems_project.dto.EmployeeProfile;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.service.EmployeeService;
 import ems.com.ems_project.service.JWTUtils;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 //import javax.validation.Valid;
 
@@ -100,29 +94,39 @@ public class EmployeeController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile() {
-        try {
-            // Get the username (email) of the currently authenticated user
-            String loggedInUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-            // Fetch the employee details based on the logged-in user's email
-            ReqRes reqRes = employeeService.getProfile(loggedInUserEmail);
-
-            if (reqRes.getStatusCode() == 200) {
-                return ResponseEntity.ok(reqRes);
-            } else {
-                return ResponseEntity.status(reqRes.getStatusCode()).body(reqRes.getMessage());
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
-        }
+    public ResponseEntity<ReqRes> getLoggedInEmployeeProfile() {
+        return ResponseEntity.ok(employeeService.getLoggedInEmployeeProfile());
     }
-    @PutMapping("/profile/update")
-    public ResponseEntity<ReqRes> updateProfile(@RequestBody EmployeeProfile updatedProfile, Principal principal) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loggedInUserId = principal.getName(); // Assuming the ID is stored as the username in authentication
 
-        ReqRes response = employeeService.updateProfile(loggedInUserId, updatedProfile);
-        return ResponseEntity.status(response.getStatusCode()).body(response);
+//    @GetMapping("/profile")
+//    public ResponseEntity<?> getProfile() {
+//        try {
+//            // Get the username (email) of the currently authenticated user
+//            String loggedInUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//            // Fetch the employee details based on the logged-in user's email
+//            ReqRes reqRes = employeeService.getProfile(loggedInUserEmail);
+//
+//            if (reqRes.getStatusCode() == 200) {
+//                return ResponseEntity.ok(reqRes);
+//            } else {
+//                return ResponseEntity.status(reqRes.getStatusCode()).body(reqRes.getMessage());
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
+//        }
+//    }
+//    @PutMapping("/profile/update")
+//    public ResponseEntity<ReqRes> updateProfile(@RequestBody EmployeeDTO updatedProfile, Principal principal) {
+////        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String loggedInUserId = principal.getName(); // Assuming the ID is stored as the username in authentication
+//
+//        ReqRes response = employeeService.updateProfile(loggedInUserId, updatedProfile);
+//        return ResponseEntity.status(response.getStatusCode()).body(response);
+//    }
+
+    @PutMapping("/profile/update")
+    public ReqRes updateProfile(@RequestBody EmployeeDTO updatedProfile) {
+        return employeeService.updateEmployeeProfile(updatedProfile);
     }
 
 
