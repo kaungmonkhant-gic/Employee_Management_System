@@ -64,7 +64,7 @@ const Attendance = () => {
 
   // Define columns for DataTable
   const columns = [
-    { field: "id", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "id", headerName: "Att.ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "date", headerName: "Date", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Employee Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "checkInTime", headerName: "Check-In Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },

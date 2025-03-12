@@ -4,11 +4,14 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import otcontroller from "../Manager/Controller/otcontroller";
 import DataTable from "../common/DataTable";
 import { useNavigate } from "react-router-dom";
+import RejectModal from "../common/RejectModal";
 
 const PendingRequests = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [headerText, setHeaderText] = useState("Manage Pending Requests");
+  const [showModal, setShowModal] = useState(false);
+  const [currentRequestId, setCurrentRequestId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,19 +40,24 @@ const PendingRequests = () => {
     }
   };
 
-  // Reject request
-  const rejectRequest = async (id) => {
-    let comment = prompt("Enter rejection reason:");
-  
-    // Ensure the comment is not empty or just spaces
-    if (comment === null || comment.trim() === "") {
+  // Reject request, open modal to capture the reason
+  const rejectRequest = (id) => {
+    setCurrentRequestId(id);
+    setShowModal(true); // Open the modal for entering the rejection reason
+  };
+
+  // Handle the rejection logic
+  const handleReject = async (id, comment) => {
+    if (!comment.trim()) {
       alert("Rejection reason is required.");
       return;
     }
   
     try {
-      await otcontroller.rejectRequest(id, comment.trim());
-      setPendingRequests((prev) => prev.filter((record) => record.id !== id)); // Remove from pending list
+      await otcontroller.rejectRequest(id, comment); // Call API to reject request
+      setPendingRequests((prev) => prev.filter((request) => request.id !== id)); // Remove rejected request
+      setShowModal(false); // Close the modal after rejection
+      alert("Request rejected successfully.");
     } catch (error) {
       console.error("Error rejecting request:", error);
       alert("Failed to reject request. Please try again.");
@@ -109,7 +117,15 @@ const PendingRequests = () => {
         highlightOnHover
         pagination
       />
-    </div>
+
+      {/* Reject Modal */}
+<RejectModal
+  show={showModal}
+  handleClose={() => setShowModal(false)}
+  handleReject={handleReject}
+  requestId={currentRequestId} // Ensure requestId is passed
+/>
+</div>
   );
 };
 

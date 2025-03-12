@@ -34,9 +34,8 @@ const managerOTService = {
     }
   },
 // Function to reject OT request with reason
-rejectOvertimeRequest: async (id, token) => {
+rejectOvertimeRequest: async (id, reason, token) => {  // Accept reason as a parameter
   try {
-    const reason = prompt("Enter rejection reason:");
     if (!reason || reason.trim() === "") {
       alert("Rejection reason is required!");
       return;
@@ -53,6 +52,7 @@ rejectOvertimeRequest: async (id, token) => {
     throw error;
   }
 },
+
 
 fetchOvertimeSelf: async () => {
   try {

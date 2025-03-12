@@ -106,7 +106,7 @@ const PendingRequests = () => {
   return (
     <div className="container mt-4">
       <h1>{headerText}</h1>
-      <button className="btn btn-secondary mb-3" onClick={() => navigate("/manager-dashboard/manager-leave")}> Return</button>
+      <button className="btn btn-secondary mb-3" onClick={() => navigate("/admin-dashboard/admin-leave")}> Return</button>
       <div className="row mb-4">
               <div className="col-md-4">
                 <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>

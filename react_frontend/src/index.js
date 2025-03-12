@@ -45,7 +45,7 @@ import SelfLeaveRecords from "./components/Employee/SelfLeaveRecords";
 import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
 import SubmitOT from "./components/SubmitOT";
 import ShowResignedEmployee from "./components/ShowResignedEmployee";
-
+import SalaryHistory from "./components/Employee/SalaryHistory";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -97,6 +97,7 @@ root.render(
         <Route path="attendance" element={<EmpAttendance />} />
         <Route path="attendance-list" element={<EmpAttendanceList />} />
         <Route path="leave" element={<EmpLeave />}/>
+        <Route path="salary-history" element={<SalaryHistory />}/>
         <Route path="self-leave-record" element={<SelfLeaveRecords />} />
         <Route path="overtime" element={<EmpOt />} />
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />

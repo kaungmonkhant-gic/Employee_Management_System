@@ -185,7 +185,7 @@ function AdminDashboard() {
             </div>
           )} */}
 
-          <Link to="/admin-dashboard/leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
+          <Link to="/admin-dashboard/admin-Leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
           <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>Profile</Link>
           <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Payroll</Link>
 

@@ -20,7 +20,7 @@ const AttendanceRecord = () => {
 
   // Define columns for DataTable
   const columns = [
-    { field: "id", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "id", headerName: "Att.ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "date", headerName: "Date", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Employee Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
     { field: "checkInTime", headerName: "Check-In Time", minWidth: 100, flex: 1, cellClassName: "text-center" },
