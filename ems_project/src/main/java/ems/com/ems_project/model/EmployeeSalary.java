@@ -1,45 +1,35 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "employee_salary")
-@Data
 public class EmployeeSalary {
 
     @Id
     @Column(length = 10, nullable = false, unique = true)
     private String id;
 
-    @Column(name = "basic_salary", nullable = false)
-    private Double basicSalary;
-
-    @Column(name = "house_allowance")
-    private Double houseAllowance;
-
-    @Column(name = "transportation")
-    private Double transportation;
-
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false,unique = true)
-    //@JsonIgnore
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false, unique = true)
+    @JsonIgnore
     private Employee employee;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "position_id", referencedColumnName = "id",nullable = false,unique = true)
-    //@JsonIgnore
-    private Positions positions;
+    @ManyToOne
+    @JoinColumn(name = "position_salary_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private PositionSalary positionSalary;
 
+    // Calculate the total salary using the PositionSalary linked to the employee
     public Double getTotalSalary() {
-        return (basicSalary != null ? basicSalary : 0.0) +
-                (houseAllowance != null ? houseAllowance : 0.0) +
-                (transportation != null ? transportation : 0.0);
+        return (positionSalary.getBasicSalary() != null ? positionSalary.getBasicSalary() : 0.0) +
+                (positionSalary.getHouseAllowance() != null ? positionSalary.getHouseAllowance() : 0.0) +
+                (positionSalary.getTransportation() != null ? positionSalary.getTransportation() : 0.0);
     }
+
 
     public String getId() {
         return id;
@@ -49,29 +39,6 @@ public class EmployeeSalary {
         this.id = id;
     }
 
-    public Double getBasicSalary() {
-        return basicSalary;
-    }
-
-    public void setBasicSalary(Double basicSalary) {
-        this.basicSalary = basicSalary;
-    }
-
-    public Double getHouseAllowance() {
-        return houseAllowance;
-    }
-
-    public void setHouseAllowance(Double houseAllowance) {
-        this.houseAllowance = houseAllowance;
-    }
-
-    public Double getTransportation() {
-        return transportation;
-    }
-
-    public void setTransportation(Double transportation) {
-        this.transportation = transportation;
-    }
 
     public Employee getEmployee() {
         return employee;
@@ -81,11 +48,11 @@ public class EmployeeSalary {
         this.employee = employee;
     }
 
-    public Positions getPositions() {
-        return positions;
+    public PositionSalary getPositionSalary() {
+        return positionSalary;
     }
 
-    public void setPositions(Positions positions) {
-        this.positions = positions;
+    public void setPositionSalary(PositionSalary positionSalary) {
+        this.positionSalary = positionSalary;
     }
 }

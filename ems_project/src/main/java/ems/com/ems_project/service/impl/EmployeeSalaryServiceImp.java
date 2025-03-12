@@ -4,29 +4,29 @@ import java.util.List;
 import java.util.Optional;
 
 import ems.com.ems_project.common.GenerateId;
-import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.EmployeeSalaryDTO;
-import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeSalary;
+import ems.com.ems_project.model.PositionSalary;
 import ems.com.ems_project.model.Positions;
 import ems.com.ems_project.repository.EmployeeSalaryRepository;
+import ems.com.ems_project.repository.PositionSalaryRepository;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.swing.text.Position;
 
 @Service
 public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
 
     @Autowired
-    private EmployeeSalaryRepository salaryRepository;
+    private EmployeeSalaryRepository employeeSalaryRepository;
     @Autowired
     private GenerateId generateId;
+    @Autowired
+    private PositionSalaryRepository positionSalaryRepository;
     @Override
     public List<EmployeeSalaryDTO> getAllSalaries() {
-        return salaryRepository.findAll().stream()
+        return employeeSalaryRepository.findAll().stream()
                 .filter(employeeSalary -> employeeSalary.getEmployee().getResignDate() == null) // Exclude resigned employees
                 .map(employeeSalary -> new EmployeeSalaryDTO(employeeSalary, employeeSalary.getEmployee().getName()))
                 .toList();
@@ -34,58 +34,73 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
 
 
     public EmployeeSalaryDTO getEmployeeSalaryById(String employeeId) {
-        EmployeeSalary employeeSalary = salaryRepository.findByEmployeeId(employeeId)
+        EmployeeSalary employeeSalary = employeeSalaryRepository.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new RuntimeException("Salary details not found for employee ID: " + employeeId));
 
         return new EmployeeSalaryDTO(employeeSalary, employeeSalary.getEmployee().getName());
     }
 
 
-//    public void createEmployeeSalary(Employee savedEmployee, RegisterDTO registerDTO) {
-//        EmployeeSalary employeeSalary = new EmployeeSalary();
-//        employeeSalary.setId(generateEmployeeSalaryId()); // Generate and set ID
-//        employeeSalary.setEmployee(savedEmployee);
-//        employeeSalary.setBasicSalary(registerDTO.getBasicSalary());
-//        employeeSalary.setHouseAllowance(registerDTO.getHouseAllowance());
-//        employeeSalary.setTransportation(registerDTO.getTransportation());
-//
-//        salaryRepository.save(employeeSalary);
-//    }
-
     public EmployeeSalary createEmployeeSalary(Employee employee) {
         System.out.println("Creating salary entry for employee: " + employee.getEmail());
 
-        // Fetch salary details based on position
-        EmployeeSalary positionSalary = salaryRepository.findByPositionId(employee.getPosition().getId());
-        System.out.println("Fetching salary details for position ID: " + employee.getPosition().getId());
+        // Fetch the PositionSalary based on employee's position
+        Positions position = employee.getPosition();
+        PositionSalary positionSalary = positionSalaryRepository.findByPositionId(position.getId());
 
         if (positionSalary == null) {
-            throw new RuntimeException("Salary details not found for position: " + employee.getPosition().getPositionName());
+            throw new RuntimeException("Salary details not found for position: " + position.getPositionName());
         }
 
-        // Create new EmployeeSalary entry for the registered employee
+        System.out.println("Fetching salary details for position: " + position.getPositionName());
+
+        // Create new EmployeeSalary entry
         EmployeeSalary employeeSalary = new EmployeeSalary();
         employeeSalary.setId(generateEmployeeSalaryId()); // Generate unique ID
-        employeeSalary.setEmployee(employee);
-        employeeSalary.setPositions(employee.getPosition()); // Assign position
+        employeeSalary.setEmployee(employee);  // Set employee
+        employeeSalary.setPositionSalary(positionSalary);  // Set the position salary
 
-        // Assign salary details from the position-based salary structure
-        employeeSalary.setBasicSalary(positionSalary.getBasicSalary());
-        employeeSalary.setHouseAllowance(positionSalary.getHouseAllowance());
-        employeeSalary.setTransportation(positionSalary.getTransportation());
+        // Optionally, log the details for debugging
+        System.out.println("Created salary entry: " + employeeSalary);
 
-//        // 🚀 Automatically calculate total salary using entity method
-//        employeeSalary.setTotalSalary(employeeSalary.getTotalSalary());
-
-        // Save salary details
-        return salaryRepository.save(employeeSalary);
+        // Save salary details to the repository
+        return employeeSalaryRepository.save(employeeSalary);
     }
+
+    public EmployeeSalary updateEmployeeSalary(Employee employee) {
+        System.out.println("Updating salary for employee: " + employee.getEmail());
+
+        // Fetch the new PositionSalary based on the updated position
+        Positions position = employee.getPosition();
+        PositionSalary positionSalary = positionSalaryRepository.findByPositionId(position.getId());
+
+        if (positionSalary == null) {
+            throw new RuntimeException("Salary details not found for position: " + position.getPositionName());
+        }
+
+        // Find the existing salary entry using employee ID
+        Optional<EmployeeSalary> existingSalary = employeeSalaryRepository.findByEmployeeId(employee.getId());
+        EmployeeSalary employeeSalary = existingSalary.orElse(new EmployeeSalary());
+
+        // Keep the existing ID if found, otherwise generate a new one
+        if (!existingSalary.isPresent()) {
+            employeeSalary.setId(generateEmployeeSalaryId());
+        }
+
+        employeeSalary.setEmployee(employee); // Set the employee
+        employeeSalary.setPositionSalary(positionSalary); // Set the position salary
+
+        System.out.println("Updated salary details for employee: " + employee.getEmail());
+
+        return employeeSalaryRepository.save(employeeSalary);
+    }
+
 
 
     @Override
     public String generateEmployeeSalaryId() {
         // Get the last Employee Salary ID from the correct repository
-        Optional<String> lastSalaryIdOptional = salaryRepository.findLastEmployeeSalaryId();
+        Optional<String> lastSalaryIdOptional = employeeSalaryRepository.findLastEmployeeSalaryId();
 
         String lastSalaryId = lastSalaryIdOptional.orElse(null); // If no ID exists, use null
 

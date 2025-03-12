@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface EmployeeSalaryService {
     List<EmployeeSalaryDTO> getAllSalaries();
-    EmployeeSalaryDTO getEmployeeSalaryById(String employeeId);
     String generateEmployeeSalaryId();
     EmployeeSalary createEmployeeSalary(Employee employee);
+    EmployeeSalary updateEmployeeSalary(Employee employee);
 
 
     //void createEmployeeSalary(Employee savedEmployee, RegisterDTO registerDTO);

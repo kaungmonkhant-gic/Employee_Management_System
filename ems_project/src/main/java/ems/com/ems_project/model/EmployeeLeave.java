@@ -1,5 +1,6 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,6 +27,7 @@ public class EmployeeLeave {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private Employee employee;
 
     public void calculateTotalLeave() {
