@@ -124,25 +124,6 @@ public class EmployeeLeaveService {
     }
 
 
-//    public void createEmployeeLeave(Employee savedEmployee, RegisterDTO registerDTO) {
-//        EmployeeLeave employeeLeave = new EmployeeLeave();
-//
-//        // Generate and assign ID before saving
-//        employeeLeave.setId(generateEmployeeLeaveId());
-//        employeeLeave.setEmployee(savedEmployee);
-//        employeeLeave.setAnnualLeave(registerDTO.getAnnualLeave());
-//        employeeLeave.setCasualLeave(registerDTO.getCasualLeave());
-//        employeeLeave.setMedicalLeave(registerDTO.getMedicalLeave());
-//
-//        // Calculate total leave
-//        double totalLeave = registerDTO.getAnnualLeave()
-//                + registerDTO.getCasualLeave()
-//                + registerDTO.getMedicalLeave();
-//        employeeLeave.setTotal(totalLeave);
-//
-//        employeeLeaveRepository.save(employeeLeave);
-//    }
-
     public EmployeeLeave createEmployeeLeave(Employee employee) {
 
         EmployeeLeave employeeLeave = new EmployeeLeave();

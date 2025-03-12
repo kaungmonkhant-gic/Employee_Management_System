@@ -350,7 +350,7 @@ public class EmployeeServiceImp implements EmployeeService {
             // Save Employee
             Employee savedEmployee = employeeRepository.save(employee);
 
-            // 🚀 Immediately create salary for the registered employee
+//            // 🚀 Immediately create salary for the registered employee
             EmployeeSalary employeeSalary = employeeSalaryService.createEmployeeSalary(savedEmployee);
             EmployeeLeave employeeLeave =employeeLeaveService.createEmployeeLeave(savedEmployee);
 
@@ -445,6 +445,8 @@ public class EmployeeServiceImp implements EmployeeService {
             }
             if (employeeDTO.getPositionName() != null) {
                 positionRepository.findByPositionName(employeeDTO.getPositionName()).ifPresent(employee::setPosition);
+                employeeSalaryService.updateEmployeeSalary(employee);
+
             }
             if (employeeDTO.getRoleName() != null) {
                 roleRepository.findByRoleName(employeeDTO.getRoleName()).ifPresent(employee::setRole);

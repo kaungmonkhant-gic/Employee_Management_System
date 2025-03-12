@@ -1,5 +1,6 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.model.EmployeeLeave;
 import ems.com.ems_project.model.Employee;
@@ -34,24 +35,40 @@ public class LeaveService {
 
     @Autowired
     private JWTUtils jwtutils;
+    @Autowired
+    private EmployeeService employeeService;
+
 
     public List<LeaveDTO> getLeavesRecordRoleBased(String token) {
+
+        // Get active employees based on role
+        List<EmployeeDTO> activeEmployees = employeeService.getActiveEmployeesBasedOnRole(token);
+
+        // Extract active employee IDs
+        List<String> activeEmployeeIds = activeEmployees.stream()
+                .map(EmployeeDTO::getId)
+                .collect(Collectors.toList());
+
+        List<Leave> leaves = new ArrayList<>();
+
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);
         String roleName = jwtutils.extractRole(token);
 
-        // Get the logged-in employee details (who is the manager)
+        // Get the logged-in employee details
         Employee manager = employeeRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        List<Leave> leaves = new ArrayList<>();
-
         if ("Admin".equals(roleName)) {
-            // Admin: Get all leave records
-            leaves = leaveRepository.findAll();
+            // Admin: Get all OT records for active employees
+            leaves = leaveRepository.findAll().stream()
+                    .filter(leave -> activeEmployeeIds.contains(leave.getEmployee().getId()))
+                    .collect(Collectors.toList());
+
         } else if ("Manager".equals(roleName)) {
-            // Manager: Get leave requests where they are assigned as the manager
-            leaves = leaveRepository.findByManagerId(manager.getId());
+            // Manager: Get OT records where they are assigned as the manager, only for active employees
+            leaves = leaveRepository.findByManagerId(manager.getId()).stream()
+                    .filter(leave -> activeEmployeeIds.contains(leave.getEmployee().getId()))
+                    .collect(Collectors.toList());
         } else {
             return Collections.emptyList(); // Other roles don't have access
         }
@@ -61,7 +78,6 @@ public class LeaveService {
                 .map(leave -> new LeaveDTO(leave, leave.getEmployee(), leave.getManager()))
                 .collect(Collectors.toList());
     }
-
 
     public List<LeaveDTO> getLeaveRecordsForLoggedInUser() {
         // Find the logged-in employee using the authenticated email

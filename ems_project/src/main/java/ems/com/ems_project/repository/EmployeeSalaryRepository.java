@@ -10,12 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalary, String> {
-    Optional<EmployeeSalary> findByEmployeeId(String employeeId);
+    @Query("SELECT es FROM EmployeeSalary es WHERE es.employee.id = :employeeId")
+    Optional<EmployeeSalary> findByEmployeeId(@Param("employeeId") String employeeId);
+
     void deleteByEmployeeId(String id);
     @Query(value = "SELECT id FROM employee_salary ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastEmployeeSalaryId();
-
-    @Query("SELECT es FROM EmployeeSalary es WHERE es.positions.id = :id")
-    EmployeeSalary findByPositionId(@Param("id") String id);
 }
 

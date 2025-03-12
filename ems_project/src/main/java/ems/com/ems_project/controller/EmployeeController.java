@@ -77,8 +77,8 @@ public class EmployeeController {
     }
     @PostMapping("/register")
     public ResponseEntity<ReqRes> registerEmployee(@RequestBody RegisterDTO registerRequest) {
-//        System.out.println("register request");
-//        System.out.println(registerRequest.toString());
+        System.out.println("register request");
+        System.out.println(registerRequest.toString());
         ReqRes reqRes = employeeService.registerEmployee(registerRequest);
 
         // Handle the response based on status code
@@ -97,32 +97,6 @@ public class EmployeeController {
     public ResponseEntity<ReqRes> getLoggedInEmployeeProfile() {
         return ResponseEntity.ok(employeeService.getLoggedInEmployeeProfile());
     }
-
-//    @GetMapping("/profile")
-//    public ResponseEntity<?> getProfile() {
-//        try {
-//            // Get the username (email) of the currently authenticated user
-//            String loggedInUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-//            // Fetch the employee details based on the logged-in user's email
-//            ReqRes reqRes = employeeService.getProfile(loggedInUserEmail);
-//
-//            if (reqRes.getStatusCode() == 200) {
-//                return ResponseEntity.ok(reqRes);
-//            } else {
-//                return ResponseEntity.status(reqRes.getStatusCode()).body(reqRes.getMessage());
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error fetching the profile: " + e.getMessage());
-//        }
-//    }
-//    @PutMapping("/profile/update")
-//    public ResponseEntity<ReqRes> updateProfile(@RequestBody EmployeeDTO updatedProfile, Principal principal) {
-////        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String loggedInUserId = principal.getName(); // Assuming the ID is stored as the username in authentication
-//
-//        ReqRes response = employeeService.updateProfile(loggedInUserId, updatedProfile);
-//        return ResponseEntity.status(response.getStatusCode()).body(response);
-//    }
 
     @PutMapping("/profile/update")
     public ReqRes updateProfile(@RequestBody EmployeeDTO updatedProfile) {

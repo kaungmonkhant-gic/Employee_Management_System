@@ -1,5 +1,6 @@
 package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
+import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
 import ems.com.ems_project.model.Employee;
@@ -29,26 +30,41 @@ public class OtService {
     @Autowired
     private EmployeeRepository employeeRepository;
     @Autowired
+    private EmployeeService employeeService;
+    @Autowired
     private JWTUtils jwtutils;
 
 
     public List<OtDTO> getOtRecordRoleBased(String token) {
+        // Get active employees based on role
+        List<EmployeeDTO> activeEmployees = employeeService.getActiveEmployeesBasedOnRole(token);
+
+        // Extract active employee IDs
+        List<String> activeEmployeeIds = activeEmployees.stream()
+                .map(EmployeeDTO::getId)
+                .collect(Collectors.toList());
+
+        List<Ots> otList = new ArrayList<>();
+
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);
         String roleName = jwtutils.extractRole(token);
 
-        // Get the logged-in employee details (who is the manager)
+        // Get the logged-in employee details
         Employee manager = employeeRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Ots> otList = new ArrayList<>();
-
         if ("Admin".equals(roleName)) {
-            // Admin: Get all leave records
-            otList = otRepository.findAll();
+            // Admin: Get all OT records for active employees
+            otList = otRepository.findAll().stream()
+                    .filter(ot -> activeEmployeeIds.contains(ot.getEmployee().getId()))
+                    .collect(Collectors.toList());
+
         } else if ("Manager".equals(roleName)) {
-            // Manager: Get leave requests where they are assigned as the manager
-            otList = otRepository.findByManagerId(manager.getId());
+            // Manager: Get OT records where they are assigned as the manager, only for active employees
+            otList = otRepository.findByManagerId(manager.getId()).stream()
+                    .filter(ot -> activeEmployeeIds.contains(ot.getEmployee().getId()))
+                    .collect(Collectors.toList());
         } else {
             return Collections.emptyList(); // Other roles don't have access
         }
