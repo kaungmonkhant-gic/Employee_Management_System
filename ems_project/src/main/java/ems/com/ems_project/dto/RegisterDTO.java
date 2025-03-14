@@ -10,6 +10,7 @@ import ems.com.ems_project.validation.ValidGender;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -39,7 +40,7 @@ public class RegisterDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotNull(message = "Date of Birth is required")
-    private Date dob;
+    private LocalDate dob;
 
     private String nrc;
 
@@ -57,10 +58,10 @@ public class RegisterDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotNull(message = "Join date is required")
-    private Date joinDate;
+    private LocalDate joinDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date resignDate;
+    private LocalDate resignDate;
 
     // Department, Position, Role
     private String departmentId;
@@ -120,13 +121,6 @@ public class RegisterDTO {
         this.gender = gender;
     }
 
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
 
     public String getNrc() {
         return nrc;
@@ -169,14 +163,6 @@ public class RegisterDTO {
         this.education = education;
     }
 
-    public Date getJoinDate() {
-        return joinDate;
-    }
-
-    public void setJoinDate(Date joinDate) {
-        this.joinDate = joinDate;
-    }
-
     public String getDepartmentId() {
         return departmentId;
     }
@@ -201,19 +187,35 @@ public class RegisterDTO {
         this.roleId = roleId;
     }
 
-    public Date getResignDate() {
-        return resignDate;
-    }
-
-    public void setResignDate(Date resignDate) {
-        this.resignDate = resignDate;
-    }
-
     public String getManagerId() {
         return managerId;
     }
 
     public void setManagerId(String managerId) {
         this.managerId = managerId;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public LocalDate getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(LocalDate joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public LocalDate getResignDate() {
+        return resignDate;
+    }
+
+    public void setResignDate(LocalDate resignDate) {
+        this.resignDate = resignDate;
     }
 }

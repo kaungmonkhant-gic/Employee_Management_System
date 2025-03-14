@@ -5,15 +5,15 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.sql.Date;
 @Getter
 @Setter
 @Data
 public class AttendanceDTO {
 
     private String id;
-    private Date date;
+    private LocalDate date;
     private LocalTime checkInTime;
     private LocalTime checkOutTime;
     private String lunchBreak;
@@ -22,8 +22,8 @@ public class AttendanceDTO {
     private Boolean leaveEarly;
     private LeaveType leaveType;
     private Boolean halfLeave;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String leaveReason;
     private RequestStatus leaveStatus = RequestStatus.PENDING;
     private String managerName;
@@ -89,12 +89,11 @@ public class AttendanceDTO {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    // Setter for date
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -164,19 +163,19 @@ public class AttendanceDTO {
         this.halfLeave = halfLeave;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

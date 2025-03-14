@@ -26,7 +26,7 @@ public class Ots {
     private String id;
 
     @Column(name = "date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private Date Date;
 
     @Column(name = "start_time")

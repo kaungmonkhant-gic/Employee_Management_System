@@ -1,6 +1,6 @@
 package ems.com.ems_project.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -40,7 +40,7 @@ public class SalaryHistory {
     private Double bonus;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
@@ -114,14 +114,6 @@ public class SalaryHistory {
         this.bonus = bonus;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public Employee getEmployee() {
         return employee;
     }
@@ -136,5 +128,13 @@ public class SalaryHistory {
 
     public void setManager(Employee manager) {
         this.manager = manager;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

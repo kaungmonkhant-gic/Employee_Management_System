@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, Integer> {
     List<EmpDailyAtts> findAll();
     List<EmpDailyAtts> findByEmployeeId(String employeeId);
-    EmpDailyAtts findByEmployeeAndDate(Employee employee, Date date);
+    EmpDailyAtts findByEmployeeAndDate(Employee employee, LocalDate date);
 
    @Query(value = "SELECT id FROM emp_daily_atts ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastAttendanceId();

@@ -1,7 +1,7 @@
 package ems.com.ems_project.model;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +34,7 @@ public class Employee implements UserDetails {
 
     @Column(name = "dob")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dob;
+    private LocalDate dob;
 
     @Column(name = "nrc", unique = true)
     private String nrc;
@@ -66,10 +66,10 @@ public class Employee implements UserDetails {
 
     @Column(name = "join_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date joinDate;
+    private LocalDate joinDate;
     @Column(name = "resign_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date resignDate;
+    private LocalDate resignDate;
 
     @ManyToOne
     @JsonIgnore
@@ -169,14 +169,6 @@ public class Employee implements UserDetails {
         this.name = name;
     }
 
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
     public String getNrc() {
         return nrc;
     }
@@ -241,22 +233,6 @@ public class Employee implements UserDetails {
         this.workExp = workExp;
     }
 
-    public Date getJoinDate() {
-        return joinDate;
-    }
-
-    public void setJoinDate(Date joinDate) {
-        this.joinDate = joinDate;
-    }
-
-    public Date getResignDate() {
-        return resignDate;
-    }
-
-    public void setResignDate(Date resignDate) {
-        this.resignDate = resignDate;
-    }
-
     public Departments getDepartment() {
         return department;
     }
@@ -281,6 +257,29 @@ public class Employee implements UserDetails {
         this.role = role;
     }
 
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public LocalDate getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(LocalDate joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public LocalDate getResignDate() {
+        return resignDate;
+    }
+
+    public void setResignDate(LocalDate resignDate) {
+        this.resignDate = resignDate;
+    }
 
     public String getDepartmentId() {
         return department != null ? department.getId() : null;

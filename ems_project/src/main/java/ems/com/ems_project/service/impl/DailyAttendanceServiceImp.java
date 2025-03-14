@@ -107,7 +107,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
         Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        Date todayDate = Date.valueOf(LocalDate.now());
+        LocalDate todayDate = LocalDate.now();
         LocalTime checkInTime = LocalTime.now();
 
         // Check if attendance already exists for today
@@ -133,7 +133,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
         Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        Date todayDate = new Date(System.currentTimeMillis());  // Get current date
+        LocalDate todayDate = LocalDate.now(); // Get current date
         LocalTime checkOutTime = LocalTime.now(); // Current time
 
         // Directly check for null instead of using Optional

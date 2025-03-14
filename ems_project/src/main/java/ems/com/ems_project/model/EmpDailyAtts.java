@@ -1,12 +1,14 @@
 package ems.com.ems_project.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.sql.Date;
 
 @Getter
 @Setter
@@ -21,14 +23,20 @@ public class EmpDailyAtts {
 
 
     @Column(name = "date",nullable = false)
-//    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     @Column(name = "check_in_time")
     private LocalTime checkInTime;
 
+    @Column(name = "updated_check_in_time")
+    private LocalTime updatedCheckInTime;
+
     @Column(name = "check_out_time")
     private LocalTime checkOutTime;
+
+    @Column(name = "updated_check_out_time")
+    private LocalTime updatedCheckOutTime;
 
     @Column(name = "lunch_break")
     private String lunchBreak;
@@ -42,9 +50,15 @@ public class EmpDailyAtts {
     @Column(name = "is_Ot")
     private Boolean isOT;
 
-
     @Column(name = "leave_early")
     private Boolean leaveEarly;
+
+    @Column(name = "reason")
+    private String reason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private RequestStatus status = RequestStatus.PENDING;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "leave_id", referencedColumnName = "id")
@@ -68,11 +82,11 @@ public class EmpDailyAtts {
     }
 
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -154,5 +168,41 @@ public class EmpDailyAtts {
 
     public void setOT(Boolean OT) {
         isOT = OT;
+    }
+
+    public LocalTime getUpdatedCheckInTime() {
+        return updatedCheckInTime;
+    }
+
+    public void setUpdatedCheckInTime(LocalTime updatedCheckInTime) {
+        this.updatedCheckInTime = updatedCheckInTime;
+    }
+
+    public LocalTime getUpdatedCheckOutTime() {
+        return updatedCheckOutTime;
+    }
+
+    public void setUpdatedCheckOutTime(LocalTime updatedCheckOutTime) {
+        this.updatedCheckOutTime = updatedCheckOutTime;
+    }
+
+    public void setLeave(Boolean leave) {
+        isLeave = leave;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
     }
 }

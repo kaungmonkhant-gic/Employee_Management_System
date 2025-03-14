@@ -3,7 +3,8 @@ package ems.com.ems_project.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.model.*;
 import lombok.Data;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 
 @Data
@@ -12,8 +13,8 @@ public class EmployeeDTO {
     private String id;
     private String name;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dob;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    private LocalDate dob;
     private String password;
     private String nrc;
     private String gender;
@@ -24,11 +25,11 @@ public class EmployeeDTO {
     private String education;
     private String workExp;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date joinDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    private LocalDate joinDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date resignDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    private LocalDate resignDate;
     private String managerName;
     private String roleName;
     private String positionName;
@@ -92,13 +93,6 @@ public class EmployeeDTO {
         this.name = name;
     }
 
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
 
     public String getPassword() {
         return password;
@@ -172,22 +166,6 @@ public class EmployeeDTO {
         this.workExp = workExp;
     }
 
-    public Date getJoinDate() {
-        return joinDate;
-    }
-
-    public void setJoinDate(Date joinDate) {
-        this.joinDate = joinDate;
-    }
-
-    public Date getResignDate() {
-        return resignDate;
-    }
-
-    public void setResignDate(Date resignDate) {
-        this.resignDate = resignDate;
-    }
-
     public String getRoleName() {
         return roleName;
     }
@@ -221,4 +199,27 @@ public class EmployeeDTO {
         this.managerName = managerName;
     }
 
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public LocalDate getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(LocalDate joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public LocalDate getResignDate() {
+        return resignDate;
+    }
+
+    public void setResignDate(LocalDate resignDate) {
+        this.resignDate = resignDate;
+    }
 }

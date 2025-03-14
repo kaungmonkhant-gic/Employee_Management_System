@@ -1,6 +1,6 @@
 package ems.com.ems_project.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -40,5 +40,5 @@ public class TempSalaryHistory {
     private Double bonus;
     
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDate date;
 }

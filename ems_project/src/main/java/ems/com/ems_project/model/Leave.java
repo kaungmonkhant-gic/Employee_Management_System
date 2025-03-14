@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
-
+import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
@@ -30,11 +29,11 @@ public class Leave {
 
     @Column(name = "start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "total_days")
     private Double totalDays;
@@ -81,19 +80,19 @@ public class Leave {
         this.halfLeave = halfLeave;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

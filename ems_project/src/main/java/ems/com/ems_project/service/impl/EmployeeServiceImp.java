@@ -19,6 +19,7 @@ import ems.com.ems_project.config.PasswordEncoderConfig;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -310,22 +311,37 @@ public class EmployeeServiceImp implements EmployeeService {
             // Create new Employee
             Employee employee = new Employee();
             employee.setId(generateEmployeeId());
+            System.out.println("id");
             employee.setEmail(registerDTO.getEmail().trim());
+            System.out.println("email");
             employee.setName(registerDTO.getName());
+            System.out.println("name");
             employee.setPhone(registerDTO.getPhone());
+            System.out.println("phone");
             employee.setGender(registerDTO.getGender());
+            System.out.println("gender");
             employee.setDob(registerDTO.getDob());
+            System.out.println("dob");
             employee.setNrc(registerDTO.getNrc());
+            System.out.println("nrc");
             employee.setMaritalStatus(registerDTO.getMaritalStatus());
+            System.out.println("marital");
             employee.setAddress(registerDTO.getAddress());
+            System.out.println("address");
             employee.setWorkExp(registerDTO.getWorkExp());
+            System.out.println("workExp");
             employee.setEducation(registerDTO.getEducation());
+            System.out.println("Education");
             employee.setJoinDate(registerDTO.getJoinDate());
+            System.out.println("join");
 
             // Set related entities
             employee.setRole(role);
+            System.out.println("role");
             employee.setDepartment(department);
+            System.out.println("department");
             employee.setPosition(position);
+            System.out.println("position");
 
             // Encode password
             String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
@@ -340,6 +356,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
             // Save Employee
             Employee savedEmployee = employeeRepository.save(employee);
+            System.out.println("save");
 
 //            // 🚀 Immediately create salary for the registered employee
             EmployeeSalary employeeSalary = employeeSalaryService.createEmployeeSalary(savedEmployee);
@@ -347,6 +364,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
             // Success Response
             reqRes.setEmployee(savedEmployee);
+            System.out.println("response");
             reqRes.setEmployeeSalary(employeeSalary);
             reqRes.setEmployeeLeave(employeeLeave);
             reqRes.setStatusCode(201);
@@ -481,7 +499,7 @@ public class EmployeeServiceImp implements EmployeeService {
             }
 
             // Set the resignDate (current date)
-            employee.setResignDate(new Date()); // Stores current date
+            employee.setResignDate(LocalDate.now());// Stores current date
             employeeRepository.save(employee);
 
             reqRes.setStatusCode(200);  // Success

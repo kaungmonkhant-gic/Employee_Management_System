@@ -4,6 +4,7 @@ import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.SalaryHistory;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -17,7 +18,7 @@ public class SalaryHistoryDTO {
     private Double leaveOver;
     private Double manualAdjustment;
     private Double bonus;
-    private Date date;
+    private LocalDate date;
 
     private String employeeName; // Optional to display employee name in DTO
     private String managerName;  // Optional to display manager name in DTO
@@ -106,14 +107,6 @@ public class SalaryHistoryDTO {
         this.bonus = bonus;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public String getEmployeeName() {
         return employeeName;
     }
@@ -130,6 +123,12 @@ public class SalaryHistoryDTO {
         this.managerName = managerName;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
 
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 }
 

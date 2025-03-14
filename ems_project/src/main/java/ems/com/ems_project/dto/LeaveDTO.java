@@ -6,8 +6,8 @@ import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.model.LeaveType;
 import ems.com.ems_project.model.RequestStatus;
 
-import java.sql.Date;
-import java.time.LocalTime;
+import java.time.LocalDate;
+
 
 public class LeaveDTO {
 
@@ -15,9 +15,9 @@ public class LeaveDTO {
     private LeaveType leaveType;
     private Boolean halfLeave;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
+    private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
+    private LocalDate endDate;
     private Double totalDays;
     private String reason;
     private RequestStatus status = RequestStatus.PENDING;
@@ -69,19 +69,19 @@ public class LeaveDTO {
         this.halfLeave = halfLeave;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

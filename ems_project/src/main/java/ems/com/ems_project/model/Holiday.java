@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 public class Holiday {
@@ -16,7 +17,7 @@ public class Holiday {
     private String Name;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     public String getId() {
         return id;
@@ -34,11 +35,11 @@ public class Holiday {
         Name = name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 }
