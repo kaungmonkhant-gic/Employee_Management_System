@@ -97,102 +97,81 @@ function AdminDashboard() {
       <div className="d-flex flex-column p-3" style={{ width: "250px", backgroundColor: "#2980B9", color: "#FFFFFF" }}>
         <h2 className="text-center mb-4">Admin Dashboard</h2>
         <nav className="nav flex-column">
-          <Link to="/admin-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>🏠 Dashboard</Link>
+          <Link to="/admin-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <i className="bi bi-house-door"></i> Dashboard</Link>
           {/* Employee Dropdown */}
           <div className="nav-link text-light" onClick={() => toggleMenu("employee")} style={{ cursor: "pointer" }}>
-            Employee
+          <i className="bi bi-person-fill"></i>  Employee
             <i className={`bi ms-2 ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
           </div>
           {menuState.employee && (
             <div className="ms-3">
-              <Link to="/admin-dashboard/employee" className="nav-link" style={{ color: "#FFFFFF" }}>Employee List</Link>
-              <Link to="/admin-dashboard/showleave" className="nav-link" style={{ color: "#FFFFFF" }}>Show Leave</Link>
-              <Link to="/admin-dashboard/salary" className="nav-link" style={{ color: "#FFFFFF" }}>Show Salary</Link>
+              <Link to="/admin-dashboard/employee" className="nav-link" style={{ color: "#FFFFFF" }}>
+              <i className="bi bi-person-lines-fill"></i>Employee List</Link>
+              <Link to="/admin-dashboard/showleave" className="nav-link" style={{ color: "#FFFFFF" }}>
+              <i className="bi bi-calendar-check"></i>Show Leave</Link>
+              <Link to="/admin-dashboard/salary" className="nav-link" style={{ color: "#FFFFFF" }}>
+              <i className="bi bi-cash"></i>Show Salary</Link>
             </div>
           )}
           {/* Attendance Dropdown */}
           <div className="nav-link text-light" onClick={() => toggleMenu("attendance")} style={{ cursor: "pointer" }}>
-            📝 Attendance
+          <i className="bi bi-person-check"></i>
+          Attendance
             <i className={`bi ms-2 ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
           </div>
           {menuState.attendance && (
             <div className="ms-3">
               <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link" style={{ color: "#FFFFFF" }}>
-                Daily Attendance
+              <i className="bi bi-alarm"></i>
+              Daily Attendance
               </Link>
               <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link" style={{ color: "#FFFFFF" }}>
-                Attendance Record
+              <i className="bi bi-file-earmark-text"></i>
+              Attendance Record
               </Link>
             </div>
           )}
 
-          
-
-                       {/* Overtime Dropdown */}
-                       <div className="nav-link text-light" onClick={() => toggleMenu("overtime")} style={{ cursor: "pointer" }}>
-                         🕒 Overtime
-                         <i className={`bi ms-2 ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
-                       </div>
-                       {menuState.overtime && (
-                         <div className="ms-3">
-                           <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>OT (Overtime)</Link>
-                           <Link to="/admin-dashboard/submit-ot" className="nav-link" style={{ color: "#FFFFFF" }}>Request OT</Link>
-                           {/* <Link to="/admin-dashboard/manager-ot-self" className="nav-link text-light">View OT</Link>
-                           <Link to="/admin-dashboard/confirm-ot-request" className="nav-link text-light">Confirmed Requests</Link> */}
-                         </div>
-                       )}
-          
-          {/* <div
-            className="nav-link"
-            onClick={() => setShowSubMenu(!showSubMenu)}
-            style={{ cursor: "pointer", color: "#FFFFFF" }}
-          >
-            👤 Employee
-            <i
-              className={`bi ms-2 ${showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
-              style={{ color: "white" }}
-            />
+    
+          {/* Overtime Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("overtime")} style={{ cursor: "pointer" }}>
+          <i className="bi bi-hourglass-split"></i>
+          Overtime
+            <i className={`bi ms-2 ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
           </div>
+              {menuState.overtime && (
+                <div className="ms-3">
+                  <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <i className="bi bi-arrow-repeat"></i>
 
-          {showSubMenu && (
-            <div className="ms-3">
-              <Link to="/admin-dashboard/employee" className="nav-link" style={{ color: "#FFFFFF" }}>Employee List</Link>
-              <Link to="/admin-dashboard/showleave" className="nav-link" style={{ color: "#FFFFFF" }}>Show Leave</Link>
-              <Link to="/admin-dashboard/salary" className="nav-link" style={{ color: "#FFFFFF" }}>Show Salary</Link>
-            </div>
-          )}
 
-          <div
-            className="nav-link"
-            onClick={() => setShowSubMenu(!showSubMenu)}
-            style={{ cursor: "pointer", color: "#FFFFFF" }}
-          >
-            📝 Attendance
-            <i
-              className={`bi ms-2 ${showSubMenu ? "bi-caret-up-fill" : "bi-caret-down-fill"}`}
-              style={{ color: "white" }}
-            />
-          </div>
+                  Incoming OT Request</Link>
+                  <Link to="/admin-dashboard/submit-ot" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <i className="bi bi-pencil-square"></i>
 
-          {showSubMenu && (
-            <div className="ms-3">
-              <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link" style={{ color: "#FFFFFF" }}>
-                Daily Attendance
-              </Link>
-              <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link" style={{ color: "#FFFFFF" }}>
-               Attendance Record
-              </Link>
-            </div>
-          )} */}
+                  Apply for OT</Link>
+                </div>
+            )}
+              
+          <Link to="/admin-dashboard/admin-Leave" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <i className="bi bi-calendar-x"></i>
 
-          <Link to="/admin-dashboard/admin-Leave" className="nav-link" style={{ color: "#FFFFFF" }}>Leave</Link>
-          <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>Profile</Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Payroll</Link>
+          Leave</Link>
+          <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <i className="bi bi-person-circle"></i>
+
+Profile</Link>
+          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <i className="bi bi-bank"></i>
+Payroll</Link>
+          <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <i className="bi bi-bar-chart-line"></i>
+Salary History</Link>
 
           <button onClick={handleLogout} className="btn btn-secondary mt-4">Logout</button>
         </nav>
       </div>
-
 
       <div className="flex-grow-1 p-4" style={{ backgroundColor: "#f8f9fa" }}>
         {/* Header */}
@@ -208,25 +187,25 @@ function AdminDashboard() {
             
             <div className="row my-4">
             
-  <div className="col-md-4">
-    <div className="card shadow-sm p-3 text-center">
-      <h5>👥 Total Employees</h5>
-      <h3>{totalEmployees !== undefined ? totalEmployees : "Loading..."}</h3>
-    </div>
-  </div>
-  <div className="col-md-4">
-    <div className="card shadow-sm p-3 text-center">
-      <h5>🏢 Total Departments</h5>
-      <h3>{totalDepartments !== undefined ? totalDepartments : "Loading..."}</h3>
-    </div>
-  </div>
-  <div className="col-md-4">
-    <div className="card shadow-sm p-3 text-center">
-      <h5>👨‍💼 Total Managers</h5>
-      <h3>{totalManagers !== undefined ? totalManagers : "Loading..."}</h3>
-    </div>
-  </div>
-</div>
+        <div className="col-md-4">
+          <div className="card shadow-sm p-3 text-center">
+            <h5>👥 Total Employees</h5>
+            <h3>{totalEmployees !== undefined ? totalEmployees : "Loading..."}</h3>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card shadow-sm p-3 text-center">
+            <h5>🏢 Total Departments</h5>
+            <h3>{totalDepartments !== undefined ? totalDepartments : "Loading..."}</h3>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card shadow-sm p-3 text-center">
+            <h5>👨‍💼 Total Managers</h5>
+            <h3>{totalManagers !== undefined ? totalManagers : "Loading..."}</h3>
+          </div>
+        </div>
+      </div>
 
             {/* Attendance Summary (Chart) */}
             <div className="row my-4">

@@ -20,6 +20,15 @@ const profileController = {
       throw new Error("Failed to update profile. Please try again later.");
     }
   },
+
+  updatePassword: async (currentPassword, newPassword, confirmPassword) => {
+    try {
+      return await profileService.resetPassword(currentPassword, newPassword, confirmPassword);
+    } catch (error) {
+      console.error("Controller Error updating password:", error);
+      return { statusCode: 500, message: "Error updating password" };
+    }
+  },
   
     // Fetch positions
     fetchPositions: async () => {

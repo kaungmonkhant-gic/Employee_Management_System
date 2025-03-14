@@ -46,6 +46,8 @@ import ViewLeaveBalance from "./components/Manager/ShowLeaveBalance";
 import SubmitOT from "./components/SubmitOT";
 import ShowResignedEmployee from "./components/ShowResignedEmployee";
 import SalaryHistory from "./components/Employee/SalaryHistory";
+import SalaryHistoryManager from "./components/Manager/SalaryHistoryManager";
+import SalaryHistoryAdmin from "./components/SalaryHistoryAdmin";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -90,6 +92,7 @@ root.render(
         <Route path="submit-ot" element={<SubmitOT />} />
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
+        <Route path="salary-history" element={<SalaryHistoryAdmin />} />
       </Route>
 
       <Route path="/employee-dashboard/*" element={<EmployeeDashboard />}>
@@ -118,6 +121,7 @@ root.render(
         <Route path="manager-ot-self" element={<ManagerOT />} />
         <Route path="manager-ot-approval" element={<ManagerOtApproval />} />
         <Route path="confirm-ot-request" element= {<ConfirmOtRequest />} />
+        <Route path="salary-hist" element= {<SalaryHistoryManager />} />
       </Route>
     </Routes>
   </BrowserRouter>

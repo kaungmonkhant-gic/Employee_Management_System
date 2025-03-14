@@ -28,7 +28,8 @@ const EmpProfile = () => {
   const [originalDetails, setOriginalDetails] = useState(initialDetails);
   const [isEditing, setIsEditing] = useState(false);
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
-
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(''); // success or error
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const parts = dateString.split("-");
@@ -46,14 +47,14 @@ const EmpProfile = () => {
   const [roles, setRoles] = useState([]);
   const genders = ["Male", "Female", "Other"];
 
-  const [selectedPositionId, setSelectedPositionId] = useState(details.positionId);
+  const [selectedPositionId, setSelectedPositionId] = useState(details.positionID);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(details.departmentId);
   const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
 
   const [selectedGender, setSelectedGender] = useState("");
 
   useEffect(() => {
-    setSelectedPositionId(details.positionId);
+    setSelectedPositionId(details.positionID);
     setSelectedDepartmentId(details.departmentId);
     setSelectedRoleId(details.roleId);
   }, [details]);
@@ -175,18 +176,60 @@ const EmpProfile = () => {
   const handleCancelEditing = () => {
     setIsEditing(false);
     // Reset selected values to original details when canceling editing
-    setSelectedPositionId(originalDetails.positionId);
+    setSelectedPositionId(originalDetails.positionID);
     setSelectedDepartmentId(originalDetails.departmentId);
     setSelectedRoleId(originalDetails.roleId);
     setSelectedGender(originalDetails.gender);
     setDetails(originalDetails); // Restore original details
   };
 
-  const handleResetPassword = async (newPassword) => {
-    // Reset password logic here
-    alert("Password reset successfully!");
-    setShowResetPasswordModal(false);
+  const handleResetPassword = async (currentPassword, newPassword, confirmPassword) => {
+    console.log("handleResetPassword called with:", { currentPassword, newPassword, confirmPassword });
+  
+    // Reset previous message
+    setMessage('');
+    setMessageType('');
+  
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setMessage("All fields are required!");
+      setMessageType('error');
+      return;
+    }
+  
+    if (newPassword !== confirmPassword) {
+      setMessage("New password and confirm password must match.");
+      setMessageType('error');
+      return;
+    }
+  
+    try {
+      // Assuming `profileController.updatePassword` is a function that calls your API.
+      const response = await profileController.updatePassword(currentPassword, newPassword, confirmPassword);
+  
+      // Check for current password error
+      if (response.statusCode === 400 && response.message === "Current password is incorrect") {
+        setMessage("Current password is incorrect.");
+        setMessageType('error');
+        return;
+      }
+  
+      if (response.statusCode === 200) {
+        setMessage("Password reset successfully.");
+        setMessageType('success');
+        setShowResetPasswordModal(false); // Close modal on success
+      } else {
+        setMessage(response.message || "Failed to reset password.");
+        setMessageType('error');
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      setMessage("Error resetting password. Please try again.");
+      setMessageType('error');
+    }
   };
+  
+  
 
   return (
     <div className="container mt-5">
@@ -433,14 +476,20 @@ const EmpProfile = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="d-flex justify-content-between">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setIsEditing(true)}
-            >
-              {isEditing ? "Save Changes" : "Edit Profile"}
-            </button>
+<div className="d-flex justify-content-between">
+  <button
+    type="button"
+    className="btn btn-primary"
+    onClick={() => {
+      if (isEditing) {
+        handleSaveChanges(); // Call the save function when editing
+      } else {
+        setIsEditing(true); // Enable editing mode
+      }
+    }}
+  >
+    {isEditing ? "Save Changes" : "Edit Profile"}
+  </button>
 
             {isEditing && (
               <button
@@ -452,26 +501,36 @@ const EmpProfile = () => {
               </button>
             )}
 
-           {/* Show Reset Password Link only when not editing */}
-           {!isEditing && (
-                <a
-                  href="#!"
-                  onClick={() => setShowResetPasswordModal(true)}
-                  className="btn btn-link mt-3"
-                >
-                  Reset Password
-                </a>
-              )}
+         {/* Show Reset Password Link only when not editing */}
+      {!isEditing && (
+        <a
+          href="#!"
+          onClick={() => setShowResetPasswordModal(true)}
+          className="btn btn-link mt-3"
+        >
+          Reset Password
+        </a>
+      )}
           </div>
         </form>
       </div>
 
-      {/* Reset Password Modal */}
-      <ResetPasswordModal
-        show={showResetPasswordModal}
-        onClose={() => setShowResetPasswordModal(false)}
-        onSubmit={handleResetPassword}
-      />
+       {/* Reset Password Modal */}
+       {showResetPasswordModal && (
+       <ResetPasswordModal
+       show={showResetPasswordModal}
+       onClose={() => setShowResetPasswordModal(false)}
+       onSubmit={handleResetPassword} // ✅ Ensure function is passed
+     />
+     
+      
+      )}
+
+{message && (
+        <div className={`message ${messageType}`}>
+          <p>{message}</p>
+        </div>
+      )}
     </div>
   );
 };
