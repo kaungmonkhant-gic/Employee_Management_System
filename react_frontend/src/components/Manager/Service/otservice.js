@@ -1,5 +1,5 @@
 import apiClient from "../../api/apiclient";
-
+import addRowNumbers from "../../common/AddRowNumbers";
 const managerOTService = {
   // Fetch all overtime records
   fetchOvertimeRequests: async (token) => {
@@ -11,7 +11,7 @@ const managerOTService = {
         },
       });
       console.log("Overtime Records:", response.data);
-      return response.data;
+      return addRowNumbers(response.data);
     } catch (error) {
       console.error("Error fetching overtime records:", error);
       throw error;
