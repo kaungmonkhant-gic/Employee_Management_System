@@ -29,7 +29,24 @@ const profileService = {
       throw error;
     }
   },
-
+  resetPassword: async (currentPassword, newPassword, confirmPassword) => {
+    try {
+      console.log("Service call to /employee/update/password (PUT)");
+      
+      const response = await apiClient.put("/employee/update/password", {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+  
+      console.log("Reset Password Response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error in resetPassword:", error);
+      throw error;
+    }
+  },
+  
  // Update employee profile
 //  updateProfile: async (updatedDetails) => {
 //   try {
