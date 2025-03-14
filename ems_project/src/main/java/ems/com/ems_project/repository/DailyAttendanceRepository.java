@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, I
 
    @Query(value = "SELECT id FROM emp_daily_atts ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastAttendanceId();
+
+    List<EmpDailyAtts> findByManagerId(String id);
 
 //    @Query("SELECT e FROM EmpDailyAtts e WHERE e.employeeId = :employeeId AND e.date BETWEEN :startDate AND :endDate")
 //    List<EmpDailyAtts> findByEmployeeIdAndDateRange(String id, Date startDate, Date endDate);

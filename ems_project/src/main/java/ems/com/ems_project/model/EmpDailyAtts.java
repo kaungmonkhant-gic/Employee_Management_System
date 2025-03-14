@@ -13,7 +13,9 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "emp_daily_atts")
+@Table(name = "emp_daily_atts", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"employee_id", "date"})
+})
 @Data
 public class EmpDailyAtts {
 
@@ -72,6 +74,12 @@ public class EmpDailyAtts {
     @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
     @JsonIgnore
     private Employee employee;
+
+    // Add the manager field
+    @ManyToOne(fetch = FetchType.LAZY) // Lazy loading is used to prevent unnecessary loading of manager data
+    @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Employee manager;  // Assuming the manager is also an Employee
 
     public String getId() {
         return id;
@@ -204,5 +212,13 @@ public class EmpDailyAtts {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+    }
+
+    public Employee getManager() {
+        return manager;
+    }
+
+    public void setManager(Employee manager) {
+        this.manager = manager;
     }
 }

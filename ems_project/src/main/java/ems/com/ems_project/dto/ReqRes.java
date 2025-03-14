@@ -22,6 +22,7 @@ public class ReqRes {
     private List<EmployeeDTO> employeeList;
     private EmployeeDTO employeeProfile;
     private RegisterDTO registerDTO;
+    private AttendanceDTO attendance;
     private Employee employee;
     private EmployeeSalary employeeSalary;
     private EmployeeLeave employeeLeave;
@@ -107,4 +108,11 @@ public class ReqRes {
         this.employeeLeave = employeeLeave;
     }
 
+    public AttendanceDTO getAttendance() {
+        return attendance;
+    }
+
+    public void setAttendance(AttendanceDTO attendance) {
+        this.attendance = attendance;
+    }
 }
