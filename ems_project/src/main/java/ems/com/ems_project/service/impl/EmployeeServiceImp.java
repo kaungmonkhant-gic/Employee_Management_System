@@ -184,15 +184,6 @@ public class EmployeeServiceImp implements EmployeeService {
         }
     }
 
-    // Helper method to get logged-in username (email) from JWT
-    private String getLoggedInUsername() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();
-        } else {
-            return principal.toString();
-        }
-    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Employee> employee = employeeRepository.findByEmail(username);
@@ -502,6 +493,74 @@ public class EmployeeServiceImp implements EmployeeService {
 
         return reqRes;
     }
+
+    @Override
+    public ReqRes updatePassword(PasswordDTO passwordDTO) {
+        ReqRes reqRes = new ReqRes();
+
+        // Get the logged-in user's email
+        String loggedInUsername = getLoggedInUsername();
+
+        // Find the existing employee by email
+        Optional<Employee> existingEmployee = employeeRepository.findByEmail(loggedInUsername);
+        if (existingEmployee.isEmpty()) {
+            reqRes.setStatusCode(404);
+            reqRes.setMessage("Employee not found with email: " + loggedInUsername);
+            return reqRes;
+        }
+
+        try {
+            Employee employee = existingEmployee.get();
+
+            // Check if the old password matches the stored password
+            if (!passwordEncoderConfig.passwordEncoder().matches(passwordDTO.getCurrentPassword(), employee.getPassword())) {
+                reqRes.setStatusCode(400);
+                reqRes.setMessage("Old password is incorrect.");
+                return reqRes;
+            }
+
+            // Check if the new password and confirm password are the same
+            if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
+                reqRes.setStatusCode(400);
+                reqRes.setMessage("New password and confirm password do not match.");
+                return reqRes;
+            }
+
+            // Validate new password (e.g., check length, complexity, etc.)
+            if (passwordDTO.getNewPassword().length() < 6) {
+                reqRes.setStatusCode(400);
+                reqRes.setMessage("New password must be at least 6 characters long.");
+                return reqRes;
+            }
+
+            // Hash and update the new password
+            String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(passwordDTO.getNewPassword());
+            employee.setPassword(hashedPassword);
+
+            // Save the updated employee object
+            employeeRepository.save(employee);
+
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Password updated successfully.");
+        } catch (Exception e) {
+            System.err.println("Error updating password: " + e.getMessage());
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("An error occurred while updating the password: " + e.getMessage());
+        }
+
+        return reqRes;
+    }
+
+    // Helper method to get logged-in username (email) from JWT
+    private String getLoggedInUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
+
 
     public String generateEmployeeId() {
         // Get the last Employee ID from the database

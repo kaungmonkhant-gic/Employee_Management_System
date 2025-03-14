@@ -45,7 +45,7 @@ public class SecurityConfig {
                                 "/leave/self", "ot/self","/departments","/positions","/roles").authenticated()
                         .requestMatchers(HttpMethod.POST, "/employee/reset-password", "/attendance/checkin", "/attendance/checkout").authenticated()
                         // Allow all authenticated users to update their profile
-                        .requestMatchers(HttpMethod.PUT, "/employee/profile/update").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/employee/profile/update","employee/update/password").authenticated()
 
 
                         // Employee management: Admin (CRUD), Manager (View)

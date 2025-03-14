@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.time.LocalTime;
 import java.sql.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter
 @Setter
 @Entity

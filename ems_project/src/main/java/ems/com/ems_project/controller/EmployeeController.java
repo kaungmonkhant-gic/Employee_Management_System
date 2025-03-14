@@ -1,6 +1,7 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.EmployeeDTO;
+import ems.com.ems_project.dto.PasswordDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.service.EmployeeService;
@@ -114,6 +115,21 @@ public class EmployeeController {
 
         if (reqRes.getStatusCode() == 200) {
             return new ResponseEntity<>(reqRes, HttpStatus.OK);
+        } else if (reqRes.getStatusCode() == 404) {
+            return new ResponseEntity<>(reqRes, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(reqRes, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/update/password")
+    public ResponseEntity<ReqRes> updatePassword(@RequestBody PasswordDTO passwordDTO) {
+        ReqRes reqRes = employeeService.updatePassword(passwordDTO);
+
+        // Return response based on the ReqRes status code
+        if (reqRes.getStatusCode() == 200) {
+            return new ResponseEntity<>(reqRes, HttpStatus.OK);
+        } else if (reqRes.getStatusCode() == 400) {
+            return new ResponseEntity<>(reqRes, HttpStatus.BAD_REQUEST);
         } else if (reqRes.getStatusCode() == 404) {
             return new ResponseEntity<>(reqRes, HttpStatus.NOT_FOUND);
         } else {

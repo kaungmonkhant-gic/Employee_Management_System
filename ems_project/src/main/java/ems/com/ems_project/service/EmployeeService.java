@@ -1,6 +1,7 @@
 package ems.com.ems_project.service;
 
 import ems.com.ems_project.dto.EmployeeDTO;
+import ems.com.ems_project.dto.PasswordDTO;
 import ems.com.ems_project.dto.RegisterDTO;
 import ems.com.ems_project.dto.ReqRes;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,5 +33,6 @@ public interface EmployeeService extends UserDetailsService {
 
     List<EmployeeDTO> getActiveEmployeesBasedOnRole(String token);
     List<EmployeeDTO> getResignedEmployeesBasedOnRole(String token);
+    ReqRes updatePassword(PasswordDTO passwordDTO);
 }
 
