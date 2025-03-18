@@ -51,7 +51,7 @@ function ManagerDashboard() {
           </Link>
 
           {/* Employee Dropdown */}
-          <div
+          {/* <div
             className="nav-link text-white"
             onClick={() => toggleMenu("employee")}
             style={{ cursor: "pointer" }}
@@ -63,7 +63,28 @@ function ManagerDashboard() {
               }`}
               style={{ color: "white" }}
             />
-          </div>
+          </div> */}
+          <div 
+  className="nav-link text-white d-flex justify-content-between align-items-center" 
+  onClick={() => toggleMenu("employee")} 
+  style={{ 
+    cursor: "pointer", 
+    transition: "background 0.3s ease", 
+    padding: "10px", 
+    borderRadius: "5px" 
+  }}
+  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+>
+  <span>
+    <i className="bi bi-person-fill me-2"></i> Employee
+  </span>
+  <i 
+    className={`bi ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} 
+    style={{ color: "white", transition: "transform 0.3s ease" }}
+  />
+</div>
+
           {menuState.employee && (
             <div className="ms-3">
               <Link to="/manager-dashboard/view-employeelist" className="nav-link text-white">
@@ -79,19 +100,17 @@ function ManagerDashboard() {
           )}
 
           {/* Attendance Dropdown */}
-          <div
-            className="nav-link text-white"
-            onClick={() => toggleMenu("attendance")}
-            style={{ cursor: "pointer" }}
-          >
-           <i className="bi bi-journal-text"></i> Attendance
-            <i
-              className={`bi ms-2 ${
-                menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"
-              }`}
-              style={{ color: "white" }}
-            />
-          </div>
+          <Link to="/manager-dashboard/manager-leave" className="nav-link text-white d-flex align-items-center" 
+          style={{ 
+                  transition: "background 0.3s ease, padding 0.2s ease", 
+                  padding: "10px", 
+                  borderRadius: "5px"
+                }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+          <i className="bi bi-envelope me-2"></i> Leave
+          </Link>
+
           {menuState.attendance && (
             <div className="ms-3">
               <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-white">

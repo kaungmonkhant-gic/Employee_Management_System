@@ -1,81 +1,61 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
+import { Modal, Button } from "react-bootstrap";
+import LeaveForm from "../common/LeaveForm";
+import apiClient from "../api/apiclient";
+import DataTable from "../common/DataTable";
+import { useNavigate } from "react-router-dom";
+import attendanceController from "../Employee/Controller/AttendanceController";
 
 const EmpAttendance = () => {
-  const [date, setDate] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
 
-  const handleCheckIn = () => {
-    if (!date) {
-      setError('Please select a date before checking in.');
-      return;
-    }
-    setError('');
-    navigate('/employee-dashboard/attendance-list', { state: { action: 'Check In', date } });
-  };
-
-  const handleCheckOut = () => {
-    if (!date) {
-      setError('Please select a date before checking out.');
-      return;
-    }
-    setError('');
-    navigate('/employee-dashboard/attendance-list', { state: { action: 'Check Out', date } });
-  };
-
+  const columns = [
+    { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "checkInTime", headerName: "Leave Type", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "checkOutTime", headerName: "Start Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
+    { field: "lateMin", headerName: "End Date", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "employeeName", headerName: "Total Days", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "managerName", headerName: "Reason", minWidth: 200, flex: 2, cellClassName: "text-center" },
+    // { field: "status", headerName: "Status", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    // { field: "employeeName", headerName: "Employee Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "managerName", headerName: "Manager Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    // {
+    //   field: "status",
+    //   headerName: "Status",
+    //   minWidth: 120,
+    //   flex: 1,
+    //   cellClassName: "text-center",
+    //   render: (row) => (
+    //     <span className={`badge ${row.status === "APPROVED" ? "bg-success" : "bg-danger"}`}>
+    //       {row.status}
+    //     </span>
+    //   ),
+    // },
+    // {
+    //   field: "rejectionReason",
+    //   headerName: "Rejection Reason",
+    //   minWidth: 200,
+    //   flex: 2,
+    //   cellClassName: "text-center",
+    //   render: (row) => (row.status === "REJECTED" ? row.rejectionReason || "No reason given" : "N/A"),
+    // },
+  ];
   return (
-    <div
-      className="d-flex justify-content-center align-items-center vh-100 bg-light"
-    >
-      <div
-        className="card shadow p-4"
-        style={{ maxWidth: '600px', width: '100%', backgroundColor: '#fff' }}
-      >
-        <h2 className="text-primary text-center mb-4">Attendance</h2>
-
-        {/* Date Selector */}
-        <div className="form-group mb-4">
-          <label
-            htmlFor="date"
-            className="form-label fw-bold d-block mb-2"
-            style={{ fontSize: '16px' }}
-          >
-            Select Date:
-          </label>
-          <input
-            type="date"
-            id="date"
-            className="form-control"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
-
-        {/* Error Message */}
-        {error && <div className="alert alert-danger">{error}</div>}
-
-        {/* Check-In and Check-Out Buttons */}
-        <div className="d-flex justify-content-center gap-3 mt-4">
-          <button
-            className="btn btn-primary px-4 py-2"
-            style={{ minWidth: '120px' }}
-            onClick={handleCheckIn}
-          >
-            Check In
-          </button>
-          <button
-            className="btn btn-secondary px-4 py-2"
-            style={{ minWidth: '120px' }}
-            onClick={handleCheckOut}
-          >
-            Check Out
-          </button>
-        </div>
-      </div>
+    <div>
+      <h1>Employee Attendance</h1>
+      <DataTable
+        fetchData={attendanceController.fetchAttendanceRecords}
+        columns={columns}
+        keyField="employeeId"
+        responsive
+        fixedHeader
+        fixedHeaderScrollHeight="400px"
+        noDataComponent="No employees found"
+        highlightOnHover
+        pagination />
     </div>
   );
+  
 };
 
 export default EmpAttendance;
