@@ -62,3 +62,6 @@ backend/main/resources/application.properties
 .settings
 .springBeans
 .sts4-cache
+
+#application properties
+bin/src/main/resources/application.properties
