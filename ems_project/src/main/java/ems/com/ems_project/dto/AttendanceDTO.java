@@ -33,24 +33,25 @@ public class AttendanceDTO {
     // No-argument constructor for ModelMapper
     public AttendanceDTO() {
     } // New field to track attendance status (LEAVE, PRESENT, HALF_LEAVE)
-
-    // Constructor using EmpDailyAtts
     public AttendanceDTO(EmpDailyAtts attendance, Employee employee, Employee manager) {
         this.id = attendance.getId();
         this.date = attendance.getDate();
-        this.checkInTime = attendance.getCheckInTime();
-        this.checkOutTime = attendance.getCheckOutTime();
+        // Directly set check-in and check-out times with default fallbacks if needed
+        this.checkInTime = attendance.getCheckInTime() != null ? attendance.getCheckInTime() : LocalTime.MIDNIGHT;
+        this.checkOutTime = attendance.getCheckOutTime() != null ? attendance.getCheckOutTime() : LocalTime.MIDNIGHT;
         this.lunchBreak = attendance.getLunchBreak();
         this.lateMin = attendance.getLateMin();
         this.leaveEarly = attendance.getLeaveEarly();
         this.status = attendance.getStatus();
 
+        // Employee and Manager names
         this.employeeName = (employee != null) ? employee.getName() : null;
         this.managerName = (manager != null) ? manager.getName() : null;
 
-        // Fetch leaveId from the associated Leave entity
+        // Handle leave ID (could be null if there's no leave associated)
         this.leaveId = (attendance.getLeave() != null) ? attendance.getLeave().getId() : null;
     }
+
 
 
     public String getId() {

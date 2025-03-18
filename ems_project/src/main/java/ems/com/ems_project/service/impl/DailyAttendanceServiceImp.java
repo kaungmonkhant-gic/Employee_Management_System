@@ -55,6 +55,47 @@ public class DailyAttendanceServiceImp implements AttendanceService {
     @Autowired
     private DateService dateService;
 
+//    public List<AttendanceDTO> getAttendanceRecordRoleBased(String token) {
+//
+//        // Get active employees based on role
+//        List<EmployeeDTO> activeEmployees = employeeService.getActiveEmployeesBasedOnRole(token);
+//
+//        // Extract active employee IDs
+//        List<String> activeEmployeeIds = activeEmployees.stream()
+//                .map(EmployeeDTO::getId)
+//                .collect(Collectors.toList());
+//
+//        List<EmpDailyAtts> attendanceRecords = new ArrayList<>();
+//
+//        // Extract user details from the token
+//        String email = jwtutils.extractUsername(token);
+//        String roleName = jwtutils.extractRole(token);
+//
+//        // Get the logged-in employee details
+//        Employee manager = employeeRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        if ("Admin".equals(roleName)) {
+//            // Admin: Get all attendance records for active employees
+//            attendanceRecords = attendanceRepository.findAll().stream()
+//                    .filter(attendance -> activeEmployeeIds.contains(attendance.getEmployee().getId()))
+//                    .collect(Collectors.toList());
+//
+//        } else if ("Manager".equals(roleName)) {
+//            // Manager: Get attendance records for active employees managed by the logged-in manager
+//            attendanceRecords = attendanceRepository.findByManagerId(manager.getId()).stream()
+//                    .filter(attendance -> activeEmployeeIds.contains(attendance.getEmployee().getId()))
+//                    .collect(Collectors.toList());
+//        } else {
+//            return Collections.emptyList(); // Other roles don't have access
+//        }
+//
+//        // Convert to DTO and return
+//        return attendanceRecords.stream()
+//                .map(attendance -> new AttendanceDTO(attendance, attendance.getEmployee(), attendance.getManager()))
+//                .collect(Collectors.toList());
+//    }
+
     public List<AttendanceDTO> getAttendanceRecordRoleBased(String token) {
 
         // Get active employees based on role
@@ -75,26 +116,47 @@ public class DailyAttendanceServiceImp implements AttendanceService {
         Employee manager = employeeRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Logging for debugging
+        System.out.println("Logged-in Manager: " + manager.getName());
+        System.out.println("Role: " + roleName);
+
         if ("Admin".equals(roleName)) {
             // Admin: Get all attendance records for active employees
             attendanceRecords = attendanceRepository.findAll().stream()
                     .filter(attendance -> activeEmployeeIds.contains(attendance.getEmployee().getId()))
                     .collect(Collectors.toList());
+            System.out.println("Admin access: Attendance records fetched for active employees");
 
         } else if ("Manager".equals(roleName)) {
             // Manager: Get attendance records for active employees managed by the logged-in manager
             attendanceRecords = attendanceRepository.findByManagerId(manager.getId()).stream()
                     .filter(attendance -> activeEmployeeIds.contains(attendance.getEmployee().getId()))
                     .collect(Collectors.toList());
+            System.out.println("Manager access: Attendance records fetched for employees managed by the manager");
+
         } else {
             return Collections.emptyList(); // Other roles don't have access
         }
 
+        // Logging attendance records before converting to DTO
+        System.out.println("Attendance records fetched: " + attendanceRecords.size() + " records found");
+
         // Convert to DTO and return
         return attendanceRecords.stream()
-                .map(attendance -> new AttendanceDTO(attendance, attendance.getEmployee(), attendance.getManager()))
+                .map(attendance -> {
+                    // Check if checkInTime and checkOutTime are null and handle accordingly
+                    LocalTime checkInTime = attendance.getCheckInTime() != null ? attendance.getCheckInTime() : null;
+                    LocalTime checkOutTime = attendance.getCheckOutTime() != null ? attendance.getCheckOutTime() : null;
+
+                    // Logging for debugging
+                    System.out.println("Attendance record - CheckInTime: " + checkInTime + ", CheckOutTime: " + checkOutTime);
+
+                    // Return DTO with null handling for checkInTime and checkOutTime
+                    return new AttendanceDTO(attendance, attendance.getEmployee(), attendance.getManager());
+                })
                 .collect(Collectors.toList());
     }
+
 
     public List<AttendanceDTO> getAttendanceRecordsForLoggedInUser() {
         // Find the logged-in employee using the authenticated email
