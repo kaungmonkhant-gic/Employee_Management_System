@@ -21,16 +21,20 @@ public class AttendanceDTO {
     private LocalTime checkOutTime;
     private String lunchBreak;
     private Integer lateMin;
-    private Boolean isLeave;
     private Boolean leaveEarly;
 
     private String employeeName;
     private String managerName;
 
+
+    private String leaveId;  // New field to store leave ID
+    private AttendanceStatus status;
+
     // No-argument constructor for ModelMapper
     public AttendanceDTO() {
-    }
+    } // New field to track attendance status (LEAVE, PRESENT, HALF_LEAVE)
 
+    // Constructor using EmpDailyAtts
     public AttendanceDTO(EmpDailyAtts attendance, Employee employee, Employee manager) {
         this.id = attendance.getId();
         this.date = attendance.getDate();
@@ -38,12 +42,14 @@ public class AttendanceDTO {
         this.checkOutTime = attendance.getCheckOutTime();
         this.lunchBreak = attendance.getLunchBreak();
         this.lateMin = attendance.getLateMin();
-        this.isLeave = attendance.getIsLeave();
         this.leaveEarly = attendance.getLeaveEarly();
+        this.status = attendance.getStatus();
 
         this.employeeName = (employee != null) ? employee.getName() : null;
         this.managerName = (manager != null) ? manager.getName() : null;
 
+        // Fetch leaveId from the associated Leave entity
+        this.leaveId = (attendance.getLeave() != null) ? attendance.getLeave().getId() : null;
     }
 
 
@@ -97,13 +103,6 @@ public class AttendanceDTO {
         this.lateMin = lateMin;
     }
 
-    public Boolean getIsLeave() {  // Ensure this method exists
-        return isLeave;
-    }
-
-    public void setIsLeave(Boolean isleave) {
-        isLeave = isleave;
-    }
 
     public Boolean getLeaveEarly() {
         return leaveEarly;
@@ -131,5 +130,21 @@ public class AttendanceDTO {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
+    }
+
+    public String getLeaveId() {
+        return leaveId;
+    }
+
+    public void setLeaveId(String leaveId) {
+        this.leaveId = leaveId;
+    }
+
+    public AttendanceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AttendanceStatus status) {
+        this.status = status;
     }
 }

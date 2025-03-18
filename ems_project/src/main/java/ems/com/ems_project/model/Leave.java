@@ -24,8 +24,9 @@ public class Leave {
     @Column(name = "leave_type")
     private LeaveType leaveType;  // Uses enum instead of String
 
-    @Column(name = "half_leave")
-    private Boolean halfLeave = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "leave_duration", nullable = false)
+    private LeaveDuration leaveDuration = LeaveDuration.FULL_LEAVE;
 
     @Column(name = "start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -72,12 +73,12 @@ public class Leave {
         this.leaveType = leaveType;
     }
 
-    public Boolean getHalfLeave() {
-        return halfLeave;
+    public LeaveDuration getLeaveDuration() {
+        return leaveDuration;
     }
 
-    public void setHalfLeave(Boolean halfLeave) {
-        this.halfLeave = halfLeave;
+    public void setLeaveDuration(LeaveDuration leaveDuration) {
+        this.leaveDuration = leaveDuration;
     }
 
     public LocalDate getStartDate() {

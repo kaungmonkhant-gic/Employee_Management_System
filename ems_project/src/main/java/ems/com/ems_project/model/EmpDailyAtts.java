@@ -13,9 +13,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "emp_daily_atts", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"employee_id", "date"})
-})
+@Table(name = "emp_daily_atts")
 @Data
 public class EmpDailyAtts {
 
@@ -44,10 +42,11 @@ public class EmpDailyAtts {
     private String lunchBreak;
 
     @Column(name = "late_min")
-    private Integer lateMin;
+    private Integer lateMin = 0;
 
-    @Column(name = "is_leave")
-    private Boolean isLeave;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private AttendanceStatus status;
 
     @Column(name = "is_Ot")
     private Boolean isOT;
@@ -59,10 +58,9 @@ public class EmpDailyAtts {
     private String reason;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private RequestStatus status = RequestStatus.PENDING;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @Column(name = "request_status")
+    private RequestStatus requestStatus = RequestStatus.PENDING;
+    @ManyToOne
     @JoinColumn(name = "leave_id", referencedColumnName = "id")
     private Leave leave;
 
@@ -130,12 +128,9 @@ public class EmpDailyAtts {
         this.lateMin = lateMin;
     }
 
-    public Boolean getIsLeave() {  // Ensure this method exists
-        return isLeave;
-    }
 
-    public void setIsLeave(Boolean isleave) {
-        isLeave = isleave;
+    public void setStatus(AttendanceStatus status) {
+        this.status = status;
     }
 
     public Boolean getLeaveEarly() {
@@ -194,9 +189,6 @@ public class EmpDailyAtts {
         this.updatedCheckOutTime = updatedCheckOutTime;
     }
 
-    public void setLeave(Boolean leave) {
-        isLeave = leave;
-    }
 
     public String getReason() {
         return reason;
@@ -206,13 +198,6 @@ public class EmpDailyAtts {
         this.reason = reason;
     }
 
-    public RequestStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RequestStatus status) {
-        this.status = status;
-    }
 
     public Employee getManager() {
         return manager;
@@ -221,4 +206,17 @@ public class EmpDailyAtts {
     public void setManager(Employee manager) {
         this.manager = manager;
     }
+
+    public AttendanceStatus getStatus() {
+        return status;
+    }
+
+    public RequestStatus getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(RequestStatus requestStatus) {
+        this.requestStatus = requestStatus;
+    }
+
 }

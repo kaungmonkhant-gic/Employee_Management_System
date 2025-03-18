@@ -1,10 +1,7 @@
 package ems.com.ems_project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.Leave;
-import ems.com.ems_project.model.LeaveType;
-import ems.com.ems_project.model.RequestStatus;
+import ems.com.ems_project.model.*;
 
 import java.time.LocalDate;
 
@@ -13,7 +10,7 @@ public class LeaveDTO {
 
     private String id;
     private LeaveType leaveType;
-    private Boolean halfLeave;
+    private LeaveDuration leaveDuration;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -29,7 +26,7 @@ public class LeaveDTO {
         if (leave != null) {
             this.id = leave.getId();
             this.leaveType = leave.getLeaveType();
-            this.halfLeave = leave.getHalfLeave();
+            this.leaveDuration = leave.getLeaveDuration();
             this.startDate = leave.getStartDate();
             this.endDate = leave.getEndDate();
             this.totalDays = leave.getTotalDays();
@@ -61,14 +58,6 @@ public class LeaveDTO {
         this.leaveType = leaveType;
     }
 
-    public Boolean getHalfLeave() {
-        return halfLeave;
-    }
-
-    public void setHalfLeave(Boolean halfLeave) {
-        this.halfLeave = halfLeave;
-    }
-
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -83,6 +72,14 @@ public class LeaveDTO {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public LeaveDuration getLeaveDuration() {
+        return leaveDuration;
+    }
+
+    public void setLeaveDuration(LeaveDuration leaveDuration) {
+        this.leaveDuration = leaveDuration;
     }
 
     public String getReason() {
