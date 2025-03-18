@@ -4,7 +4,7 @@ import apiClient from "../components/api/apiclient";
 const attendanceRecordService = {
     fetchAllAttendance: async () => {
         try {
-            const response = await apiClient.get("/attendance/all");
+            const response = await apiClient.get("/attendance/role/records");
             console.log("Attendance Records:", response.data);
             return Array.isArray(response.data) ? response.data : [];
         } catch (error) {
