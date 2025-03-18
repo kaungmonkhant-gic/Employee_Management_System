@@ -88,7 +88,7 @@ function EmployeeDashboard() {
               {employeeName?.charAt(0)}
             </div>
             <div>
-              <h5 className="mb-0" style={{ fontSize: "1.2rem", fontWeight: "600", color: "white" }}>Welcome, {employeeName}</h5>
+              <h5 className="mb-0" style={{ fontSize: "1.2rem", fontWeight: "600", color: "white" }}><i className="bi bi-person"></i>  {/* Employee */} {employeeName}</h5>
               <p className="mb-0" style={{ fontSize: "0.9rem", color: "#d1e8ff" }}>Your dashboard overview</p>
             </div>
           </div>

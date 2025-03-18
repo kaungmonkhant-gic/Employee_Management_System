@@ -37,11 +37,15 @@ function AdminDashboard() {
     }));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("employeeName");
-    setEmployeeName(""); // Clear the state
-    navigate("/login");
-  };
+  useEffect(() => {
+     const storedEmployeeName = localStorage.getItem("employeeName");
+     setEmployeeName(storedEmployeeName || "Admin");
+   }, []);
+ 
+   const handleLogout = () => {
+     localStorage.removeItem("employeeName");
+     navigate("/login");
+   };
 
   // ✅ Attendance Summary Chart Data
   const attendanceData = {
@@ -168,17 +172,47 @@ Payroll</Link>
           <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
           <i className="bi bi-bar-chart-line"></i>
 Salary History</Link>
-
+<Link to="/admin-dashboard/generate-payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Generate Payroll</Link>
+<Link to="/admin-dashboard/testing" className="nav-link" style={{ color: "#FFFFFF" }}>Testing</Link>
           <button onClick={handleLogout} className="btn btn-secondary mt-4">Logout</button>
         </nav>
       </div>
 
       <div className="flex-grow-1 p-4" style={{ backgroundColor: "#f8f9fa" }}>
         {/* Header */}
-        <header className="p-3 d-flex justify-content-between align-items-center rounded" style={{ backgroundColor: "#2980B9", color: "#FFFFFF" }}>
-  <h4>👋 Welcome,admin {employeeName}</h4> {/* This should show the correct name */}
-  <button onClick={handleLogout} className="btn btn-light btn-sm">Logout</button>
-</header>
+        <header
+          className="d-flex justify-content-between align-items-center px-3 py-2 rounded shadow-sm mb-3"
+          style={{ backgroundColor: "#2980B9", height: "60px" }}
+        >
+          <div className="d-flex align-items-center">
+            <div
+              className="avatar me-2 d-flex justify-content-center align-items-center"
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "white",
+                color: "#2980B9",
+                fontSize: "1rem",
+                fontWeight: "bold",
+              }}
+            >
+              {employeeName?.charAt(0)}
+            </div>
+            <div>
+              <h5 className="mb-0" style={{ fontSize: "1.2rem", fontWeight: "600", color: "white" }}>
+              <i className="bi bi-person-check"></i>  {/* Admin */} {employeeName}
+              </h5>
+              <p className="mb-0" style={{ fontSize: "0.9rem", color: "#d1e8ff" }}>
+                Your dashboard overview
+              </p>
+            </div>
+          </div>
+
+          <button onClick={handleLogout} className="btn btn-light btn-sm rounded-pill px-3">
+            Logout
+          </button>
+        </header>
 
         {/* ✅ Show Dashboard Content ONLY on /admin-dashboard */}
         {location.pathname === "/admin-dashboard" && (
