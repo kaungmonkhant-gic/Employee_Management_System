@@ -174,7 +174,7 @@ function ManagerDashboard() {
             </div>
             <div>
               <h5 className="mb-0" style={{ fontSize: "1.2rem", fontWeight: "600", color: "white" }}>
-                Welcome, {managerName}
+              <i className="bi bi-person-check"></i>  {/* Manager */} {managerName}
               </h5>
               <p className="mb-0" style={{ fontSize: "0.9rem", color: "#d1e8ff" }}>
                 Your dashboard overview
