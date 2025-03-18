@@ -1,12 +1,15 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.LeaveDTO;
+import ems.com.ems_project.model.LeaveDuration;
 import ems.com.ems_project.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +47,26 @@ public class LeaveController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    // Endpoint to calculate total leave days based on start date, end date, and leave type
+    @PostMapping("/totaldays")
+    public ResponseEntity<Double> getTotalLeaveDays(@RequestBody LeaveDTO leaveDTO) {
+        // Extract startDate, endDate, and leaveDuration from the request body
+        LocalDate startDate = leaveDTO.getStartDate();
+        LocalDate endDate = leaveDTO.getEndDate();
+        LeaveDuration leaveDuration = leaveDTO.getLeaveDuration();
+
+        // Validate dates
+        if (startDate == null || endDate == null || leaveDuration == null) {
+            return ResponseEntity.badRequest().body(0.0);
+        }
+
+        // Calculate total leave days
+        double totalDays = leaveService.calculateTotalLeaveDays(startDate, endDate, leaveDuration);
+
+        return ResponseEntity.ok(totalDays);
+    }
+
     // Get leave status count based on role (Admin/Manager)
     @GetMapping("/role-status-count")
     public Map<String, Long> getLeaveStatusForRoleBased() {

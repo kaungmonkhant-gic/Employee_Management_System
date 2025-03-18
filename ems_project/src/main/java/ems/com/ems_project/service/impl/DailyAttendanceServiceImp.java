@@ -4,13 +4,16 @@ import ems.com.ems_project.dto.AttendanceDTO;
 import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.ReqRes;
+import ems.com.ems_project.model.AttendanceStatus;
 import ems.com.ems_project.model.EmpDailyAtts;
 import ems.com.ems_project.model.Employee;
+import ems.com.ems_project.model.Leave;
 import ems.com.ems_project.repository.DailyAttendanceRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.LeaveRepository;
 import ems.com.ems_project.repository.OtRepository;
 import ems.com.ems_project.service.AttendanceService;
+import ems.com.ems_project.service.DateUtils;
 import ems.com.ems_project.service.EmployeeService;
 import ems.com.ems_project.service.JWTUtils;
 import org.modelmapper.ModelMapper;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -49,6 +53,8 @@ public class DailyAttendanceServiceImp implements AttendanceService {
     private GenerateId generateId;
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private DateUtils dateUtils;
 
     public List<AttendanceDTO> getAttendanceRecordRoleBased(String token) {
 
@@ -124,6 +130,23 @@ public class DailyAttendanceServiceImp implements AttendanceService {
                 response.setError("Attendance already recorded for today.");
                 return response;  // Return structured error response
             }
+            // Define the acceptable check-in time range (8 AM to 5 PM)
+            LocalTime startOfWorkDay = LocalTime.of(8, 0); // 8:00 AM
+
+            AttendanceStatus status;
+            Integer lateMin = 0; // Default late minutes
+
+            // Check if the employee checks in after 8 AM
+            if (checkInTime.isBefore(startOfWorkDay)) {
+                // If check-in is before 8 AM, mark as present (no late)
+                status = AttendanceStatus.PRESENT;
+            } else {
+                // If check-in is after 8 AM, mark as late and calculate late minutes
+                status = AttendanceStatus.LATE;
+                // Calculate late minutes accurately
+                lateMin = Math.toIntExact(Duration.between(startOfWorkDay, checkInTime).toMinutes()); // Calculate late minutes
+            }
+
 
             // Create new attendance record
             EmpDailyAtts attendance = new EmpDailyAtts();
@@ -131,6 +154,8 @@ public class DailyAttendanceServiceImp implements AttendanceService {
             attendance.setEmployee(employee);
             attendance.setDate(todayDate);
             attendance.setCheckInTime(checkInTime);
+            attendance.setStatus(status);  // Set status as PRESENT or LATE
+            attendance.setLateMin(lateMin);
 
             attendanceRepository.save(attendance);
 
@@ -196,6 +221,56 @@ public class DailyAttendanceServiceImp implements AttendanceService {
             return response;
         }
     }
+    public void updateAttendanceForLeave(Employee employee, LocalDate startDate, LocalDate endDate, Leave leave) {
+        LocalDate currentDate = startDate;
+
+        while (!currentDate.isAfter(endDate)) {
+            if (!dateUtils.isWorkingDay(currentDate)) {
+                // Skip weekends and public holidays
+                currentDate = currentDate.plusDays(1);
+                continue;
+            }
+            // Check if attendance already exists for that date
+            EmpDailyAtts attendance = attendanceRepository.findByEmployeeAndDate(employee, currentDate);
+
+            if (attendance == null) {
+                // If no attendance exists, create a new entry
+                attendance = new EmpDailyAtts();
+                attendance.setId(generateAttendanceId());
+                attendance.setEmployee(employee);
+                attendance.setDate(currentDate);
+            }
+
+            // ✅ Mark the attendance as leave and associate the Leave entity
+            attendance.setStatus(AttendanceStatus.LEAVE);
+            attendance.setLeave(leave); // Associate Leave entity
+
+            attendanceRepository.save(attendance);
+
+            // Move to the next day
+            currentDate = currentDate.plusDays(1);
+        }
+    }
+//
+//    public void saveOrUpdateAttendance(Employee employee, LocalDate date, Leave leave) {
+//        EmpDailyAtts existingAttendance = attendanceRepository.findByEmployeeAndDate(employee, date);
+//
+//        if (existingAttendance == null) {
+//            EmpDailyAtts newAttendance = new EmpDailyAtts();
+//            newAttendance.setId(generateAttendanceId());
+//            newAttendance.setEmployee(employee);
+//            newAttendance.setDate(date);
+//            newAttendance.setLeave(leave);
+//            newAttendance.setStatus(AttendanceStatus.LEAVE);
+//            attendanceRepository.save(newAttendance);
+//        } else {
+//            existingAttendance.setLeave(leave);
+//            existingAttendance.setStatus(AttendanceStatus.LEAVE);
+//            attendanceRepository.save(existingAttendance);
+//        }
+//    }
+
+
 
     // Helper method to get logged-in username (email) from JWT
     private String getLoggedInUsername() {
