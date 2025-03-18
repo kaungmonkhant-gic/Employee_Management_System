@@ -23,6 +23,8 @@ public class SalaryHistory {
 
     @Column(name = "house_allowance")
     private Double houseAllowance;
+    @Column(name = "transportation")
+    private Double transportation;
 
     @Column(name = "ot_fee")
     private Double otFee;
@@ -136,5 +138,13 @@ public class SalaryHistory {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public Double getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
     }
 }

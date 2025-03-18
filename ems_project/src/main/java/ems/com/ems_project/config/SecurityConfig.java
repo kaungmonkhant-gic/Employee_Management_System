@@ -42,7 +42,7 @@ public class SecurityConfig {
 
                         // Routes for all authenticated users (view profile, records, reset password, check-in/checkout)
                         .requestMatchers(HttpMethod.GET, "/employee/profile", "/attendance/self", "/salary-history/self",
-                                "/leave/self", "ot/self","/departments","/positions","/roles").authenticated()
+                                "/leave/self", "ot/self","/departments","/positions","/roles","/isWorkingDay").authenticated()
                         .requestMatchers(HttpMethod.POST, "/employee/reset-password", "/attendance/checkin", "/attendance/checkout").authenticated()
                         // Allow all authenticated users to update their profile
                         .requestMatchers(HttpMethod.PUT, "/employee/profile/update","employee/update/password").authenticated()

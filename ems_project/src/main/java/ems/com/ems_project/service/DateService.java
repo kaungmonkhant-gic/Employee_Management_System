@@ -2,13 +2,13 @@ package ems.com.ems_project.service;
 
 import ems.com.ems_project.repository.HolidayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
-@Component
-public class DateUtils {
+@Service
+public class DateService {
 
     @Autowired
     private HolidayRepository holidayRepository;

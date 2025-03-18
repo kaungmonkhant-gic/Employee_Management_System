@@ -22,6 +22,9 @@ public class EmployeeLeave {
     @Column(name = "medical_leave")
     private Double medicalLeave = 0.0;
 
+    @Column(name = "unpaid_leave")
+    private Double unpaidLeave = 0.0;
+
     @Column(name = "total")
     private Double total = 0.0;
 
@@ -64,6 +67,14 @@ public class EmployeeLeave {
 
     public void setMedicalLeave(Double medicalLeave) {
         this.medicalLeave = medicalLeave;
+    }
+
+    public Double getUnpaidLeave() {
+        return unpaidLeave;
+    }
+
+    public void setUnpaidLeave(Double unpaidLeave) {
+        this.unpaidLeave = unpaidLeave;
     }
 
     public Double getTotal() {

@@ -5,7 +5,6 @@ import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.model.*;
 import ems.com.ems_project.repository.EmployeeLeaveRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
-import ems.com.ems_project.repository.HolidayRepository;
 import ems.com.ems_project.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +29,7 @@ public class LeaveService {
     @Autowired
     private EmployeeLeaveService employeeLeaveService;
     @Autowired
-    private DateUtils dateUtils;
+    private DateService dateService;
     @Autowired
     private EmployeeLeaveRepository employeeLeaveRepository;
 
@@ -180,8 +178,8 @@ public class LeaveService {
             // Debugging: Print each date
             System.out.println("Checking: " + currentDate);
 
-            // Use DateUtils to check if the current date is a working day
-            if (dateUtils.isWorkingDay(currentDate)) {
+            // Use DateService to check if the current date is a working day
+            if (dateService.isWorkingDay(currentDate)) {
                 totalDays++;
             }
             currentDate = currentDate.plusDays(1);

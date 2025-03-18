@@ -13,6 +13,7 @@ public class SalaryHistoryDTO {
     private String id;
     private Double basicSalary;
     private Double houseAllowance;
+    private Double transportation;
     private Double otFee;
     private Double lateOver;
     private Double leaveOver;
@@ -30,6 +31,7 @@ public class SalaryHistoryDTO {
             this.id = salaryHistory.getId();
             this.basicSalary = salaryHistory.getBasicSalary();
             this.houseAllowance = salaryHistory.getHouseAllowance();
+            this.transportation = salaryHistory.getTransportation();
             this.otFee = salaryHistory.getOtFee();
             this.lateOver = salaryHistory.getLateOver();
             this.leaveOver = salaryHistory.getLeaveOver();
@@ -129,6 +131,14 @@ public class SalaryHistoryDTO {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public Double getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
     }
 }
 

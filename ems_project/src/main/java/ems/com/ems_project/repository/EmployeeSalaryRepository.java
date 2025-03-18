@@ -1,5 +1,6 @@
 package ems.com.ems_project.repository;
 
+import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeSalary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +17,7 @@ public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalary, 
     void deleteByEmployeeId(String id);
     @Query(value = "SELECT id FROM employee_salary ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastEmployeeSalaryId();
+
+    Optional<Object> findByEmployee(Employee employee);
 }
 

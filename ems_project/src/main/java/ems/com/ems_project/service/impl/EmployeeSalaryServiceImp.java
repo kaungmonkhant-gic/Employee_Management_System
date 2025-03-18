@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.EmployeeSalaryDTO;
+import ems.com.ems_project.dto.SalaryDTO;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeSalary;
 import ems.com.ems_project.model.PositionSalary;
 import ems.com.ems_project.model.Positions;
-import ems.com.ems_project.repository.EmployeeSalaryRepository;
-import ems.com.ems_project.repository.PositionSalaryRepository;
+import ems.com.ems_project.repository.*;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,12 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
     private GenerateId generateId;
     @Autowired
     private PositionSalaryRepository positionSalaryRepository;
+    @Autowired
+    private DailyAttendanceRepository attendanceRepository;
+    @Autowired
+    private EmployeeLeaveRepository employeeLeaveRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
     @Override
     public List<EmployeeSalaryDTO> getAllSalaries() {
         return employeeSalaryRepository.findAll().stream()
@@ -96,6 +102,27 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
     }
 
 
+    public SalaryDTO getEmployeeSalaryDetails(String employeeId) {
+        // Fetch the employee details
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // Fetch the employee salary details
+        EmployeeSalary employeeSalary = employeeSalaryRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new RuntimeException("Salary details not found"));
+
+        // Fetch the position salary linked to the employee's position
+        PositionSalary positionSalary = employeeSalary.getPositionSalary();
+
+        // Fetch the late minutes from the attendance table (if needed)
+        Integer lateMinutes = attendanceRepository.findLateMinutesByEmployeeId(employeeId);
+
+        // Fetch the unpaid leave from the leave table (if needed)
+        Double unpaidLeave = employeeLeaveRepository.findUnpaidLeaveByEmployeeId(employeeId);
+
+        // Return the DTO with all the necessary data
+        return new SalaryDTO(employee, positionSalary, lateMinutes, unpaidLeave);
+    }
 
     @Override
     public String generateEmployeeSalaryId() {

@@ -28,7 +28,7 @@ public class AttendanceDTO {
 
 
     private String leaveId;  // New field to store leave ID
-    private AttendanceStatus status;
+    private AttendanceStatus status = AttendanceStatus.ABSENT;
 
     // No-argument constructor for ModelMapper
     public AttendanceDTO() {

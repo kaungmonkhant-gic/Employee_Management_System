@@ -22,6 +22,8 @@ public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, I
 
     List<EmpDailyAtts> findByManagerId(String id);
 
+    Integer findLateMinutesByEmployeeId(String employeeId);
+
 //    @Query("SELECT e FROM EmpDailyAtts e WHERE e.employeeId = :employeeId AND e.date BETWEEN :startDate AND :endDate")
 //    List<EmpDailyAtts> findByEmployeeIdAndDateRange(String id, Date startDate, Date endDate);
 }

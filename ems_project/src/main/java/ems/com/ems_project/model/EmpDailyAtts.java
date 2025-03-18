@@ -46,7 +46,7 @@ public class EmpDailyAtts {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private AttendanceStatus status;
+    private AttendanceStatus status = AttendanceStatus.ABSENT;
 
     @Column(name = "is_Ot")
     private Boolean isOT;

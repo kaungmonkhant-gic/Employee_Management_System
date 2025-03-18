@@ -2,7 +2,6 @@ package ems.com.ems_project.service.impl;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.AttendanceDTO;
 import ems.com.ems_project.dto.EmployeeDTO;
-import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.AttendanceStatus;
 import ems.com.ems_project.model.EmpDailyAtts;
@@ -13,7 +12,7 @@ import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.LeaveRepository;
 import ems.com.ems_project.repository.OtRepository;
 import ems.com.ems_project.service.AttendanceService;
-import ems.com.ems_project.service.DateUtils;
+import ems.com.ems_project.service.DateService;
 import ems.com.ems_project.service.EmployeeService;
 import ems.com.ems_project.service.JWTUtils;
 import org.modelmapper.ModelMapper;
@@ -54,7 +53,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
     @Autowired
     private EmployeeService employeeService;
     @Autowired
-    private DateUtils dateUtils;
+    private DateService dateService;
 
     public List<AttendanceDTO> getAttendanceRecordRoleBased(String token) {
 
@@ -147,7 +146,6 @@ public class DailyAttendanceServiceImp implements AttendanceService {
                 lateMin = Math.toIntExact(Duration.between(startOfWorkDay, checkInTime).toMinutes()); // Calculate late minutes
             }
 
-
             // Create new attendance record
             EmpDailyAtts attendance = new EmpDailyAtts();
             attendance.setId(generateAttendanceId());
@@ -225,7 +223,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
         LocalDate currentDate = startDate;
 
         while (!currentDate.isAfter(endDate)) {
-            if (!dateUtils.isWorkingDay(currentDate)) {
+            if (!dateService.isWorkingDay(currentDate)) {
                 // Skip weekends and public holidays
                 currentDate = currentDate.plusDays(1);
                 continue;
@@ -251,26 +249,6 @@ public class DailyAttendanceServiceImp implements AttendanceService {
             currentDate = currentDate.plusDays(1);
         }
     }
-//
-//    public void saveOrUpdateAttendance(Employee employee, LocalDate date, Leave leave) {
-//        EmpDailyAtts existingAttendance = attendanceRepository.findByEmployeeAndDate(employee, date);
-//
-//        if (existingAttendance == null) {
-//            EmpDailyAtts newAttendance = new EmpDailyAtts();
-//            newAttendance.setId(generateAttendanceId());
-//            newAttendance.setEmployee(employee);
-//            newAttendance.setDate(date);
-//            newAttendance.setLeave(leave);
-//            newAttendance.setStatus(AttendanceStatus.LEAVE);
-//            attendanceRepository.save(newAttendance);
-//        } else {
-//            existingAttendance.setLeave(leave);
-//            existingAttendance.setStatus(AttendanceStatus.LEAVE);
-//            attendanceRepository.save(existingAttendance);
-//        }
-//    }
-
-
 
     // Helper method to get logged-in username (email) from JWT
     private String getLoggedInUsername() {

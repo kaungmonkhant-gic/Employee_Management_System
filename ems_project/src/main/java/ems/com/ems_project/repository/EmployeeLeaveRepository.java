@@ -23,4 +23,5 @@ public interface EmployeeLeaveRepository extends JpaRepository<EmployeeLeave, St
     // Delete all leaves of an employee
     void deleteByEmployeeId(String employeeId);
 
+    Double findUnpaidLeaveByEmployeeId(String employeeId);
 }
