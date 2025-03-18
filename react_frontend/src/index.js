@@ -48,6 +48,8 @@ import ShowResignedEmployee from "./components/ShowResignedEmployee";
 import SalaryHistory from "./components/Employee/SalaryHistory";
 import SalaryHistoryManager from "./components/Manager/SalaryHistoryManager";
 import SalaryHistoryAdmin from "./components/SalaryHistoryAdmin";
+import GeneratePayroll from "./components/GeneratePayroll"
+import Testing from "./components/testing";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -93,6 +95,8 @@ root.render(
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
         <Route path="salary-history" element={<SalaryHistoryAdmin />} />
+        <Route path="generate-payroll" element={<GeneratePayroll />} />
+        <Route path="testing" element={<Testing />} />
       </Route>
 
       <Route path="/employee-dashboard/*" element={<EmployeeDashboard />}>
