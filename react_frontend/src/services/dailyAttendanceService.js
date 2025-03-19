@@ -6,7 +6,7 @@ const BASE_URL = "http://localhost:8081"; // Ensure correct API URL
 const DailyAttendanceService = {
   getAllAttendance: async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/attendance/all`); // Fetch all attendance records
+      const response = await axios.get(`${BASE_URL}/attendance/self`); // Fetch all attendance records
       return response.data;
     } catch (error) {
       console.error("Error fetching attendance:", error);

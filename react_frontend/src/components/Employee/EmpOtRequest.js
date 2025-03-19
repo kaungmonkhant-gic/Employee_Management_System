@@ -72,7 +72,7 @@ const OvertimeRequests = () => {
     <div className="d-flex align-items-center p-2 border rounded shadow-sm" style={{ backgroundColor: "#f8d7da" }}>
       <CheckCircleFill size={28} color="red" />
       <div className="ms-3">
-        <p className="text-muted mb-1">Rejected Requests</p>
+        <p className="text-muted mb-1">Rejected Requests hhh</p>
         <p className="fw-bold mb-0">{rejected}</p>
       </div>
     </div>
@@ -117,7 +117,7 @@ const OvertimeRequests = () => {
             <DataTable
               fetchData={() => filteredRecords}
               columns={[
-                { field: "number", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+                { field: "id", headerName: "OT ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
                 { field: "date", headerName: "Date", minWidth: 150, flex: 1, cellClassName: "text-center" },
                 { field: "startTime", headerName: "Start Time", minWidth: 200, flex: 1.5, cellClassName: "text-center" },
                 { field: "endTime", headerName: "End Time", minWidth: 200, flex: 1.5, cellClassName: "text-center" },
@@ -143,7 +143,7 @@ const OvertimeRequests = () => {
                   },
                 },
               ]}
-              keyField="number"
+              keyField="id"
               responsive
               fixedHeader
               fixedHeaderScrollHeight="400px"

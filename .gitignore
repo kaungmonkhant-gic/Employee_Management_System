@@ -1,4 +1,67 @@
-ems_project/src/main/resources/application.properties
-react_frontend/package-lock.json
-react_frontend/package-lock.json
+# === Global Ignores ===
 .DS_Store
+.idea/
+.vscode/
+*.log
+*.iml
+*.iws
+*.ipr
+
+# === Frontend (React) ===
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+coverage/
+
+# Production Build
+frontend/build/
+
+# Local Environment
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# NPM/Yarn Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Backend (Java) ===
+HELP.md
+target/
+build/
+*.class
+
+# Maven Wrapper
+!.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot
+backend/main/resources/application.properties
+
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Spring Tool Suite (STS)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+#application properties
+bin/src/main/resources/application.properties
