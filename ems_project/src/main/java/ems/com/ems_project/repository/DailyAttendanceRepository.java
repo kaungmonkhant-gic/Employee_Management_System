@@ -26,6 +26,10 @@ public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, I
 
     @Query("SELECT COALESCE(SUM(e.lateMin), 0) FROM EmpDailyAtts e WHERE e.employee.id = :employeeId")
     Integer findTotalLateMinutesByEmployeeId(String employeeId);
+
+    @Query("SELECT COALESCE(SUM(e.lateMin), 0) FROM EmpDailyAtts e WHERE e.employee.id = :employeeId AND e.date BETWEEN :startDate AND :endDate")
+    Integer findTotalLateMinutesByEmployeeIdAndDateRange(String employeeId, LocalDate startDate, LocalDate endDate);
+
 //    @Query("SELECT e.id, SUM(a.lateMinutes) FROM EmpDailyAtts a JOIN a.employee e WHERE e.id IN :employeeIds GROUP BY e.id")
 //    Map<String, Integer> findLateMinutesByEmployeeIds(@Param("employeeIds") List<String> employeeIds);
 
