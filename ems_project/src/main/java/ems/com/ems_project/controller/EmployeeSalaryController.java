@@ -2,7 +2,7 @@ package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.EmployeeLeaveDTO;
 import ems.com.ems_project.dto.EmployeeSalaryDTO;
-import ems.com.ems_project.model.EmployeeSalary;
+import ems.com.ems_project.dto.SalaryDTO;
 import ems.com.ems_project.service.EmployeeSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +21,12 @@ public class EmployeeSalaryController {
     @GetMapping("/all")
     public List<EmployeeSalaryDTO> getAllSalaries() {
         return salaryService.getAllSalaries();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SalaryDTO>> getAllEmployeeSalaries() {
+        List<SalaryDTO> salaryList = salaryService.getAllEmployeeSalaryDetails();
+        return ResponseEntity.ok(salaryList);
     }
 
 }

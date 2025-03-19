@@ -1,7 +1,8 @@
 package ems.com.ems_project.dto;
-
-import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.PositionSalary;
+import ems.com.ems_project.model.EmpDailyAtts;
+import ems.com.ems_project.model.EmployeeLeave;
+import ems.com.ems_project.model.EmployeeSalary;
+import ems.com.ems_project.model.Ots;
 import lombok.Data;
 
 @Data
@@ -11,20 +12,44 @@ public class SalaryDTO {
     private Double basicSalary;
     private Double houseAllowance;
     private Double transportation;
-    private Integer lateMinutes;  // From Employee Daily Attendance
-    private Double unpaidLeave;  // From Employee Leave
-    private Double totalSalary;  // You can remove this if you don't want it
+    private Integer lateMinutes;
+    private Integer otTime;// From Employee Daily Attendance
+    private Double unpaidLeave;  // From Employee Leave/
 
-    public SalaryDTO(Employee employee, PositionSalary positionSalary, Integer lateMinutes, Double unpaidLeave) {
-        this.employeeId = employee.getId();
-        this.employeeName = employee.getName();
-        this.basicSalary = positionSalary.getBasicSalary();
-        this.houseAllowance = positionSalary.getHouseAllowance();
-        this.transportation = positionSalary.getTransportation();
-        this.lateMinutes = lateMinutes;
-        this.unpaidLeave = unpaidLeave;
+    public SalaryDTO(EmployeeSalary employeeSalary,String employeeName, Integer lateMinutes,  Integer otTime, Double unpaidLeave) {
+        this.employeeId = employeeSalary.getEmployee().getId();
+        this.employeeName = employeeName;
+        this.basicSalary = employeeSalary.getPositionSalary().getBasicSalary();
+        this.houseAllowance = employeeSalary.getPositionSalary().getHouseAllowance();
+        this.transportation = employeeSalary.getPositionSalary().getTransportation();
+        this.lateMinutes = (lateMinutes != null) ? lateMinutes : 0;  // default value if null
+        this.otTime = (otTime != null) ? otTime : 0;  // default value if null
+        this.unpaidLeave = (unpaidLeave != null) ? unpaidLeave : 0.0;
         // totalSalary can be removed if no calculation is needed
     }
+
+//    @Service
+//    public class SalaryService {
+//
+//        @Autowired
+//        private SalaryRepository salaryRepository;
+//
+//        public List<EmployeeSalaryResponse> getEmployeeSalaries() {
+//            List<Object[]> results = salaryRepository.getEmployeeSalaryDetails();
+//
+//            return results.stream().map(result -> new EmployeeSalaryResponse(
+//                    (String) result[0],  // employee_id
+//                    (String) result[1],  // employee_name
+//                    (String) result[2],  // total_ot_time
+//                    ((Number) result[3]).intValue(), // total_late_min
+//                    ((Number) result[4]).intValue(), // total_unpaid_leave
+//                    ((Number) result[5]).doubleValue(), // basic_salary
+//                    ((Number) result[6]).doubleValue(), // house_allowance
+//                    ((Number) result[7]).doubleValue()  // transportation
+//            )).collect(Collectors.toList());
+//        }
+//    }
+
 
     public String getEmployeeId() {
         return employeeId;
@@ -82,12 +107,12 @@ public class SalaryDTO {
         this.unpaidLeave = unpaidLeave;
     }
 
-    public Double getTotalSalary() {
-        return totalSalary;
+    public Integer getOtTime() {
+        return otTime;
     }
 
-    public void setTotalSalary(Double totalSalary) {
-        this.totalSalary = totalSalary;
+    public void setOtTime(Integer otTime) {
+        this.otTime = otTime;
     }
 }
 

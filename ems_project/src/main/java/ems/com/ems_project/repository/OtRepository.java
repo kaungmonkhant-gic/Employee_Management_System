@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -27,6 +28,10 @@ public interface OtRepository extends JpaRepository<Ots, String> {
 
 
     List<Ots> findByManagerId(String id);
+
+
+    @Query("SELECT COALESCE(SUM(e.otTime), 0) FROM Ots e WHERE e.employee.id = :employeeId")
+    Integer findTotalOTTimeByEmployeeId(String employeeId);
 
 }
 

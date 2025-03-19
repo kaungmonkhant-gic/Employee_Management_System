@@ -55,47 +55,6 @@ public class DailyAttendanceServiceImp implements AttendanceService {
     @Autowired
     private DateService dateService;
 
-//    public List<AttendanceDTO> getAttendanceRecordRoleBased(String token) {
-//
-//        // Get active employees based on role
-//        List<EmployeeDTO> activeEmployees = employeeService.getActiveEmployeesBasedOnRole(token);
-//
-//        // Extract active employee IDs
-//        List<String> activeEmployeeIds = activeEmployees.stream()
-//                .map(EmployeeDTO::getId)
-//                .collect(Collectors.toList());
-//
-//        List<EmpDailyAtts> attendanceRecords = new ArrayList<>();
-//
-//        // Extract user details from the token
-//        String email = jwtutils.extractUsername(token);
-//        String roleName = jwtutils.extractRole(token);
-//
-//        // Get the logged-in employee details
-//        Employee manager = employeeRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        if ("Admin".equals(roleName)) {
-//            // Admin: Get all attendance records for active employees
-//            attendanceRecords = attendanceRepository.findAll().stream()
-//                    .filter(attendance -> activeEmployeeIds.contains(attendance.getEmployee().getId()))
-//                    .collect(Collectors.toList());
-//
-//        } else if ("Manager".equals(roleName)) {
-//            // Manager: Get attendance records for active employees managed by the logged-in manager
-//            attendanceRecords = attendanceRepository.findByManagerId(manager.getId()).stream()
-//                    .filter(attendance -> activeEmployeeIds.contains(attendance.getEmployee().getId()))
-//                    .collect(Collectors.toList());
-//        } else {
-//            return Collections.emptyList(); // Other roles don't have access
-//        }
-//
-//        // Convert to DTO and return
-//        return attendanceRecords.stream()
-//                .map(attendance -> new AttendanceDTO(attendance, attendance.getEmployee(), attendance.getManager()))
-//                .collect(Collectors.toList());
-//    }
-
     public List<AttendanceDTO> getAttendanceRecordRoleBased(String token) {
 
         // Get active employees based on role

@@ -22,7 +22,7 @@ public class OtDTO {
     private LocalTime startTime;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime endTime;
-    private String otTime;
+    private Integer otTime;
     private String reason;
     private RequestStatus otStatus = RequestStatus.PENDING;
     private String managerName;
@@ -82,11 +82,11 @@ public class OtDTO {
         this.endTime = endTime;
     }
 
-    public String getOtTime() {
+    public Integer getOtTime() {
         return otTime;
     }
 
-    public void setOtTime(String otTime) {
+    public void setOtTime(Integer otTime) {
         this.otTime = otTime;
     }
 

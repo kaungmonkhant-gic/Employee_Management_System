@@ -48,9 +48,6 @@ public class EmpDailyAtts {
     @Column(name = "status")
     private AttendanceStatus status = AttendanceStatus.ABSENT;
 
-    @Column(name = "is_Ot")
-    private Boolean isOT;
-
     @Column(name = "leave_early")
     private Boolean leaveEarly;
 
@@ -69,7 +66,7 @@ public class EmpDailyAtts {
     private Ots overtime;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id",nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @JsonIgnore
     private Employee employee;
 
@@ -120,15 +117,6 @@ public class EmpDailyAtts {
         this.lunchBreak = lunchBreak;
     }
 
-    public Integer getLateMin() {
-        return lateMin;
-    }
-
-    public void setLateMin(Integer lateMin) {
-        this.lateMin = lateMin;
-    }
-
-
     public void setStatus(AttendanceStatus status) {
         this.status = status;
     }
@@ -163,14 +151,6 @@ public class EmpDailyAtts {
 
     public void setLeave(Leave leave) {
         this.leave = leave;
-    }
-
-    public Boolean getOT() {
-        return isOT;
-    }
-
-    public void setOT(Boolean OT) {
-        isOT = OT;
     }
 
     public LocalTime getUpdatedCheckInTime() {
@@ -219,4 +199,11 @@ public class EmpDailyAtts {
         this.requestStatus = requestStatus;
     }
 
+    public Integer getLateMin() {
+        return lateMin;
+    }
+
+    public void setLateMin(Integer lateMin) {
+        this.lateMin = lateMin;
+    }
 }

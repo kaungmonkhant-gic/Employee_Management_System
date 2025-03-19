@@ -13,13 +13,13 @@ public class EmployeeSalary {
     @Column(length = 10, nullable = false, unique = true)
     private String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false, unique = true)
+    @OneToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @JsonIgnore
     private Employee employee;
 
     @ManyToOne
-    @JoinColumn(name = "position_salary_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "position_salary_id", referencedColumnName = "id")
     @JsonIgnore
     private PositionSalary positionSalary;
 
@@ -55,4 +55,5 @@ public class EmployeeSalary {
     public void setPositionSalary(PositionSalary positionSalary) {
         this.positionSalary = positionSalary;
     }
+
 }

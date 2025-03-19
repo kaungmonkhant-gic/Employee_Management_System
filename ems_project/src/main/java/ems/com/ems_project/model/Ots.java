@@ -39,7 +39,7 @@ public class Ots {
     private LocalTime endTime;
 
     @Column(name = "ot_time")
-    private String otTime;
+    private Integer otTime = 0;
 
     @Column(name = "reason")
     private String reason;
@@ -56,8 +56,8 @@ public class Ots {
     @JsonIgnore
     private Employee manager;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @JsonIgnore
     private Employee employee;
 
@@ -97,14 +97,6 @@ public class Ots {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-    }
-
-    public String getOtTime() {
-        return otTime;
-    }
-
-    public void setOtTime(String otTime) {
-        this.otTime = otTime;
     }
 
     public String getReason() {
@@ -153,5 +145,13 @@ public class Ots {
 
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+
+    public Integer getOtTime() {
+        return otTime;
+    }
+
+    public void setOtTime(Integer otTime) {
+        this.otTime = otTime;
     }
 }

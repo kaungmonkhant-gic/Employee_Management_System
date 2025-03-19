@@ -3,11 +3,13 @@ package ems.com.ems_project.repository;
 import ems.com.ems_project.model.EmployeeLeave;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 //import java.util.List;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -22,6 +24,6 @@ public interface EmployeeLeaveRepository extends JpaRepository<EmployeeLeave, St
 
     // Delete all leaves of an employee
     void deleteByEmployeeId(String employeeId);
-
-    Double findUnpaidLeaveByEmployeeId(String employeeId);
+    @Query("SELECT COALESCE(SUM(e.unpaidLeave), 0.0) FROM EmployeeLeave e WHERE e.employee.id = :employeeId")
+    Double findTotalUnpaidLeaveByEmployeeId(String employeeId);
 }

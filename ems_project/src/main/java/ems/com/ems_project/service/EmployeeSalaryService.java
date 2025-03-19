@@ -13,7 +13,7 @@ public interface EmployeeSalaryService {
     String generateEmployeeSalaryId();
     EmployeeSalary createEmployeeSalary(Employee employee);
     EmployeeSalary updateEmployeeSalary(Employee employee);
-    SalaryDTO getEmployeeSalaryDetails(String employeeId);
+    List<SalaryDTO> getAllEmployeeSalaryDetails();
 
 
     //void createEmployeeSalary(Employee savedEmployee, RegisterDTO registerDTO);
