@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
-import { getLeaveBalance, fetchRemainingLeaveDays } from "../Employee/Controller/LeaveRequestController";
 import EmpLeaveRequestController from "../Employee/Controller/LeaveRequestController";
 import EmpLeaveService from "../Employee/Service/LeaveRequestService";
 
@@ -10,7 +9,11 @@ const LeaveForm = ({ }) => {
     leaveType: "",
     startDate: "",  // Empty initially
     endDate: "",
+    leaveDuration:"",
     reason: "",
+    status: "",
+    leaveType: "",
+    
   });
   const [leaveBalance, setLeaveBalance] = useState({
     annualLeave: 0,
@@ -25,6 +28,8 @@ const LeaveForm = ({ }) => {
   const [remainingLeaveDays, setRemainingLeaveDays] = useState(0); // Remaining leave days
   
 
+
+
    // Fetch leave balance when the component mounts
    useEffect(() => {
     const fetchBalance = async () => {
@@ -36,7 +41,7 @@ const LeaveForm = ({ }) => {
 
 
 // Fetch remaining leave days when leave type changes
-useEffect(() => {
+ useEffect(() => {
   if (formData.leaveType) {
     EmpLeaveRequestController.fetchRemainingLeaveDays(formData.leaveType)
       .then(setRemainingLeaveDays)
@@ -45,15 +50,7 @@ useEffect(() => {
 }, [formData.leaveType]);
 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  // Calculate total leave days based on start and end dates
+// Calculate total leave days based on start and end dates
   useEffect(() => {
     if (formData.startDate && formData.endDate) {
       const start = new Date(formData.startDate);
@@ -77,20 +74,44 @@ useEffect(() => {
     if (!formData.leaveType) validationErrors.leaveType = "Leave type is required.";
     if (!formData.startDate) validationErrors.startDate = "Start date is required.";
     if (formData.startDate < today) validationErrors.startDate = "Start date cannot be in the past.";
+    if (!formData.leaveType) validationErrors.leaveType = "Leave type is required.";
     if (!formData.endDate) validationErrors.endDate = "End date is required.";
     if (formData.endDate < formData.startDate) validationErrors.endDate = "End date cannot be earlier than start date.";
     if (!formData.reason) validationErrors.reason = "Please provide a reason.";
 
-    if (Object.keys(validationErrors).length > 0) {
+    if (!formData.startDate) {
+      validationErrors.startDate = "Start date is required.";
+      } else if (formData.startDate < today) {
+      validationErrors.startDate = "Start date cannot be in the past.";
+      }
+  
+  if (!formData.endDate) {
+      validationErrors.endDate = "End date is required.";
+      } else if (formData.endDate < formData.startDate) {
+      validationErrors.endDate = "End date cannot be earlier than start date.";
+      }
+
+    // Validate half-day leave
+    if (formData.leaveDuration === "Morning Half Leave" || formData.leaveDuration === "Evening Half Leave") {
+      formData.totalDays = 0.5;
+      } else {
+      // Calculate total leave days normally
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      const timeDiff = end.getTime() - start.getTime();
+      formData.totalDays = timeDiff / (1000 * 3600 * 24) + 1; // Add 1 to include the start date
+      }
+  
+      if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
-    }
+      }
 
-    if (totalLeaveDays > remainingLeaveDays) {
+      if (totalLeaveDays > remainingLeaveDays) {
       validationErrors.totalLeaveDays = "You do not have enough leave days remaining.";
       setErrors(validationErrors);
       return;
-    }
+      }
 
     // Show confirmation modal before submission
     setModalType("submit");
@@ -98,9 +119,17 @@ useEffect(() => {
 
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   const handleCancel = () => {
     setModalType("cancel");
-    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+    setFormData({ leaveType: "", startDate: "", endDate: "", leaveDuration:"",reason: "" });
     setShowModal(true);
   };
 
@@ -109,6 +138,7 @@ useEffect(() => {
       leaveType: formData.leaveType,
       startDate: formData.startDate,
       endDate: formData.endDate,
+      leaveDuration: formData.leaveDuration,
       totalDays: totalLeaveDays,
       reason: formData.reason,
     };
@@ -118,18 +148,12 @@ useEffect(() => {
       alert("Leave request submitted successfully!");
       console.log("Leave request submitted successfully:", response);
   
-      // Optionally show a success message to the user
-      // alert("Leave request submitted successfully!");
-  
       // Reset form after successful submission
-      setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+      setFormData({ leaveType: "", startDate: "", endDate: "",leaveDuration:"", reason: "" });
       setErrors({});
       setShowModal(false);
     } catch (error) {
       console.error("Error submitting leave request:", error);
-  
-      // Show error message to user
-      // alert("Failed to submit leave request. Please try again.");
     }
   };
 
@@ -144,6 +168,7 @@ useEffect(() => {
       <div className="row justify-content-center">
         <div className="card p-2">
           <form onSubmit={handleSubmit}>
+
             {/* Leave Type */}
             <div className="row align-items-center mb-3">
               <div className="col-4 text-muted">Leave Type:</div>
@@ -161,6 +186,46 @@ useEffect(() => {
                   <option value="Annual Leave">Annual Leave</option>
                 </select>
                 {errors.leaveType && <small className="text-danger">{errors.leaveType}</small>}
+              </div>
+            </div>
+
+             {/* Leave Duration (Full/Half Leave) */}
+             <div className="row align-items-center mb-3">
+              <div className="col-4 text-muted">Leave Duration:</div>
+              <div className="col-8">
+                <div className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="leaveDuration"
+                    value="Full Leave"
+                    checked={formData.leaveDuration === "Full Leave"}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label">Full Leave</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="leaveDuration"
+                    value="Half Leave"
+                    checked={formData.leaveDuration === "Morning Half Leave"}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label">Morning Half Leave</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="leaveDuration"
+                    value="Half Leave"
+                    checked={formData.leaveDuration === "Evening Half Leave"}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label">Evening Half Leave</label>
+                </div>
               </div>
             </div>
 
@@ -294,7 +359,7 @@ useEffect(() => {
                 <Button
                   variant="danger"
                   onClick={() => {
-                    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+                    setFormData({ leaveType: "", startDate: "", endDate: "",leaveDuration:"", reason: "" });
                     setShowModal(false);
                   }}
                   disabled={!formData.leaveType || !formData.startDate || !formData.endDate}

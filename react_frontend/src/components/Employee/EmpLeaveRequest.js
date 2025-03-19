@@ -47,7 +47,7 @@ function LeaveRequests() {
     { field: "endDate", headerName: "End Date", minWidth: 120, flex: 1, cellClassName: "text-center" },
     { field: "totalDays", headerName: "Total Days", minWidth: 120, flex: 1, cellClassName: "text-center" },
     { field: "reason", headerName: "Reason", minWidth: 200, flex: 2, cellClassName: "text-center" },
-    { field: "status", headerName: "Status", minWidth: 120, flex: 1, cellClassName: "text-center" },
+    { field: "leaveDuration", headerName: "Leave Duration", minWidth: 200, flex: 1, cellClassName: "text-center" },
     { field: "employeeName", headerName: "Employee Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
     { field: "managerName", headerName: "Manager Name", minWidth: 120, flex: 1, cellClassName: "text-center" },
     {

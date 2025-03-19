@@ -35,9 +35,17 @@ const LeaveRequests = () => {
   }, []);
 
   useEffect(() => {
-    setLeaveRecords();
-  }, []);
+    const fetchLeaveRecords = async () => {
+      try {
+        const response = await leaveController.fetchLeaveRecords();
+        setLeaveRecords(response || []);
+      } catch (error) {
+        console.error("Error fetching leave records:", error);
+      }
+    };
 
+    fetchLeaveRecords();
+  }, []);
 
 
   const columns = [
