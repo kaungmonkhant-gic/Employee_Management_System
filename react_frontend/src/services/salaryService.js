@@ -14,5 +14,22 @@ const salaryService = {
       
     },
 
+
+  calculateSalary: async (salaryData) => {
+    try {
+      console.log("Sending salary calculation request with data:", salaryData);
+
+      // Sending a POST request with employee salary calculation data
+      const response = await apiClient.post("/salary/calculate", salaryData);
+
+      console.log("Salary calculation response:", response.data);
+      return response.data; // Returns updated salary data from backend
+    } catch (error) {
+      console.error("Error in salary calculation service:", error);
+      throw error; // Throw error for handling in the controller
+    }
+  },
 };
+
 export default salaryService;
+

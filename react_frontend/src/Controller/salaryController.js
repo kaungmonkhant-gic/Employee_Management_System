@@ -13,6 +13,17 @@ const salaryController = {
       return [];
     }
   },
+
+  calculateSalary: async (salaryData) => {
+    try {
+      console.log("Processing salary calculation in controller:", salaryData);
+      const calculatedSalaries = await salaryService.calculateSalary(salaryData);
+      return calculatedSalaries;
+    } catch (error) {
+      console.error("Error in salary calculation controller:", error);
+      throw error;
+    }
+  },
 };
 
 export default salaryController;
