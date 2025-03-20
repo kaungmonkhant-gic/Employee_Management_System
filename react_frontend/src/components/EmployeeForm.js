@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import EmployeeModel from "../models/EmployeeModel.js";
 import nrcData from "../Data/nrc.json";
+//import FormControlField from "./common/FormControlField";
 import employeeController from "../Controller/employeeController";
+
 import { Container, Card, Form, Row, Col, Button, InputGroup, FormControl } from 'react-bootstrap';
 function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
 
@@ -14,70 +17,43 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
   const [selectedPositionId, setSelectedPositionId] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState("");
 
-  const [employeeData, setEmployeeData] = useState({
-    name: "",
-    email: "",
-    positionId: "",
-    departmentId: "",
-    roleId: "",
-    id: "",
-    dob: "",
-    gender: "",
-    maritalStatus: "",
-    nrcRegion: "",
-    nrcTownship: "",
-    nrcType: "",
-    nrcDetails: "",
-    phone: "",
-    address: "",
-    education: "",
-    workExp: "",
-    joinDate: "",
-    resignDate: "",
-    nrc: "",
-    annualLeave: "",
-    medicalLeave: "",
-    casualLeave: "",
-    totalLeave: "",
-  });
-  useEffect(() => {
-    if (editingEmployee) {
-      setEmployeeData({
-        name: editingEmployee.name || "",
-        email: editingEmployee.email || "",
-        positionId: editingEmployee.positionId || "",
-        departmentId: editingEmployee.departmentId || "",
-        roleId: editingEmployee.roleId || "",
-        id: editingEmployee.id || "",
-        dob: editingEmployee.dob || "",
-        gender: editingEmployee.gender || "",
-        maritalStatus: editingEmployee.maritalStatus || "",
-        nrcRegion: editingEmployee.nrcRegion || "",
-        nrcTownship: editingEmployee.nrcTownship || "",
-        nrcType: editingEmployee.nrcType || "",
-        nrcDetails: editingEmployee.nrcDetails || "",
-        phone: editingEmployee.phone || "",
-        address: editingEmployee.address || "",
-        education: editingEmployee.education || "",
-        workExp: editingEmployee.workExp || "",
-        joinDate: editingEmployee.joinDate || "",
-        resignDate: editingEmployee.resignDate || "",
-        nrc: editingEmployee.nrc || "",
-        annualLeave: editingEmployee.annualLeave || "",
-        medicalLeave: editingEmployee.medicalLeave || "",
-        casualLeave: editingEmployee.casualLeave || "",
-        totalLeave: editingEmployee.totalLeave || "",
-        password: editingEmployee.password || "",
-      });
-  
-      // Also update the selected values for dropdowns
-      setSelectedDepartmentId(editingEmployee.departmentId || "");
-      setSelectedPositionId(editingEmployee.positionId || "");
-      setSelectedRoleId(editingEmployee.roleId || "");
-    }
-  }, [editingEmployee]);
+  const [employeeData, setEmployeeData] = useState(EmployeeModel);
+
+  const FormControlField = ({ label, name, type = "text", value, onChange, options, placeholder, required = false }, style) => (
+    <Form.Group className="mb-3">
+      <Form.Label className="fw-semibold">{label}</Form.Label>
+      {type === "select" ? (
+        <Form.Control as="select" name={name} value={value} onChange={onChange} className="form-select-lg" required={required} style={style}>
+          <option value="">Select {label}</option>
+          {options && options.map((option, index) => (
+            <option key={index} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Form.Control>
+      ) : (
+        <Form.Control
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="form-control-lg"
+          required={required}
+        />
+      )}
+    </Form.Group>
+  );
   
 
+  useEffect(() => {
+    if (editingEmployee) {
+      setEmployeeData(prevState => ({
+        ...prevState, // Preserve default state structure
+        ...editingEmployee // Override with editingEmployee values
+      }));
+    }
+  }, [editingEmployee]);
 
   useEffect(() => {
     if (editingEmployee) {
@@ -86,110 +62,83 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
   }, [editingEmployee]);
 
   useEffect(() => {
-    const fetchDepartments = async () => {
+    const fetchData = async () => {
       try {
-        const response = await employeeController.fetchDepartments(); //  Wait for the response
-        console.log("Fetched departments:", response); //  Debugging log
+        // Fetch all data in parallel
+        const [departmentsResponse, positionsResponse, rolesResponse] = await Promise.all([
+          employeeController.fetchDepartments(),
+          employeeController.fetchPositions(),
+          employeeController.fetchRoles(),
+        ]);
   
-        if (Array.isArray(response)) {  //  Ensure response itself is an array
-          setDepartments(response); //  Set data correctly
-        } else {
-          console.error("Unexpected response format:", response);
-          setDepartments([]); // Prevent errors
-        }
+        // Ensure responses are arrays before setting state
+        setDepartments(Array.isArray(departmentsResponse) ? departmentsResponse : []);
+        setPositions(Array.isArray(positionsResponse) ? positionsResponse : []);
+        setRoles(Array.isArray(rolesResponse) ? rolesResponse : []);
       } catch (error) {
-        console.error("Error fetching departments:", error);
+        console.error("Error fetching data:", error);
         setDepartments([]);
-      }
-    };
-    fetchDepartments(); //  Call the function
-  }, []);
-
-  useEffect(() => {
-    const fetchPositions = async () => {
-      try {
-        const response = await employeeController.fetchPositions(); // ✅ Wait for the response
-  
-        console.log("Fetched positions:", response); // ✅ Debugging log
-  
-        if (Array.isArray(response)) {  // ✅ Ensure response itself is an array
-          setPositions(response); // ✅ Set data correctly
-        } else {
-          console.error("Unexpected response format:", response);
-          setPositions([]); // Prevent errors
-        }
-      } catch (error) {
-        console.error("Error fetching positions:", error);
         setPositions([]);
-      }
-    };
-  
-    fetchPositions(); // ✅ Call the function
-  }, []);
-
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await employeeController.fetchRoles(); // ✅ Wait for the response
-  
-        console.log("Fetched roles:", response); // ✅ Debugging log
-  
-        if (Array.isArray(response)) {  // ✅ Ensure response itself is an array
-          setRoles(response); // ✅ Set data correctly
-        } else {
-          console.error("Unexpected response format:", response);
-          setRoles([]); // Prevent errors
-        }
-      } catch (error) {
-        console.error("Error fetching roles:", error);
         setRoles([]);
       }
     };
   
-    fetchRoles(); // ✅ Call the function
+    fetchData();
   }, []);
   
-  // Handle department selection change
-  const handleDepartmentChange = (e) => {
-    const selectedId = e.target.value;
-    setSelectedDepartmentId(selectedId);
-    console.log("Selected Department ID:", selectedId);
-    setEmployeeData((employeeData) => ({
-      ...employeeData,
-      departmentId: selectedId,
-      [e.target.name]: e.target.value
-    }));
-  };
- // Handle position selection change
- const handlePositionChange = (e) => {
-  const selectedId = e.target.value;
-  setSelectedPositionId(selectedId);
-  console.log("Selected Position ID:", selectedId);
-  setEmployeeData((employeeData) => ({
-    ...employeeData,
-    positionId: selectedId,
-    [e.target.name]: e.target.value
-  }));
-};
+  // Set selected department id when department name changes
+  useEffect(() => {
+    if (employeeData.departmentName) {
+      const dept = departments.find(dept => dept.departmentName === employeeData.departmentName);
+      if (dept) {
+        setSelectedDepartmentId(dept.id);
+        console.log("Selected dept ID:", dept.id);
+      }
+      console.log("Selected Department ID:", selectedDepartmentId);
+    }
+  }, [departments, employeeData.departmentName]);
 
- // Handle role selection change
- const handleRoleChange = (e) => {
-  const selectedId = e.target.value;
-  setSelectedRoleId(selectedId);
-  console.log("Selected Role ID:", selectedId);
-  setEmployeeData((employeeData) => ({
-    ...employeeData,
-    roleId: selectedId,
-    [e.target.name]: e.target.value
-  }));
-};
-  const handleChange = (e) => {
+  useEffect(() => {
+    console.log("Updated Selected Department ID:", selectedDepartmentId);
+  }, [selectedDepartmentId]);
+
+// Generic handle change function
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  
+  // Check for specific fields (department, position, role)
+  if (name === "departmentId") {
+    setSelectedDepartmentId(value);
+    console.log("Selected Department ID:", value);
+  } else if (name === "positionId") {
+    setSelectedPositionId(value);
+    console.log("Selected Position ID:", value);
+  } else if (name === "roleId") {
+    setSelectedRoleId(value);
+    console.log("Selected Role ID:", value);
+  }
+
+  // Update NRC field dynamically
+  if (["nrcRegion", "nrcTownship", "nrcType", "nrcDetails"].includes(name)) {
     setEmployeeData((employeeData) => ({
       ...employeeData,
       nrc: `${employeeData.nrcRegion || ""}${employeeData.nrcTownship || ""}${employeeData.nrcType || ""}${employeeData.nrcDetails || ""}`,
       [e.target.name]: e.target.value
     }));
-  };
+  } else {
+    // Update other fields
+    setEmployeeData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
+
+};
+
+useEffect(() => {
+  console.log("Updated Employee Data after NRC update:", employeeData);
+}, [employeeData]); 
+
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
@@ -237,7 +186,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
               <h5 className="fw-bold text-secondary">Personal Information</h5>
               <hr />
               
-              <Form.Group className="mb-3">
+              {/* <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Full Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -247,7 +196,15 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                   required
                   className="form-control-lg"
                 />
-              </Form.Group>
+              </Form.Group> */}
+
+              <FormControlField
+                label="Full Name"
+                name="name"
+                value={employeeData.name}
+                onChange={handleChange}
+                required
+              />
   
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Email Address</Form.Label>
@@ -303,7 +260,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">NRC</Form.Label>
                 <div className="d-flex gap-2">
-                  <Form.Control
+                  {/* <Form.Control
                     as="select"
                     name="nrcRegion"
                     value={employeeData.nrcRegion}
@@ -316,9 +273,20 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                     {[...new Set(nrcData.data.map(item => item.nrc_code))].map((code, index) => (
                       <option key={index} value={code}>{code}</option>
                     ))}
-                  </Form.Control>
+                  </Form.Control> */}
+
+                  <FormControlField
+                    style={{ flex: 1 }}
+                    label="Region"
+                    name="nrcRegion"
+                    type="select"
+                    value={employeeData.nrcRegion}
+                    onChange={handleChange}
+                    options={[...new Set(nrcData.data.map(item => item.nrc_code))].map(code => ({ value: code, label: code }))}
+                  />
+
                   
-                  <Form.Control
+                  {/* <Form.Control
                     as="select"
                     name="nrcTownship"
                     value={employeeData.nrcTownship}
@@ -335,7 +303,19 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                           {item.name_en} ({item.name_mm})
                         </option>
                       ))}
-                  </Form.Control>
+                  </Form.Control> */}
+
+                  <FormControlField
+                    style={{ flex: 2 }}
+                    label="Township"
+                    name="nrcTownship"
+                    type="select"
+                    value={employeeData.nrcRegion}
+                    onChange={handleChange}
+                    options={[...new Set(nrcData.data.filter(item => item.nrc_code === employeeData.nrcRegion))].map((item, index) => (
+                      { value: item.name_mm, label: `${item.name_en} (${item.name_mm})` }
+                    ))}
+                  />
                   
                   <Form.Control
                     as="select"
@@ -415,8 +395,9 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                 <Form.Label className="fw-semibold">Position</Form.Label>
                 <Form.Control
                   as="select"
+                  name="positionId"
                   value={selectedPositionId}
-                  onChange={handlePositionChange}
+                  onChange={handleChange}
                   className="form-select-lg"
                   required
                 >
@@ -435,8 +416,9 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                 <Form.Label className="fw-semibold">Department</Form.Label>
                 <Form.Control
                   as="select"
+                  name="departmentId"
                   value={selectedDepartmentId}
-                  onChange={handleDepartmentChange}
+                  onChange={handleChange}
                   className="form-select-lg"
                   required
                 >
@@ -455,8 +437,9 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
                 <Form.Label className="fw-semibold">Role</Form.Label>
                 <Form.Control
                   as="select"
+                  name="roleId"
                   value={selectedRoleId}
-                  onChange={handleRoleChange}
+                  onChange={handleChange}
                   className="form-select-lg"
                   required
                 >
