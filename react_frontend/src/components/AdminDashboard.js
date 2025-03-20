@@ -166,14 +166,29 @@ function AdminDashboard() {
           <i className="bi bi-person-circle"></i>
 
 Profile</Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
-          <i className="bi bi-bank"></i>
-Payroll</Link>
-          <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
-          <i className="bi bi-bar-chart-line"></i>
-Salary History</Link>
+          
+          
 <Link to="/admin-dashboard/generate-payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Generate Payroll</Link>
-<Link to="/admin-dashboard/testing" className="nav-link" style={{ color: "#FFFFFF" }}>Testing</Link>
+
+          {/* Salary Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("salary")} style={{ cursor: "pointer" }}>
+          <i className="bi bi-coin" style={{ marginRight: '8px' }}></i>
+
+          Salary
+            <i className={`bi ms-2 ${menuState.salary ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          </div>
+              {menuState.salary && (
+                <div className="ms-3">
+                  <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
+          <i className="bi bi-bar-chart-line"></i>
+              Salary History</Link>
+
+                  <Link to="/admin-dashboard/calculate-salary" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <i className="bi bi-cash-stack" style={{ marginRight: '8px' }}></i>
+                Calculate Salary</Link>
+                </div>
+            )}
+              
           <button onClick={handleLogout} className="btn btn-secondary mt-4">Logout</button>
         </nav>
       </div>
