@@ -26,46 +26,55 @@ const Attendance = () => {
         setCheckInTime(savedCheckInTime);
       }
     }, []);
-  
-    // Handle Check-in
+   // Handle check-in
     const handleCheckIn = async () => {
       if (isCheckingIn) return;
       setIsCheckingIn(true);
-  
+    
       const now = new Date();
       const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
-  
+    
+      // Define official check-in time (e.g., 9:00 AM)
+      const officialCheckInTime = new Date();
+      officialCheckInTime.setHours(9, 0, 0, 0); // 09:00 AM
+    
+      // Calculate late minutes
+      const lateMin = now > officialCheckInTime ? Math.floor((now - officialCheckInTime) / 60000) : 0;
+    
       // Prevent multiple check-ins in a day
       const todayDate = now.toISOString().split("T")[0];
       const hasCheckedInToday = attendanceData.some(
         (entry) => entry.date === todayDate && entry.checkInTime
       );
-  
+    
       if (hasCheckedInToday) {
         alert("You have already checked in today.");
         setIsCheckingIn(false);
         return;
       }
-  
+    
       try {
-        console.log("Attempting Check-in:", { formattedTime });
-  
-        const newAttendance = await EmpAttendanceService.checkIn(formattedTime, 0);
+        console.log("Attempting Check-in:", { formattedTime, lateMin });
+    
+        // Send check-in time & late minutes to backend
+        const newAttendance = await EmpAttendanceService.checkIn(formattedTime, lateMin);
         console.log("Check-in Successful:", newAttendance);
-  
+    
         setAttendanceData((prevData) => [...prevData, newAttendance]);
         setIsCheckedIn(true);
         setCheckInTime(formattedTime);
-  
+    
         // ✅ Save Check-in State to Local Storage
         localStorage.setItem("isCheckedIn", "true");
         localStorage.setItem("checkInTime", formattedTime);
+    
       } catch (error) {
         console.error("Check-in failed:", error.response?.data || error.message);
       } finally {
         setIsCheckingIn(false);
       }
     };
+    
   
     // Handle Check-out
     const handleCheckOut = async () => {
@@ -101,7 +110,7 @@ const Attendance = () => {
     { field: "employeeName", headerName: "Employee Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "checkInTime", headerName: "Check-In Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "checkOutTime", headerName: "Check-Out Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "lateMinutes", headerName: "Late Minutes", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "lateMin", headerName: "Late Minutes", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
