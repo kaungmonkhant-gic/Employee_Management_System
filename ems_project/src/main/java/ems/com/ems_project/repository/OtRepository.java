@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,8 +31,10 @@ public interface OtRepository extends JpaRepository<Ots, String> {
     List<Ots> findByManagerId(String id);
 
 
-    @Query("SELECT COALESCE(SUM(e.otTime), 0) FROM Ots e WHERE e.employee.id = :employeeId")
-    Integer findTotalOTTimeByEmployeeId(String employeeId);
+//    @Query("SELECT COALESCE(SUM(e.otTime), 0) FROM Ots e WHERE e.employee.id = :employeeId")
+//    Integer findTotalOTTimeByEmployeeId(String employeeId);
+    @Query("SELECT COALESCE(SUM(e.otTime), 0) FROM Ots e WHERE e.employee.id = :employeeId AND e.date BETWEEN :startDate AND :endDate")
+    Integer findTotalOTTimeByEmployeeIdAndDateRange(String employeeId, LocalDate startDate, LocalDate endDate);
 
 }
 

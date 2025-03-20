@@ -27,7 +27,7 @@ public class Ots {
 
     @Column(name = "date")
     @JsonFormat(pattern = "MM-dd-yyyy")
-    private Date Date;
+    private Date date;
 
     @Column(name = "start_time")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
@@ -74,13 +74,12 @@ public class Ots {
     }
 
 
-
     public Date getDate() {
-        return Date;
+        return date;
     }
 
     public void setDate(Date date) {
-        Date = date;
+        this.date = date;
     }
 
     public LocalTime getStartTime() {

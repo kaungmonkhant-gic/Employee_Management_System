@@ -16,38 +16,38 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-// ✅ Register required Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function AdminDashboard() {
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ Get current page URL
+  const location = useLocation();
   const [employeeName, setEmployeeName] = useState("");
-  // Separate state for each submenu
+
+ 
   const [menuState, setMenuState] = useState({
     employee: false,
     attendance: false,
     overtime: false,
+    salary: false, // Added for Salary dropdown
   });
-
+  
   const toggleMenu = (menu) => {
     setMenuState((prevState) => ({
       ...prevState,
       [menu]: !prevState[menu], // Toggle only the clicked menu
     }));
   };
-
+  
   useEffect(() => {
-     const storedEmployeeName = localStorage.getItem("employeeName");
-     setEmployeeName(storedEmployeeName || "Admin");
-   }, []);
- 
-   const handleLogout = () => {
-     localStorage.removeItem("employeeName");
-     navigate("/login");
-   };
+    const storedEmployeeName = localStorage.getItem("employeeName");
+    setEmployeeName(storedEmployeeName || "Admin");
+  }, []);
 
-  // ✅ Attendance Summary Chart Data
+  const handleLogout = () => {
+    localStorage.removeItem("employeeName");
+    navigate("/login");
+  };
+
   const attendanceData = {
     labels: ["Present", "Absent", "Late"],
     datasets: [
@@ -72,35 +72,35 @@ function AdminDashboard() {
         const departments = await employeeController.fetchDepartmentCount();
         const managers = await employeeController.fetchManagerCount();
 
-        // Log the raw responses to verify they're just numbers
-        console.log("Employees:", employees);
-        console.log("Departments:", departments);
-        console.log("Managers:", managers);
-
-        // Directly set the values since the response is just a number
         setTotalEmployees(employees || 0);
-        setTotalDepartments(departments || 0);  // Just the number
-        setTotalManagers(managers || 0);        // Just the number
+        setTotalDepartments(departments || 0);
+        setTotalManagers(managers || 0);
       } catch (error) {
         console.error("Failed to fetch counts:", error);
       }
     };
 
     loadCounts();
-
-    // Retrieve employeeName from localStorage when the component mounts
-    const storedEmployeeName = localStorage.getItem("employeeName");
-    if (storedEmployeeName) {
-      setEmployeeName(storedEmployeeName);
-    }
-  }, []); // Empty dependency array ensures this effect runs only once after the initial render
+  }, []);
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh" }}>
+    <div className="d-flex">
       {/* Sidebar */}
-      <div className="d-flex flex-column p-3" style={{ width: "250px", backgroundColor: "#2980B9", color: "#FFFFFF" }}>
+      <div
+        className="d-flex flex-column p-3"
+        style={{
+          width: "250px",
+          backgroundColor: "#2980B9",
+          color: "#FFFFFF",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          overflowY: "auto",
+        }}
+      >
         <h2 className="text-center mb-4">Admin Dashboard</h2>
-        <nav className="nav flex-column">
+      <nav className="nav flex-column">
           <Link to="/admin-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>
           <i className="bi bi-house-door"></i> Dashboard</Link>
           {/* Employee Dropdown */}
@@ -160,25 +160,49 @@ function AdminDashboard() {
               
           <Link to="/admin-dashboard/admin-Leave" className="nav-link" style={{ color: "#FFFFFF" }}>
           <i className="bi bi-calendar-x"></i>
-
           Leave</Link>
+
           <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>
           <i className="bi bi-person-circle"></i>
+          Profile</Link>
+          
+          <Link to="/admin-dashboard/generate-payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
+          Generate Payroll</Link>
 
-Profile</Link>
-          <Link to="/admin-dashboard/payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
-          <i className="bi bi-bank"></i>
-Payroll</Link>
-          <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
-          <i className="bi bi-bar-chart-line"></i>
-Salary History</Link>
-<Link to="/admin-dashboard/generate-payroll" className="nav-link" style={{ color: "#FFFFFF" }}>Generate Payroll</Link>
-<Link to="/admin-dashboard/testing" className="nav-link" style={{ color: "#FFFFFF" }}>Testing</Link>
+          {/* Salary Dropdown */}
+          <div className="nav-link text-light" onClick={() => toggleMenu("salary")} style={{ cursor: "pointer" }}>
+          <i className="bi bi-coin" style={{ marginRight: '8px' }}></i>
+          Salary
+            <i className={`bi ms-2 ${menuState.salary ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          </div>
+              {menuState.salary && (
+                <div className="ms-3">
+
+                  <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
+                <i className="bi bi-bar-chart-line"></i>
+              Salary History</Link>
+
+                  <Link to="/admin-dashboard/calculate-salary" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <i className="bi bi-cash-stack" style={{ marginRight: '8px' }}></i>
+                Calculate Salary</Link>
+
+                </div>
+          )}
+              
           <button onClick={handleLogout} className="btn btn-secondary mt-4">Logout</button>
         </nav>
       </div>
 
-      <div className="flex-grow-1 p-4" style={{ backgroundColor: "#f8f9fa" }}>
+      {/* Main Content */}
+      <div
+        className="flex-grow-1 p-4"
+        style={{
+          backgroundColor: "#f8f9fa",
+          marginLeft: "250px",
+          width: "calc(100% - 250px)",
+          minHeight: "100vh",
+        }}
+      >
         {/* Header */}
         <header
           className="d-flex justify-content-between align-items-center px-3 py-2 rounded shadow-sm mb-3"
@@ -201,7 +225,7 @@ Salary History</Link>
             </div>
             <div>
               <h5 className="mb-0" style={{ fontSize: "1.2rem", fontWeight: "600", color: "white" }}>
-              <i className="bi bi-person-check"></i>  {/* Admin */} {employeeName}
+                <i className="bi bi-person-check"></i> {employeeName}
               </h5>
               <p className="mb-0" style={{ fontSize: "0.9rem", color: "#d1e8ff" }}>
                 Your dashboard overview
@@ -214,79 +238,38 @@ Salary History</Link>
           </button>
         </header>
 
-        {/* ✅ Show Dashboard Content ONLY on /admin-dashboard */}
+        {/* Dashboard Content */}
         {location.pathname === "/admin-dashboard" && (
           <>
-            {/* Admin Stats Section */}
-            
             <div className="row my-4">
-            
-        <div className="col-md-4">
-          <div className="card shadow-sm p-3 text-center">
-            <h5>👥 Total Employees</h5>
-            <h3>{totalEmployees !== undefined ? totalEmployees : "Loading..."}</h3>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card shadow-sm p-3 text-center">
-            <h5>🏢 Total Departments</h5>
-            <h3>{totalDepartments !== undefined ? totalDepartments : "Loading..."}</h3>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card shadow-sm p-3 text-center">
-            <h5>👨‍💼 Total Managers</h5>
-            <h3>{totalManagers !== undefined ? totalManagers : "Loading..."}</h3>
-          </div>
-        </div>
-      </div>
-
-            {/* Attendance Summary (Chart) */}
-            <div className="row my-4">
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5 className="text-center">📊 Attendance Overview</h5>
-                  <Bar data={attendanceData} />
+              <div className="col-md-4">
+                <div className="card shadow-sm p-3 text-center">
+                  <h5>👥 Total Employees</h5>
+                  <h3>{totalEmployees}</h3>
                 </div>
               </div>
-
-              {/* Recent Activities */}
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>🔔 Recent Activities</h5>
-                  <ul>
-                    <li>✔ Manager A approved a leave request</li>
-                    <li>🔧 Admin updated employee details</li>
-                    <li>📢 New employee registered in HR department</li>
-                  </ul>
+              <div className="col-md-4">
+                <div className="card shadow-sm p-3 text-center">
+                  <h5>🏢 Total Departments</h5>
+                  <h3>{totalDepartments}</h3>
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="card shadow-sm p-3 text-center">
+                  <h5>👨‍💼 Total Managers</h5>
+                  <h3>{totalManagers}</h3>
                 </div>
               </div>
             </div>
 
-            {/* Upcoming Birthdays */}
-            <div className="row my-4">
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>🎂 Upcoming Birthdays</h5>
-                  <ul>
-                    <li>🎉 John Doe - March 5</li>
-                    <li>🎈 Jane Smith - March 10</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Placeholder for Future Features */}
-              <div className="col-md-6">
-                <div className="card shadow-sm p-3">
-                  <h5>🚀 Future Dashboard Insights</h5>
-                  <p>More analytics & reports coming soon!</p>
-                </div>
-              </div>
+            {/* Attendance Chart */}
+            <div className="card shadow-sm p-3">
+              <h5 className="text-center">📊 Attendance Overview</h5>
+              <Bar data={attendanceData} />
             </div>
           </>
         )}
 
-        {/* Show the requested page */}
         <Outlet />
       </div>
     </div>

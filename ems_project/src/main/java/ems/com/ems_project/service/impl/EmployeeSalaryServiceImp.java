@@ -1,5 +1,6 @@
 package ems.com.ems_project.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,41 +105,51 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
 
         return employeeSalaryRepository.save(employeeSalary);
     }
-//    public List<SalaryDTO> getAllEmployeeSalaryDetails() {
-//        // Fetch all salary records
-//        List<EmployeeSalary> allSalaries = employeeSalaryRepository.findAll();
+//public List<SalaryDTO> getAllEmployeeSalaryDetails(LocalDate date) {
+//    List<EmployeeSalary> employeeSalaries = employeeSalaryRepository.findAll();
 //
-//        // Collect all employee IDs to batch-fetch data
-//        List<String> allEmployeeIds = allSalaries.stream()
-//                .map(employeeSalary -> employeeSalary.getEmployee().getId())
-//                .collect(Collectors.toList());
+//    // Use the date passed from the front-end to calculate the date range
+//    // Calculate the start date (25th of the previous month)
+//    LocalDate startDate = date.minusMonths(1).withDayOfMonth(25);
 //
-//        // Fetch OT time, late minutes, and unpaid leave in bulk
-//        Map<String, String> otTimeMap = otRepository.findTotalOTTimeByEmployeeId(employeeId);
-//        Map<String, Integer> lateMinutesMap = attendanceRepository.findTotalLateMinutesByEmployeeId(employeeId);
-//        Map<String, Double> unpaidLeaveMap = employeeLeaveRepository.findTotalUnpaidLeaveByEmployeeId(employeeId);
+//    // Calculate the end date (26th of the current month)
+//    LocalDate endDate = date.withDayOfMonth(26);
 //
-//        // Map EmployeeSalary to SalaryDTO, incorporating batch-fetched data
-//        return allSalaries.stream().map(employeeSalary -> {
+//    return employeeSalaries.stream().map(employeeSalary -> {
+//        try {
+//            if (employeeSalary == null || employeeSalary.getEmployee() == null || employeeSalary.getPositionSalary() == null) {
+//                return null; // Skip invalid records
+//            }
+//
 //            String employeeId = employeeSalary.getEmployee().getId();
+//            String employeeName = employeeSalary.getEmployee().getName();
 //
-//            // Retrieve pre-fetched values
-//            String otTime = otTimeMap.getOrDefault(employeeId, "0");
-//            Integer lateMinutes = lateMinutesMap.getOrDefault(employeeId, 0);
-//            Double unpaidLeave = unpaidLeaveMap.getOrDefault(employeeId, 0.0);
+//            // Fetch related records safely, with date range for late minutes
+//            Integer lateMinutes = attendanceRepository.findTotalLateMinutesByEmployeeIdAndDateRange(employeeId, startDate, endDate);
+//            Integer otTime = otRepository.findTotalOTTimeByEmployeeIdAndDateRange(employeeId, startDate, endDate);
+//            Double unpaidLeave = employeeLeaveRepository.findTotalUnpaidLeaveByEmployeeId(employeeId);
 //
-//            // Create SalaryDTO with additional info
-//            return new SalaryDTO(
-//                    employeeSalary,
-//                    employeeSalary.getEmployee().getName(),
-//                    lateMinutes,
-//                    otTime,
-//                    unpaidLeave
-//            );
-//        }).collect(Collectors.toList());
-//    }
-public List<SalaryDTO> getAllEmployeeSalaryDetails() {
+//            // Handle null cases
+//            lateMinutes = (lateMinutes != null) ? lateMinutes : 0;
+//            otTime = (otTime != null) ? otTime : 0;
+//            unpaidLeave = (unpaidLeave != null) ? unpaidLeave : 0.0;
+//
+//            return new SalaryDTO(employeeSalary, employeeName, lateMinutes, otTime, unpaidLeave);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }).filter(dto -> dto != null).collect(Collectors.toList());
+//}
+//
+public List<SalaryDTO> getAllEmployeeSalaryDetails(int year, int month) {
     List<EmployeeSalary> employeeSalaries = employeeSalaryRepository.findAll();
+
+    // Calculate the start date (25th of the previous month)
+    LocalDate startDate = LocalDate.of(year, month, 1).minusMonths(1).withDayOfMonth(25);
+
+    // Calculate the end date (26th of the current month)
+    LocalDate endDate = LocalDate.of(year, month, 1).withDayOfMonth(26);
 
     return employeeSalaries.stream().map(employeeSalary -> {
         try {
@@ -149,9 +160,9 @@ public List<SalaryDTO> getAllEmployeeSalaryDetails() {
             String employeeId = employeeSalary.getEmployee().getId();
             String employeeName = employeeSalary.getEmployee().getName();
 
-            // Fetch related records safely
-            Integer lateMinutes = attendanceRepository.findTotalLateMinutesByEmployeeId(employeeId);
-            Integer otTime = otRepository.findTotalOTTimeByEmployeeId(employeeId);
+            // Fetch related records safely, with date range for late minutes
+            Integer lateMinutes = attendanceRepository.findTotalLateMinutesByEmployeeIdAndDateRange(employeeId, startDate, endDate);
+            Integer otTime = otRepository.findTotalOTTimeByEmployeeIdAndDateRange(employeeId, startDate, endDate);
             Double unpaidLeave = employeeLeaveRepository.findTotalUnpaidLeaveByEmployeeId(employeeId);
 
             // Handle null cases
@@ -167,31 +178,6 @@ public List<SalaryDTO> getAllEmployeeSalaryDetails() {
     }).filter(dto -> dto != null).collect(Collectors.toList());
 }
 
-
-
-//    public SalaryDTO getEmployeeSalaryDetails(String employeeId) {
-//        // Fetch the employee details
-//        Employee employee = employeeRepository.findById(employeeId)
-//                .orElseThrow(() -> new RuntimeException("Employee not found"));
-//
-//        // Fetch the employee salary details
-//        EmployeeSalary employeeSalary = employeeSalaryRepository.findByEmployeeId(employeeId)
-//                .orElseThrow(() -> new RuntimeException("Salary details not found"));
-//
-//        // Fetch the position salary linked to the employee's position
-//        PositionSalary positionSalary = employeeSalary.getPositionSalary();
-//
-//        // Fetch the late minutes from the attendance table (if needed)
-//        Integer lateMinutes = attendanceRepository.findLateMinutesByEmployeeId(employeeId);
-//
-//        String otTime = otRepository.findOtTimeByEmployeeId(employeeId);
-//
-//        // Fetch the unpaid leave from the leave table (if needed)
-//        Double unpaidLeave = employeeLeaveRepository.findUnpaidLeaveByEmployeeId(employeeId);
-//
-//        // Return the DTO with all the necessary data
-//        return new SalaryDTO(employeeSalary, lateMinutes, otTime, unpaidLeave);
-//    }
 
     @Override
     public String generateEmployeeSalaryId() {
