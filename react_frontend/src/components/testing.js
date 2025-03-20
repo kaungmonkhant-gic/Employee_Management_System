@@ -1,107 +1,141 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Select, Form, Row, Col } from "antd";
-import axios from "axios";
+import { Button, Form, Row, Col } from "antd";
 import DataTable from "./common/DataTable";
 import salaryController from "../Controller/salaryController";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-const { Option } = Select;
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:8081/salary";
 
 const EmployeeSalaryCalculation = () => {
-    const [workingDays, setWorkingDays] = useState(0);
-    const [selectedDate, setSelectedDate] = useState(dayjs()); // Default to current month & year
-    const [employees, setEmployees] = useState([]);
-    const [loading, setLoading] = useState(true);
-  
-    const handleDateChange = (date) => {
-      if (date) {
-        setSelectedDate(date);
-      }
-    };
-   
-    const handleAdjustmentChange = (employeeId, value) => {
-        setEmployees((prevEmployees) =>
-          prevEmployees.map((emp) =>
-            emp.employeeId === employeeId ? { ...emp, manualAdjustment: value } : emp
-          )
-        );
-      };
+  const [workingDays, setWorkingDays] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(dayjs()); // Default to current month & year
+  const [employees, setEmployees] = useState([]); // State for employees data
+  const [loading, setLoading] = useState(false); // Loading state
+  const token = localStorage.getItem("token"); // Retrieve token from localStorage
 
+  // Handle date change
+  const handleDateChange = (date) => {
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
+
+  // Fetch salary data when selected month changes
   useEffect(() => {
     const fetchSalaryData = async () => {
+      if (!selectedDate) return;
+
       try {
-        setLoading(true); // Set loading to true before fetching
-        const salaryData = await salaryController.fetchSalaryData();
-        setEmployees(salaryData);
+        setLoading(true);
+        const selectedMonth = selectedDate.month() + 1; // Convert to 1-based index
+        const selectedYear = selectedDate.year();
+
+        const response = await axios.get(`${API_BASE_URL}/data`, {
+          params: { year: selectedYear, month: selectedMonth },
+          headers: { Authorization: `Bearer ${token}` }, // Add token here
+        });
+
+        setEmployees(response.data);
       } catch (error) {
         console.error("Error fetching salary data:", error);
       } finally {
-        setLoading(false); // Set loading to false after fetching
+        setLoading(false);
       }
     };
-  
-    fetchSalaryData();
-  }, []);
-  
 
+    fetchSalaryData();
+  }, [selectedDate, token]);
+
+  // Calculate salary based on working days
   const calculateSalary = async () => {
     if (workingDays <= 0 || !selectedDate) {
       alert("Please enter valid working days and select a month.");
       return;
     }
-  
-    const selectedMonth = selectedDate.format("MMMM"); // Get full month name
-    const selectedYear = selectedDate.year(); // Get year
-  
-    // Prepare data to send to backend
+
+    const selectedMonth = selectedDate.format("MMMM");
+    const selectedYear = selectedDate.year();
+
     const salaryRequestData = employees.map((emp) => ({
       employeeId: emp.employeeId,
       year: selectedYear,
       month: selectedMonth,
-      workingDays: workingDays,
     }));
-  
+
     try {
-      // Call controller function which calls the service
-      const updatedSalaries = await salaryController.calculateSalary(salaryRequestData);
-  
-      // Update employees' salary data in state
+      const updatedSalaries = await salaryController.calculateSalary(
+        salaryRequestData,
+        token // Pass token to salaryController
+      );
+
       setEmployees(updatedSalaries);
     } catch (error) {
       console.error("Error calculating salaries:", error);
       alert("Failed to calculate salaries. Please try again.");
     }
   };
-  
 
-
+  // Columns configuration for DataTable
   const columns = [
-    { field: "employeeId", headerName: "Emp ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "employeeName", headerName: "Emp Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "basicSalary", headerName: "Basic Salary", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "houseAllowance", headerName: "House Allowance", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "transportation", headerName: "Transportation", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "totalOTHours", headerName: "Total OT Hours", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "absent", headerName: "Absent ", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "lateMinutes", headerName: "Late Minutes", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "bonus", headerName: "Bonus", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    {
-      field: "manualAdjustment",
-      headerName: "Manual Adjustment",
-      minWidth: 100,
-      flex: 0.5,
-      renderCell: (params) => (
-        <input
-          type="number"
-          value={params.row.manualAdjustment}
-          onChange={(e) => handleAdjustmentChange(params.row.employeeId, e.target.value)}
-          className="form-control"
-          style={{ width: "100px" }}
-        />
-      ),
-    },
-  ];
+    { field: "employeeId", headerName: "Emp ID", flex: 0.5, cellClassName: "text-center" },
+    { field: "employeeName", headerName: "Emp Name", flex: 0.5, cellClassName: "text-center" },
+    { field: "basicSalary", headerName: "Basic Salary", flex: 0.5, cellClassName: "text-center" },
+    { field: "houseAllowance", headerName: "House Allowance", flex: 0.5, cellClassName: "text-center" },
+    { field: "transportation", headerName: "Transportation", flex: 0.5, cellClassName: "text-center" },
+    { field: "otTime", headerName: "Total OT Hours", flex: 0.5, cellClassName: "text-center" },
+    { field: "lateMinutes", headerName: "Late Minutes", flex: 0.5, cellClassName: "text-center" },
+    { field: "unpaidLeave", headerName: "Unpaid Leaves", flex: 0.5, cellClassName: "text-center" },
+     // Editable Bonus Column
+  {
+    field: "bonus",
+    headerName: "Bonus",
+    flex: 0.5,
+    renderCell: (params) => (
+      <input
+        type="number"
+        value={params.row.bonus || 0}
+        onChange={(e) =>
+          setEmployees((prevEmployees) =>
+            prevEmployees.map((emp) =>
+              emp.employeeId === params.row.employeeId
+                ? { ...emp, bonus: Number(e.target.value) || 0 }
+                : emp
+            )
+          )
+        }
+        className="form-control text-center"
+        style={{ width: "100px" }}
+      />
+    ),
+  },
+
+  // Editable Manual Adjustment Column
+  {
+    field: "manualAdjustment",
+    headerName: "Manual Adjustment",
+    flex: 0.5,
+    renderCell: (params) => (
+      <input
+        type="number"
+        value={params.row.manualAdjustment || 0}
+        onChange={(e) =>
+          setEmployees((prevEmployees) =>
+            prevEmployees.map((emp) =>
+              emp.employeeId === params.row.employeeId
+                ? { ...emp, manualAdjustment: Number(e.target.value) || 0 }
+                : emp
+            )
+          )
+        }
+        className="form-control text-center"
+        style={{ width: "100px" }}
+      />
+    ),
+  },
+];
 
   return (
     <div className="container mt-5 vh-100">
@@ -109,7 +143,7 @@ const EmployeeSalaryCalculation = () => {
 
       <Form layout="vertical">
         <Row gutter={24}>
-          {/* Working Days */}
+          {/* Working Days Input */}
           <Col span={8}>
             <Form.Item label="Working Days">
               <input
@@ -147,20 +181,20 @@ const EmployeeSalaryCalculation = () => {
       </Form>
 
       {loading ? (
-  <p className="text-center">Loading data...</p>
-) : (
-  <DataTable
-    fetchData={() => employees}
-    columns={columns}
-    keyField="employeeId"
-    responsive
-    fixedHeader
-    fixedHeaderScrollHeight="400px"
-    noDataComponent="No employees found"
-    highlightOnHover
-    pagination
-  />
-)}
+        <p className="text-center">Loading data...</p>
+      ) : (
+        <DataTable
+          fetchData={() => employees}
+          columns={columns}
+          keyField="employeeId"
+          responsive
+          fixedHeader
+          fixedHeaderScrollHeight="400px"
+          noDataComponent="No employees found"
+          highlightOnHover
+          pagination
+        />
+      )}
     </div>
   );
 };
