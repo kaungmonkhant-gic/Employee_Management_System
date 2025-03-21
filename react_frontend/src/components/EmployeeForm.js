@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from "react";
 import EmployeeModel from "../models/EmployeeModel.js";
 import nrcData from "../Data/nrc.json";
-//import FormControlField from "./common/FormControlField";
 import employeeController from "../Controller/employeeController";
-
-import { Container, Card, Form, Row, Col, Button, InputGroup, FormControl } from 'react-bootstrap';
+import { Card, Form, Row, Col, Button} from 'react-bootstrap';
 function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
 
   // State to store the list of departments fetched from the API
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
   const [roles, setRoles] = useState([]);
-
   // State to track the selected department ID
   const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
   const [selectedPositionId, setSelectedPositionId] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState("");
-
   const [employeeData, setEmployeeData] = useState(EmployeeModel);
 
   const FormControlField = ({ label, name, type = "text", value, onChange, options, placeholder, required = false }, style) => (
@@ -45,7 +41,6 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
     </Form.Group>
   );
   
-
   useEffect(() => {
     if (editingEmployee) {
       setEmployeeData(prevState => ({
@@ -102,6 +97,59 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
     console.log("Updated Selected Department ID:", selectedDepartmentId);
   }, [selectedDepartmentId]);
 
+  // for position show in editing
+  useEffect(() => {
+    if (employeeData.positionName) {
+      const pos = positions.find(pos => pos.positionName === employeeData.positionName);
+      if (pos) {
+        setSelectedPositionId(pos.id);
+        console.log("Selected pos ID:", pos.id);
+      }
+      console.log("Selected position ID:", selectedPositionId);
+    }
+  }, [positions, employeeData.positionName]);
+
+  useEffect(() => {
+    console.log("Updated Selected Position ID:", selectedPositionId);
+  }, [selectedPositionId]);
+
+  //for role show in editing
+  useEffect(() => {
+    if (employeeData.roleName) {
+      const rol = roles.find(rol => rol.roleName === employeeData.roleName);
+      if (rol) {
+        setSelectedRoleId(rol.id);
+        console.log("Selected role ID:", rol.id);
+      }
+      console.log("Selected role ID:", selectedRoleId);
+    }
+  }, [roles, employeeData.roleName]);
+
+  useEffect(() => {
+    console.log("Updated Selected Role ID:", selectedRoleId);
+  }, [selectedRoleId]);
+
+  //for join Date show in editing
+  useEffect(() => {
+    if (editingEmployee) {
+      const { nrc } = editingEmployee || "";
+      const nrcParts = nrc ? nrc.match(/^(\d+)([A-Z]+)\((\w+)\)(\d+)$/) : [];
+  
+      setEmployeeData(prevState => ({
+        ...prevState,
+        ...editingEmployee,
+        joinDate: editingEmployee.joinDate ? new Date(editingEmployee.joinDate).toISOString().split("T")[0] : "",
+        dob: editingEmployee.dob ? new Date(editingEmployee.dob).toISOString().split("T")[0] : "",
+        nrcRegion: nrcParts?.[1] || "",
+        nrcTownship: nrcParts?.[2] || "",
+        nrcType: nrcParts?.[3] || "",
+        nrcDetails: nrcParts?.[4] || ""
+      }));
+    }
+  }, [editingEmployee]);
+  
+  
+
 // Generic handle change function
 const handleChange = (e) => {
   const { name, value } = e.target;
@@ -132,13 +180,11 @@ const handleChange = (e) => {
       [name]: value,
     }));
   }
-
 };
 
 useEffect(() => {
   console.log("Updated Employee Data after NRC update:", employeeData);
 }, [employeeData]); 
-
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
