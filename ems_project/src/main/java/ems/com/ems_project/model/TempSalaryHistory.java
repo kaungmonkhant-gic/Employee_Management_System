@@ -1,14 +1,9 @@
 package ems.com.ems_project.model;
 
-import java.time.LocalDate;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "temp_salary_history")
 @Data
@@ -18,17 +13,24 @@ public class TempSalaryHistory {
     @Column(length = 10, nullable = false, unique = true)
     private String id;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
+
     @Column(name = "basic_salary", nullable = false)
     private Double basicSalary;
 
     @Column(name = "house_allowance")
     private Double houseAllowance;
-    
-    @Column(name = "late_over")
-    private Double lateOver;
 
-    @Column(name = "leave_over")
-    private Double leaveOver;
+    @Column(name = "transportation")
+    private Double transportation;
+    
+    @Column(name = "late_over_fee")
+    private Double lateOverFee;
+
+    @Column(name = "leave_over_fee")
+    private Double leaveOverFee;
     
     @Column(name = "ot_fee")
     private Double otFee;
@@ -38,9 +40,13 @@ public class TempSalaryHistory {
     
     @Column(name = "bonus")
     private Double bonus;
-    
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+
+    @Column(name = "final_salary")
+    private Double finalSalary;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM")
+    @Column(name = "salary_month", length = 7)
+    private String salaryMonth;
 
     public String getId() {
         return id;
@@ -48,6 +54,14 @@ public class TempSalaryHistory {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public Double getBasicSalary() {
@@ -66,20 +80,20 @@ public class TempSalaryHistory {
         this.houseAllowance = houseAllowance;
     }
 
-    public Double getLateOver() {
-        return lateOver;
+    public Double getLateOverFee() {
+        return lateOverFee;
     }
 
-    public void setLateOver(Double lateOver) {
-        this.lateOver = lateOver;
+    public void setLateOverFee(Double lateOverFee) {
+        this.lateOverFee = lateOverFee;
     }
 
-    public Double getLeaveOver() {
-        return leaveOver;
+    public Double getLeaveOverFee() {
+        return leaveOverFee;
     }
 
-    public void setLeaveOver(Double leaveOver) {
-        this.leaveOver = leaveOver;
+    public void setLeaveOverFee(Double leaveOverFee) {
+        this.leaveOverFee = leaveOverFee;
     }
 
     public Double getOtFee() {
@@ -106,13 +120,28 @@ public class TempSalaryHistory {
         this.bonus = bonus;
     }
 
-    public LocalDate getDate() {
-        return date;
+
+    public Double getFinalSalary() {
+        return finalSalary;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setFinalSalary(Double finalSalary) {
+        this.finalSalary = finalSalary;
     }
 
+    public Double getTransportation() {
+        return transportation;
+    }
 
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
+    }
+
+    public String getSalaryMonth() {
+        return salaryMonth;
+    }
+
+    public void setSalaryMonth(String salaryMonth) {
+        this.salaryMonth = salaryMonth;
+    }
 }

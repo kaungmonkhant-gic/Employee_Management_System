@@ -1,9 +1,10 @@
 package ems.com.ems_project.dto;
-import ems.com.ems_project.model.EmpDailyAtts;
-import ems.com.ems_project.model.EmployeeLeave;
-import ems.com.ems_project.model.EmployeeSalary;
-import ems.com.ems_project.model.Ots;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import ems.com.ems_project.model.*;
 import lombok.Data;
+
+import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Data
 public class SalaryDTO {
@@ -14,9 +15,20 @@ public class SalaryDTO {
     private Double transportation;
     private Integer lateMinutes;
     private Integer otTime;// From Employee Daily Attendance
-    private Double unpaidLeave;  // From Employee Leave/
+    private Double unpaidLeave;
+    private Double lateOverFee;
+    private Double leaveOverFee;
+    private Double otFee;
+    private Double manualAdjustment;
+    private Double bonus;
+    private Double finalSalary;
+    @JsonFormat(pattern = "yyyy-MM")
+    private String salaryMonth; // From Employee Leave/
 
-    public SalaryDTO(EmployeeSalary employeeSalary,String employeeName, Integer lateMinutes,  Integer otTime, Double unpaidLeave) {
+    public SalaryDTO() {
+    }
+
+    public SalaryDTO(EmployeeSalary employeeSalary, String employeeName, Integer lateMinutes, Integer otTime, Double unpaidLeave) {
         this.employeeId = employeeSalary.getEmployee().getId();
         this.employeeName = employeeName;
         this.basicSalary = employeeSalary.getPositionSalary().getBasicSalary();
@@ -28,27 +40,20 @@ public class SalaryDTO {
         // totalSalary can be removed if no calculation is needed
     }
 
-//    @Service
-//    public class SalaryService {
-//
-//        @Autowired
-//        private SalaryRepository salaryRepository;
-//
-//        public List<EmployeeSalaryResponse> getEmployeeSalaries() {
-//            List<Object[]> results = salaryRepository.getEmployeeSalaryDetails();
-//
-//            return results.stream().map(result -> new EmployeeSalaryResponse(
-//                    (String) result[0],  // employee_id
-//                    (String) result[1],  // employee_name
-//                    (String) result[2],  // total_ot_time
-//                    ((Number) result[3]).intValue(), // total_late_min
-//                    ((Number) result[4]).intValue(), // total_unpaid_leave
-//                    ((Number) result[5]).doubleValue(), // basic_salary
-//                    ((Number) result[6]).doubleValue(), // house_allowance
-//                    ((Number) result[7]).doubleValue()  // transportation
-//            )).collect(Collectors.toList());
-//        }
-//    }
+    public SalaryDTO(TempSalaryHistory tempSalaryHistory) {
+        this.employeeId = tempSalaryHistory.getEmployee().getId();
+        this.employeeName = tempSalaryHistory.getEmployee().getName(); // Assuming Employee has `getName()`
+        this.basicSalary = tempSalaryHistory.getBasicSalary();
+        this.houseAllowance = tempSalaryHistory.getHouseAllowance();
+        this.transportation = tempSalaryHistory.getTransportation();
+        this.lateOverFee = tempSalaryHistory.getLateOverFee();
+        this.leaveOverFee = tempSalaryHistory.getLeaveOverFee();
+        this.otFee = tempSalaryHistory.getOtFee();
+        this.manualAdjustment = tempSalaryHistory.getManualAdjustment();
+        this.bonus = tempSalaryHistory.getBonus();
+        this.finalSalary = tempSalaryHistory.getFinalSalary();
+        this.salaryMonth = tempSalaryHistory.getSalaryMonth();
+    }
 
 
     public String getEmployeeId() {
@@ -113,6 +118,62 @@ public class SalaryDTO {
 
     public void setOtTime(Integer otTime) {
         this.otTime = otTime;
+    }
+
+    public Double getLateOverFee() {
+        return lateOverFee;
+    }
+
+    public void setLateOverFee(Double lateOverFee) {
+        this.lateOverFee = lateOverFee;
+    }
+
+    public Double getLeaveOverFee() {
+        return leaveOverFee;
+    }
+
+    public void setLeaveOverFee(Double leaveOverFee) {
+        this.leaveOverFee = leaveOverFee;
+    }
+
+    public Double getOtFee() {
+        return otFee;
+    }
+
+    public void setOtFee(Double otFee) {
+        this.otFee = otFee;
+    }
+
+    public Double getManualAdjustment() {
+        return manualAdjustment;
+    }
+
+    public void setManualAdjustment(Double manualAdjustment) {
+        this.manualAdjustment = manualAdjustment;
+    }
+
+    public Double getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(Double bonus) {
+        this.bonus = bonus;
+    }
+
+    public Double getFinalSalary() {
+        return finalSalary;
+    }
+
+    public void setFinalSalary(Double finalSalary) {
+        this.finalSalary = finalSalary;
+    }
+
+    public String getSalaryMonth() {
+        return salaryMonth;
+    }
+
+    public void setSalaryMonth(String salaryMonth) {
+        this.salaryMonth = salaryMonth;
     }
 }
 

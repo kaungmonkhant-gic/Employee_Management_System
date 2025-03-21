@@ -1,48 +1,47 @@
 package ems.com.ems_project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.SalaryHistory;
 import lombok.Data;
-
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.YearMonth;
 
 @Data
 public class SalaryHistoryDTO {
-
     private String id;
+    private String employeeId;
+    private String employeeName;
     private Double basicSalary;
     private Double houseAllowance;
     private Double transportation;
+    private Double lateOverFee;
+    private Double leaveOverFee;
     private Double otFee;
-    private Double lateOver;
-    private Double leaveOver;
     private Double manualAdjustment;
     private Double bonus;
-    private LocalDate date;
-
-    private String employeeName; // Optional to display employee name in DTO
-    private String managerName;  // Optional to display manager name in DTO
+    private Double finalSalary;
+    @JsonFormat(pattern = "yyyy-MM")
+    private String salaryMonth; // From Employee Leave/// Optional to display manager name in DTO
 
 
     // Constructor to map SalaryHistory entity to SalaryHistoryDTO
-    public SalaryHistoryDTO(SalaryHistory salaryHistory, Employee employee, Employee manager) {
+    public SalaryHistoryDTO(SalaryHistory salaryHistory, Employee employee) {
         if (salaryHistory != null) {
             this.id = salaryHistory.getId();
             this.basicSalary = salaryHistory.getBasicSalary();
             this.houseAllowance = salaryHistory.getHouseAllowance();
             this.transportation = salaryHistory.getTransportation();
             this.otFee = salaryHistory.getOtFee();
-            this.lateOver = salaryHistory.getLateOver();
-            this.leaveOver = salaryHistory.getLeaveOver();
+            this.lateOverFee = salaryHistory.getLateOverFee();
+            this.leaveOverFee= salaryHistory.getLeaveOverFee();
             this.manualAdjustment = salaryHistory.getManualAdjustment();
             this.bonus = salaryHistory.getBonus();
-            this.date = salaryHistory.getDate();
+            this.salaryMonth = salaryHistory.getSalaryMonth();
+            this.finalSalary = salaryHistory.getFinalSalary();
         }
-            // Optional, assuming Employee and Manager have getName method
-            // Extract employee name and manager name if available
+            // Optional,Employee  has getName method
             this.employeeName = (employee != null) ? employee.getName() : null;
-            this.managerName = (manager != null) ? manager.getName() : null;
+            this.employeeId = (employee != null ) ? employee.getId() : null;
     }
 
     public String getId() {
@@ -51,6 +50,22 @@ public class SalaryHistoryDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
     public Double getBasicSalary() {
@@ -69,28 +84,36 @@ public class SalaryHistoryDTO {
         this.houseAllowance = houseAllowance;
     }
 
+    public Double getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Double transportation) {
+        this.transportation = transportation;
+    }
+
+    public Double getLateOverFee() {
+        return lateOverFee;
+    }
+
+    public void setLateOverFee(Double lateOverFee) {
+        this.lateOverFee = lateOverFee;
+    }
+
+    public Double getLeaveOverFee() {
+        return leaveOverFee;
+    }
+
+    public void setLeaveOverFee(Double leaveOverFee) {
+        this.leaveOverFee = leaveOverFee;
+    }
+
     public Double getOtFee() {
         return otFee;
     }
 
     public void setOtFee(Double otFee) {
         this.otFee = otFee;
-    }
-
-    public Double getLateOver() {
-        return lateOver;
-    }
-
-    public void setLateOver(Double lateOver) {
-        this.lateOver = lateOver;
-    }
-
-    public Double getLeaveOver() {
-        return leaveOver;
-    }
-
-    public void setLeaveOver(Double leaveOver) {
-        this.leaveOver = leaveOver;
     }
 
     public Double getManualAdjustment() {
@@ -109,36 +132,20 @@ public class SalaryHistoryDTO {
         this.bonus = bonus;
     }
 
-    public String getEmployeeName() {
-        return employeeName;
+    public Double getFinalSalary() {
+        return finalSalary;
     }
 
-    public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
+    public void setFinalSalary(Double finalSalary) {
+        this.finalSalary = finalSalary;
     }
 
-    public String getManagerName() {
-        return managerName;
+    public String getSalaryMonth() {
+        return salaryMonth;
     }
 
-    public void setManagerName(String managerName) {
-        this.managerName = managerName;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Double getTransportation() {
-        return transportation;
-    }
-
-    public void setTransportation(Double transportation) {
-        this.transportation = transportation;
+    public void setSalaryMonth(String salaryMonth) {
+        this.salaryMonth = salaryMonth;
     }
 }
 

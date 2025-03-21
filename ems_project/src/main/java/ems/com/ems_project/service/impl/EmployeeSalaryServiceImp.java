@@ -105,43 +105,7 @@ public class EmployeeSalaryServiceImp implements EmployeeSalaryService {
 
         return employeeSalaryRepository.save(employeeSalary);
     }
-//public List<SalaryDTO> getAllEmployeeSalaryDetails(LocalDate date) {
-//    List<EmployeeSalary> employeeSalaries = employeeSalaryRepository.findAll();
-//
-//    // Use the date passed from the front-end to calculate the date range
-//    // Calculate the start date (25th of the previous month)
-//    LocalDate startDate = date.minusMonths(1).withDayOfMonth(25);
-//
-//    // Calculate the end date (26th of the current month)
-//    LocalDate endDate = date.withDayOfMonth(26);
-//
-//    return employeeSalaries.stream().map(employeeSalary -> {
-//        try {
-//            if (employeeSalary == null || employeeSalary.getEmployee() == null || employeeSalary.getPositionSalary() == null) {
-//                return null; // Skip invalid records
-//            }
-//
-//            String employeeId = employeeSalary.getEmployee().getId();
-//            String employeeName = employeeSalary.getEmployee().getName();
-//
-//            // Fetch related records safely, with date range for late minutes
-//            Integer lateMinutes = attendanceRepository.findTotalLateMinutesByEmployeeIdAndDateRange(employeeId, startDate, endDate);
-//            Integer otTime = otRepository.findTotalOTTimeByEmployeeIdAndDateRange(employeeId, startDate, endDate);
-//            Double unpaidLeave = employeeLeaveRepository.findTotalUnpaidLeaveByEmployeeId(employeeId);
-//
-//            // Handle null cases
-//            lateMinutes = (lateMinutes != null) ? lateMinutes : 0;
-//            otTime = (otTime != null) ? otTime : 0;
-//            unpaidLeave = (unpaidLeave != null) ? unpaidLeave : 0.0;
-//
-//            return new SalaryDTO(employeeSalary, employeeName, lateMinutes, otTime, unpaidLeave);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }).filter(dto -> dto != null).collect(Collectors.toList());
-//}
-//
+
 public List<SalaryDTO> getAllEmployeeSalaryDetails(int year, int month) {
     List<EmployeeSalary> employeeSalaries = employeeSalaryRepository.findAll();
 
