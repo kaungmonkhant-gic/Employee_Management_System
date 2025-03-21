@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
-import { getLeaveBalance, fetchRemainingLeaveDays } from "../Employee/Controller/LeaveRequestController";
 import EmpLeaveRequestController from "../Employee/Controller/LeaveRequestController";
 import EmpLeaveService from "../Employee/Service/LeaveRequestService";
+import apiClient from "../api/apiclient";
 
-const LeaveForm = ({ }) => {
+const LeaveForm = ({}) => {
   const [formData, setFormData] = useState({
     leaveType: "",
-    startDate: "",  // Empty initially
+    startDate: "",
     endDate: "",
+    leaveDuration: "",
+    totalDays: "",
     reason: "",
   });
+
   const [leaveBalance, setLeaveBalance] = useState({
     annualLeave: 0,
     casualLeave: 0,
@@ -21,12 +24,9 @@ const LeaveForm = ({ }) => {
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(""); // For submit or cancel modal
-  const [totalLeaveDays, setTotalLeaveDays] = useState(0); // Total leave days
   const [remainingLeaveDays, setRemainingLeaveDays] = useState(0); // Remaining leave days
-  
 
-   // Fetch leave balance when the component mounts
-   useEffect(() => {
+  useEffect(() => {
     const fetchBalance = async () => {
       const balance = await EmpLeaveRequestController.getLeaveBalance();
       setLeaveBalance(balance);
@@ -34,24 +34,14 @@ const LeaveForm = ({ }) => {
     fetchBalance();
   }, []);
 
-
-// Fetch remaining leave days when leave type changes
-useEffect(() => {
-  if (formData.leaveType) {
-    EmpLeaveRequestController.fetchRemainingLeaveDays(formData.leaveType)
-      .then(setRemainingLeaveDays)
-      .catch((error) => console.error("Failed to fetch remaining leave days", error));
-  }
-}, [formData.leaveType]);
-
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  // Fetch remaining leave days when leave type changes
+  useEffect(() => {
+    if (formData.leaveType) {
+      EmpLeaveRequestController.fetchRemainingLeaveDays(formData.leaveType)
+        .then(setRemainingLeaveDays)
+        .catch((error) => console.error("Failed to fetch remaining leave days", error));
+    }
+  }, [formData.leaveType]);
 
   // Calculate total leave days based on start and end dates
   useEffect(() => {
@@ -61,10 +51,10 @@ useEffect(() => {
       if (start <= end) {
         const diffTime = Math.abs(end - start);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
-        setTotalLeaveDays(diffDays);
+        setFormData((prevState) => ({ ...prevState, totalDays: diffDays }));
       }
     } else {
-      setTotalLeaveDays(0);
+      setFormData((prevState) => ({ ...prevState, totalDays: "" }));
     }
   }, [formData.startDate, formData.endDate]);
 
@@ -81,12 +71,32 @@ useEffect(() => {
     if (formData.endDate < formData.startDate) validationErrors.endDate = "End date cannot be earlier than start date.";
     if (!formData.reason) validationErrors.reason = "Please provide a reason.";
 
+    // Validate half-day leave
+    if (formData.leaveDuration === "Morning Half Leave" || formData.leaveDuration === "Evening Half Leave") {
+      // Check if the start and end date are the same
+      if (formData.startDate !== formData.endDate) {
+        validationErrors.startDate = "Start and End dates must be the same for Half Leave.";
+        validationErrors.endDate = "Start and End dates must be the same for Half Leave.";
+      }
+      setFormData((prevState) => ({ ...prevState, totalDays: 0.5 }));
+    } else {
+      // Calculate total leave days normally
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      const timeDiff = end.getTime() - start.getTime();
+      setFormData((prevState) => ({
+        ...prevState,
+        totalDays: timeDiff / (1000 * 3600 * 24) + 1, // Add 1 to include the start date
+      }));
+    }
+
+    // Check if there are any validation errors
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    if (totalLeaveDays > remainingLeaveDays) {
+    if (formData.totalDays > remainingLeaveDays) {
       validationErrors.totalLeaveDays = "You do not have enough leave days remaining.";
       setErrors(validationErrors);
       return;
@@ -95,12 +105,19 @@ useEffect(() => {
     // Show confirmation modal before submission
     setModalType("submit");
     setShowModal(true);
+  };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleCancel = () => {
     setModalType("cancel");
-    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+    setFormData({ leaveType: "", startDate: "", endDate: "", leaveDuration: "", reason: "" });
     setShowModal(true);
   };
 
@@ -109,33 +126,26 @@ useEffect(() => {
       leaveType: formData.leaveType,
       startDate: formData.startDate,
       endDate: formData.endDate,
-      totalDays: totalLeaveDays,
+      leaveDuration: formData.leaveDuration,
+      totalDays: formData.totalDays,
       reason: formData.reason,
     };
-  
+
     try {
       const response = await EmpLeaveService.applyForLeave(leaveRequestData);
       alert("Leave request submitted successfully!");
       console.log("Leave request submitted successfully:", response);
-  
-      // Optionally show a success message to the user
-      // alert("Leave request submitted successfully!");
-  
+
       // Reset form after successful submission
-      setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
+      setFormData({ leaveType: "", startDate: "", endDate: "", leaveDuration: "", reason: "" });
       setErrors({});
       setShowModal(false);
     } catch (error) {
       console.error("Error submitting leave request:", error);
-  
-      // Show error message to user
-      // alert("Failed to submit leave request. Please try again.");
     }
   };
 
   const handleCancelSubmission = () => {
-    // setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
-    // setErrors({});
     setShowModal(false);
   };
 
@@ -161,6 +171,46 @@ useEffect(() => {
                   <option value="Annual Leave">Annual Leave</option>
                 </select>
                 {errors.leaveType && <small className="text-danger">{errors.leaveType}</small>}
+              </div>
+            </div>
+
+            {/* Leave Duration */}
+            <div className="row align-items-center mb-3">
+              <div className="col-4 text-muted">Leave Duration:</div>
+              <div className="col-8">
+                <div className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="leaveDuration"
+                    value="Full Leave"
+                    checked={formData.leaveDuration === "Full Leave"}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label">Full Leave</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="leaveDuration"
+                    value="Morning Half Leave"
+                    checked={formData.leaveDuration === "Morning Half Leave"}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label">Morning Half Leave</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="leaveDuration"
+                    value="Evening Half Leave"
+                    checked={formData.leaveDuration === "Evening Half Leave"}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label">Evening Half Leave</label>
+                </div>
               </div>
             </div>
 
@@ -203,7 +253,7 @@ useEffect(() => {
                 <input
                   type="text"
                   className="form-control border-0 border-bottom"
-                  value={totalLeaveDays > 0 ? totalLeaveDays : "0"}
+                  value={formData.totalDays || "0"} // Show 0 if totalDays is not set
                   readOnly
                 />
               </div>
@@ -216,7 +266,7 @@ useEffect(() => {
                 <input
                   type="text"
                   className="form-control border-0 border-bottom"
-                  value={`You have days ${remainingLeaveDays ?? 0} left for leave`}
+                  value={`You have ${remainingLeaveDays ?? 0} days left for leave`}
                   readOnly
                 />
               </div>
@@ -239,7 +289,7 @@ useEffect(() => {
 
             {/* Submit and Cancel buttons */}
             <div className="d-flex justify-content-end mt-4">
-              <button type="submit" className="btn" style={{ backgroundColor: "#001F3F", color: "white", marginRight: "10px" }} onClick={handleSubmit}>
+              <button type="submit" className="btn" style={{ backgroundColor: "#001F3F", color: "white", marginRight: "10px" }}>
                 Submit
               </button>
               <button type="button" className="btn btn-secondary" onClick={handleCancel}>
@@ -251,63 +301,64 @@ useEffect(() => {
       </div>
 
       {/* Modal for confirmation */}
-        <Modal show={showModal} onHide={handleCancelSubmission} centered style={{ width: 600, height: 500 }}>
-          <Modal.Header closeButton>
-            <Modal.Title>{modalType === "submit" ? "Confirm Leave Submission" : "Are You Sure?"}</Modal.Title>
-          </Modal.Header>
+      <Modal show={showModal} onHide={handleCancelSubmission} centered style={{ width: 600, height: 500 }}>
+        <Modal.Header closeButton>
+          <Modal.Title>{modalType === "submit" ? "Confirm Leave Submission" : "Are You Sure?"}</Modal.Title>
+        </Modal.Header>
 
-          <Modal.Body>
-            {modalType === "submit" ? (
-              <>
-                <p>
-                  You are about to submit a leave request for <strong>{formData.leaveType}</strong> from{" "}
-                  <strong>{formData.startDate}</strong> to <strong>{formData.endDate}</strong>.
-                </p>
-                <p>
-                  You have <strong>{totalLeaveDays}</strong> days of leave. You currently have{" "}
-                  <strong>{remainingLeaveDays}</strong> days left. Are you sure you want to submit the leave request?
-                </p>
-              </>
-            ) : (
-              <>
-                <textarea
-                  readOnly
-                  className="form-control" style={{ height: 95 }}
-                  value={`Leave Type: ${formData.leaveType}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}`}
-                />
-              </>
-            )}
-          </Modal.Body>
+        <Modal.Body>
+          {modalType === "submit" ? (
+            <>
+              <p>
+                You are about to submit a leave request for <strong>{formData.leaveType}</strong> from{" "}
+                <strong>{formData.startDate}</strong> to <strong>{formData.endDate}</strong>.
+              </p>
+              <p>
+                You have <strong>{formData.totalDays}</strong> days of leave. You currently have{" "}
+                <strong>{remainingLeaveDays}</strong> days left. Are you sure you want to submit the leave request?
+              </p>
+            </>
+          ) : (
+            <>
+              <textarea
+                readOnly
+                className="form-control"
+                style={{ height: 95 }}
+                value={`Leave Type: ${formData.leaveType}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}`}
+              />
+            </>
+          )}
+        </Modal.Body>
 
-          <Modal.Footer>
-            {modalType === "submit" ? (
-              <>
-                <Button variant="danger" onClick={handleConfirmSubmission}>
-                  Yes
-                </Button>
-                <Button variant="secondary" onClick={handleCancelSubmission}>
-                  No
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="danger"
-                  onClick={() => {
-                    setFormData({ leaveType: "", startDate: "", endDate: "", reason: "" });
-                    setShowModal(false);
-                  }}
-                  disabled={!formData.leaveType || !formData.startDate || !formData.endDate}
-                >
-                  Yes
-                </Button>
-                <Button variant="secondary" onClick={handleCancelSubmission}>
-                  No
-                </Button>
-              </>
-            )}
-          </Modal.Footer>
-        </Modal>
+        <Modal.Footer>
+          {modalType === "submit" ? (
+            <>
+              <Button variant="danger" onClick={handleConfirmSubmission}>
+                Yes
+              </Button>
+              <Button variant="secondary" onClick={handleCancelSubmission}>
+                No
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  setFormData({ leaveType: "", startDate: "", endDate: "", leaveDuration: "", reason: "" });
+                  setShowModal(false);
+                }}
+                disabled={!formData.leaveType || !formData.startDate || !formData.endDate}
+              >
+                Yes
+              </Button>
+              <Button variant="secondary" onClick={handleCancelSubmission}>
+                No
+              </Button>
+            </>
+          )}
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

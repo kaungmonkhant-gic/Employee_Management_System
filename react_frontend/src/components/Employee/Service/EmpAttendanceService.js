@@ -1,7 +1,5 @@
-import apiClient from "../components/api/apiclient";
+import apiClient from "../../api/apiclient";
 
-// Use BASE_URL as the base for the API
-// const BASE_URL = "http://localhost:8081"; // Ensure correct API URL
 
 const DailyAttendanceService = {
   getAllAttendance: async () => {
@@ -13,7 +11,6 @@ const DailyAttendanceService = {
       return [];
     }
   },
-
   checkIn: async (checkInTime, lateMinutes) => {
     try {
       const response = await apiClient.post("/attendance/checkin", { checkInTime, lateMinutes });
