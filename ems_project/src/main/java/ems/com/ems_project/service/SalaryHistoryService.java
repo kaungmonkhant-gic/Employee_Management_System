@@ -30,7 +30,12 @@ public class SalaryHistoryService {
     @Autowired
     private GenerateId generateId;
 
-
+    public List<SalaryHistoryDTO> getAllSalaryHistories() {
+        return salaryHistoryRepository.findAll().stream()
+                .filter(salaryHistory -> salaryHistory.getEmployee().getResignDate() == null) // Exclude resigned employees
+                .map(salaryHistory -> new SalaryHistoryDTO(salaryHistory, salaryHistory.getEmployee()))
+                .toList();
+    }
 
     public List<SalaryHistoryDTO> getSalaryRecordsForLoggedInUser() {
         // Find the logged-in employee using the authenticated email

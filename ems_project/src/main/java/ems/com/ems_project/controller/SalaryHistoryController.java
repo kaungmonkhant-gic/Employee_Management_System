@@ -16,6 +16,15 @@ public class SalaryHistoryController {
     @Autowired
     private SalaryHistoryService salaryHistoryService;
 
+    @GetMapping
+    public ResponseEntity<List<SalaryHistoryDTO>> getAllSalaryHistories() {
+        List<SalaryHistoryDTO> salaryHistories = salaryHistoryService.getAllSalaryHistories();
+        if (salaryHistories.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Return 204 if no records found
+        }
+        return ResponseEntity.ok(salaryHistories); // Return 200 with salary history data
+    }
+
     @GetMapping("/self")
     public ResponseEntity<List<SalaryHistoryDTO>> getLoggedInUserSalaryRecords() {
         return ResponseEntity.ok(salaryHistoryService.getSalaryRecordsForLoggedInUser());
