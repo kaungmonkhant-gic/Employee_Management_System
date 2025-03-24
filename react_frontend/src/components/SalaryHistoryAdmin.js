@@ -9,17 +9,25 @@ function SalaryHistoryAdmin() {
   const navigate = useNavigate(); // Initialize the navigate function
 
   const [columns] = useState([
-    
+    { 
+      field: "salaryMonth", 
+      headerName: "Date", 
+      minWidth: 120,  // Ensure the minWidth is enough
+      flex: 1, 
+      cellClassName: "text-center", 
+      renderCell: (params) => (
+        <span className="date-cell">{new Date(params.value).toLocaleDateString()}</span>
+      )
+    },
     { field: "employeeName", headerName: "Employee Name", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "managerName", headerName: "Manager Name", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "basicSalary", headerName: "Basic Salary", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "houseAllowance", headerName: "House Allowance", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "otFee", headerName: "OT Fee", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "lateOver", headerName: "Late Over", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "leaveOver", headerName: "Leave Over", minWidth: 100, flex: 1, cellClassName: "text-center" },
+    { field: "lateOverFee", headerName: "Late Over", minWidth: 100, flex: 1, cellClassName: "text-center" },
+    { field: "leaveOverFee", headerName: "Leave Over", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "manualAdjustment", headerName: "Manual Adjustment", minWidth: 100, flex: 1, cellClassName: "text-center" },
     { field: "bonus", headerName: "Bonus", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "date", headerName: "Date", minWidth: 100, flex: 1, cellClassName: "text-center", renderCell: (params) => new Date(params.value).toLocaleDateString() },
+    { field: "finalSalary", headerName: "Total Salary", minWidth: 100, flex: 1, cellClassName: "text-center" },
   ]);
 
   return (
