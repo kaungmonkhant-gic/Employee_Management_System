@@ -25,6 +25,10 @@ const LeaveForm = ({}) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(""); // For submit or cancel modal
   const [remainingLeaveDays, setRemainingLeaveDays] = useState(0); // Remaining leave days
+  const [workingDayErrors, setWorkingDayErrors] = useState({
+    startDateError: "",
+    endDateError: "",
+  });
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -43,20 +47,61 @@ const LeaveForm = ({}) => {
     }
   }, [formData.leaveType]);
 
-  // Calculate total leave days based on start and end dates
+  // Check if startDate and endDate are working days
   useEffect(() => {
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      if (start <= end) {
-        const diffTime = Math.abs(end - start);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
-        setFormData((prevState) => ({ ...prevState, totalDays: diffDays }));
+    const checkIfWorkingDay = async (date) => {
+      try {
+        const response = await apiClient.get(`/isWorkingDay?date=${date}`);
+        return response.data; // Assuming the API returns true or false
+      } catch (error) {
+        console.error("Error checking working day:", error);
+        return false;
       }
-    } else {
-      setFormData((prevState) => ({ ...prevState, totalDays: "" }));
-    }
+    };
+
+    const validateDates = async () => {
+      if (formData.startDate) {
+        const isStartDateWorkingDay = await checkIfWorkingDay(formData.startDate);
+        setWorkingDayErrors((prev) => ({
+          ...prev,
+          startDateError: isStartDateWorkingDay ? "" : "Start date is not a working day.",
+        }));
+      }
+
+      if (formData.endDate) {
+        const isEndDateWorkingDay = await checkIfWorkingDay(formData.endDate);
+        setWorkingDayErrors((prev) => ({
+          ...prev,
+          endDateError: isEndDateWorkingDay ? "" : "End date is not a working day.",
+        }));
+      }
+    };
+
+    // Validate dates whenever startDate or endDate changes
+    validateDates();
   }, [formData.startDate, formData.endDate]);
+
+  // Calculate total leave days based on start and end dates
+  // useEffect(() => {
+  //   if (formData.startDate && formData.endDate) {
+  //     const start = new Date(formData.startDate);
+  //     const end = new Date(formData.endDate);
+
+  //     if (start <= end) {
+  //       const diffTime = Math.abs(end - start);
+  //       let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
+
+  //       // Check if the leave is half-day for start or end
+  //       if (formData.leaveDuration === "Morning Half Leave" || formData.startLeaveType === "Evening Half Leave") {
+  //         diffDays -= 0.5;
+  //       }
+
+  //       setFormData((prevState) => ({ ...prevState, totalDays: diffDays }));
+  //     }
+  //   } else {
+  //     setFormData((prevState) => ({ ...prevState, totalDays: "" }));
+  //   }
+  // }, [formData.startDate, formData.endDate, formData.startLeaveType, formData.leaveType]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,15 +124,12 @@ const LeaveForm = ({}) => {
         validationErrors.endDate = "Start and End dates must be the same for Half Leave.";
       }
       setFormData((prevState) => ({ ...prevState, totalDays: 0.5 }));
-    } else {
-      // Calculate total leave days normally
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      const timeDiff = end.getTime() - start.getTime();
-      setFormData((prevState) => ({
-        ...prevState,
-        totalDays: timeDiff / (1000 * 3600 * 24) + 1, // Add 1 to include the start date
-      }));
+    }
+
+    // Check working day errors
+    if (workingDayErrors.startDateError || workingDayErrors.endDateError) {
+      validationErrors.startDate = workingDayErrors.startDateError;
+      validationErrors.endDate = workingDayErrors.endDateError;
     }
 
     // Check if there are any validation errors
@@ -106,6 +148,56 @@ const LeaveForm = ({}) => {
     setModalType("submit");
     setShowModal(true);
   };
+
+    // Calculate total leave days 
+    useEffect(() => {
+      const calculateTotalLeaveDays = async () => {
+        if (formData.startDate && formData.endDate) {
+          const start = new Date(formData.startDate);
+          const end = new Date(formData.endDate);
+    
+          if (start <= end) {
+            let diffDays = 0;
+            let currentDate = new Date(start);
+    
+            // Loop through each date between start and end
+            while (currentDate <= end) {
+              const dateString = currentDate.toISOString().split("T")[0]; // Format YYYY-MM-DD
+              
+              // Check if the current date is a working day
+              try {
+                const response = await apiClient.get(`/isWorkingDay?date=${dateString}`);
+                if (response.data) {
+                  diffDays++; // Only count working days
+                }
+              } catch (error) {
+                console.error("Error checking working day:", error);
+              }
+    
+              currentDate.setDate(currentDate.getDate() + 1); // Move to next day
+            }
+    
+            // Adjust for "Morning Half Leave" or "Evening Half Leave"
+            if (formData.leaveDuration === "Morning Half Leave" || formData.leaveDuration === "Evening Half Leave") {
+              // If it's the same day, half leave
+              if (formData.startDate === formData.endDate) {
+                diffDays = 0.5; // Only half a day if the leave is on the same day
+              } else {
+                // If it spans multiple days, consider it 1 day leave
+                diffDays = diffDays;
+              }
+            }
+    
+            setFormData((prevState) => ({ ...prevState, totalDays: diffDays }));
+          }
+        } else {
+          setFormData((prevState) => ({ ...prevState, totalDays: "" }));
+        }
+      };
+    
+      calculateTotalLeaveDays();
+    }, [formData.startDate, formData.endDate, formData.leaveDuration]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -227,6 +319,9 @@ const LeaveForm = ({}) => {
                   required
                 />
                 {errors.startDate && <small className="text-danger">{errors.startDate}</small>}
+                {workingDayErrors.startDateError && (
+                  <small className="text-danger">{workingDayErrors.startDateError}</small>
+                )}
               </div>
             </div>
 
@@ -243,6 +338,9 @@ const LeaveForm = ({}) => {
                   required
                 />
                 {errors.endDate && <small className="text-danger">{errors.endDate}</small>}
+                {workingDayErrors.endDateError && (
+                  <small className="text-danger">{workingDayErrors.endDateError}</small>
+                )}
               </div>
             </div>
 
@@ -253,20 +351,7 @@ const LeaveForm = ({}) => {
                 <input
                   type="text"
                   className="form-control border-0 border-bottom"
-                  value={formData.totalDays || "0"} // Show 0 if totalDays is not set
-                  readOnly
-                />
-              </div>
-            </div>
-
-            {/* Remaining Leave Days */}
-            <div className="row align-items-center mb-3">
-              <div className="col-4 text-muted">Remaining Leave Days:</div>
-              <div className="col-8">
-                <input
-                  type="text"
-                  className="form-control border-0 border-bottom"
-                  value={`You have ${remainingLeaveDays ?? 0} days left for leave`}
+                  value={formData.totalDays || ""}
                   readOnly
                 />
               </div>
@@ -278,84 +363,56 @@ const LeaveForm = ({}) => {
               <div className="col-8">
                 <textarea
                   name="reason"
-                  className="form-control border-0 border-bottom"
+                  className="form-control"
                   value={formData.reason}
                   onChange={handleChange}
+                  rows="3"
                   required
                 ></textarea>
                 {errors.reason && <small className="text-danger">{errors.reason}</small>}
               </div>
             </div>
 
-            {/* Submit and Cancel buttons */}
-            <div className="d-flex justify-content-end mt-4">
-              <button type="submit" className="btn" style={{ backgroundColor: "#001F3F", color: "white", marginRight: "10px" }}>
-                Submit
-              </button>
-              <button type="button" className="btn btn-secondary" onClick={handleCancel}>
-                Cancel
-              </button>
+            {/* Submit Button */}
+            <div className="row justify-content-end">
+              <div className="col-auto">
+                <button type="submit" className="btn btn-primary">
+                  Submit
+                </button>
+                <button type="button" className="btn btn-secondary ms-2" onClick={handleCancel}>
+                  Cancel
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
 
-      {/* Modal for confirmation */}
-      <Modal show={showModal} onHide={handleCancelSubmission} centered style={{ width: 600, height: 500 }}>
+      {/* Confirmation Modal */}
+      <Modal show={showModal} onHide={handleCancelSubmission}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType === "submit" ? "Confirm Leave Submission" : "Are You Sure?"}</Modal.Title>
+          <Modal.Title>{modalType === "submit" ? "Confirm Submission" : "Confirm Cancellation"}</Modal.Title>
         </Modal.Header>
-
         <Modal.Body>
           {modalType === "submit" ? (
-            <>
-              <p>
-                You are about to submit a leave request for <strong>{formData.leaveType}</strong> from{" "}
-                <strong>{formData.startDate}</strong> to <strong>{formData.endDate}</strong>.
-              </p>
-              <p>
-                You have <strong>{formData.totalDays}</strong> days of leave. You currently have{" "}
-                <strong>{remainingLeaveDays}</strong> days left. Are you sure you want to submit the leave request?
-              </p>
-            </>
+            "Are you sure you want to submit this leave request?"
           ) : (
-            <>
-              <textarea
-                readOnly
-                className="form-control"
-                style={{ height: 95 }}
-                value={`Leave Type: ${formData.leaveType}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}`}
-              />
-            </>
+            "Are you sure you want to cancel this request?"
           )}
         </Modal.Body>
-
         <Modal.Footer>
-          {modalType === "submit" ? (
-            <>
-              <Button variant="danger" onClick={handleConfirmSubmission}>
-                Yes
-              </Button>
-              <Button variant="secondary" onClick={handleCancelSubmission}>
-                No
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="danger"
-                onClick={() => {
-                  setFormData({ leaveType: "", startDate: "", endDate: "", leaveDuration: "", reason: "" });
-                  setShowModal(false);
-                }}
-                disabled={!formData.leaveType || !formData.startDate || !formData.endDate}
-              >
-                Yes
-              </Button>
-              <Button variant="secondary" onClick={handleCancelSubmission}>
-                No
-              </Button>
-            </>
+          <Button variant="secondary" onClick={handleCancelSubmission}>
+            Close
+          </Button>
+          {modalType === "submit" && (
+            <Button variant="primary" onClick={handleConfirmSubmission}>
+              Confirm 
+            </Button>
+          )}
+          {modalType === "cancel" && (
+            <Button variant="danger" onClick={handleCancelSubmission}>
+              Cancel
+            </Button>
           )}
         </Modal.Footer>
       </Modal>
