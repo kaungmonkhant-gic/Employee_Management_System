@@ -165,9 +165,6 @@ function AdminDashboard() {
           <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>
           <i className="bi bi-person-circle"></i>
           Profile</Link>
-          
-          <Link to="/admin-dashboard/generate-payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
-          Generate Payroll</Link>
 
           {/* Salary Dropdown */}
           <div className="nav-link text-light" onClick={() => toggleMenu("salary")} style={{ cursor: "pointer" }}>

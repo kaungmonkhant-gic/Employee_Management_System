@@ -49,7 +49,6 @@ import SalaryHistory from "./components/Employee/SalaryHistory";
 import SalaryHistoryManager from "./components/Manager/SalaryHistoryManager";
 import SalaryHistoryAdmin from "./components/SalaryHistoryAdmin";
 import CalculateSalary from "./components/CalculateSalary";
-import GeneratePayroll from "./components/GeneratePayroll";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -95,7 +94,6 @@ root.render(
         <Route path="profile" element={<Profile />} />
         <Route path="payroll" element={<PayRoll />} />
         <Route path="salary-history" element={<SalaryHistoryAdmin />} />
-        <Route path="generate-payroll" element={<GeneratePayroll/>} />
         <Route path="calculate-salary" element={<CalculateSalary />} />
       </Route>
 
