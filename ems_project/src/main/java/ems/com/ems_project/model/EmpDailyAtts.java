@@ -31,9 +31,6 @@ public class EmpDailyAtts {
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime checkOutTime;
 
-    @Column(name = "lunch_break")
-    private String lunchBreak;
-
     @Column(name = "late_min")
     private Integer lateMin = 0;
 
@@ -91,14 +88,6 @@ public class EmpDailyAtts {
 
     public void setCheckOutTime(LocalTime checkOutTime) {
         this.checkOutTime = checkOutTime;
-    }
-
-    public String getLunchBreak() {
-        return lunchBreak;
-    }
-
-    public void setLunchBreak(String lunchBreak) {
-        this.lunchBreak = lunchBreak;
     }
 
     public void setStatus(AttendanceStatus status) {

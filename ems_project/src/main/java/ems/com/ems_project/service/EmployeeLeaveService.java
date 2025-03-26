@@ -149,7 +149,8 @@ public class EmployeeLeaveService {
         employeeLeave.setAnnualLeave(10.0);
         employeeLeave.setCasualLeave(6.0);
         employeeLeave.setMedicalLeave(30.0);
-        employeeLeave.setTotal(10.0 + 6.0 + 30.0);
+        employeeLeave.setUnpaidLeave(0.0);
+        employeeLeave.setTotal(10.0 + 6.0 + 30.0+0.0);
 
         return employeeLeaveRepository.save(employeeLeave);
     }
