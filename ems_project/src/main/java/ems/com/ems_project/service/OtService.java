@@ -97,6 +97,73 @@ public class OtService {
     }
 
 
+//    public OtDTO submitOTRequest(OtDTO requestDTO) {
+//
+//        //  Get the logged-in username (email) from JWT token
+//        String loggedInUsername = getLoggedInUsername();
+//
+//        // Fetch employee from the database using the email (logged-in username)
+//
+//        Employee employee = employeeRepository.findByEmail(loggedInUsername)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
+//
+//        // Check if the employee has a leave on the given date using the custom query
+//        Optional<Leave> leave = leaveRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
+//        if (leave.isPresent()) {
+//            // If the leave exists, prevent OT submission
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request cannot be submitted while on leave.");
+//        }
+//
+//        // Check if the employee is marked as "Present" for the given date using EmpDailyAtts
+//        EmpDailyAtts attendance = attendanceRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
+//        if (attendance == null || !AttendanceStatus.PRESENT.equals(attendance.getStatus())) {
+//            // If no attendance record or status is not "Present", prevent OT submission
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted if you are marked as Present.");
+//        }
+//
+//        // Check if the employee has a check-in time for the given date
+//        if (attendance.getCheckInTime() == null) {
+//            // If there is no check-in time, prevent OT submission
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted after check-in.");
+//        }
+//
+//        // Assign the employee's manager (if they have one). Manager will be null for managers.
+//        Employee manager = null;
+//        if (!"Manager".equals(employee.getRole().getRoleName())) {
+//            manager = employee.getManager();  // Get the manager if the employee is not a manager
+//        }
+//
+//        // Generate OT ID
+//        String otId = generateOtId();
+//
+//        //  Create and save OT request
+//        Ots ot = new Ots();
+//        ot.setId(otId); // Set the generated OT ID
+//        ot.setEmployee(employee);// Automatically set logged-in employee
+//        ot.setManager(manager);
+//        ot.setDate(requestDTO.getDate());
+//        ot.setStartTime(requestDTO.getStartTime());
+//        ot.setEndTime(requestDTO.getEndTime());
+//        ot.setOtTime(requestDTO.getOtTime());
+//        ot.setReason(requestDTO.getReason());
+//        ot.setStatus(requestDTO.getOtStatus());
+//
+//        if ("Manager".equals(employee.getRole().getRoleName())) {
+//            ot.setStatus(RequestStatus.APPROVED);
+//            // Save OT object to the repository
+//            Ots savedOt = otRepository.save(ot);
+//            // Update attendance with OT details
+//            attendanceService.updateOTForAttendance(ot.getEmployee(), ot.getDate(), savedOt);// Approve the leave if the employee is a manager
+//        } else {
+//            ot.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
+//        }
+//        // Save OT object to the repository
+//        Ots savedOt = otRepository.save(ot);
+//
+//        // Return an OtDTO response including employeeName and managerName
+//        return new OtDTO(savedOt, employee, manager);
+//    }
+
     public OtDTO submitOTRequest(OtDTO requestDTO) {
 
         //  Get the logged-in username (email) from JWT token
@@ -107,25 +174,6 @@ public class OtService {
         Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
 
-        // Check if the employee has a leave on the given date using the custom query
-        Optional<Leave> leave = leaveRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
-        if (leave.isPresent()) {
-            // If the leave exists, prevent OT submission
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request cannot be submitted while on leave.");
-        }
-
-        // Check if the employee is marked as "Present" for the given date using EmpDailyAtts
-        EmpDailyAtts attendance = attendanceRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
-        if (attendance == null || !AttendanceStatus.PRESENT.equals(attendance.getStatus())) {
-            // If no attendance record or status is not "Present", prevent OT submission
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted if you are marked as Present.");
-        }
-
-        // Check if the employee has a check-in time for the given date
-        if (attendance.getCheckInTime() == null) {
-            // If there is no check-in time, prevent OT submission
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted after check-in.");
-        }
 
         // Assign the employee's manager (if they have one). Manager will be null for managers.
         Employee manager = null;
@@ -149,11 +197,7 @@ public class OtService {
         ot.setStatus(requestDTO.getOtStatus());
 
         if ("Manager".equals(employee.getRole().getRoleName())) {
-            ot.setStatus(RequestStatus.APPROVED);
-            // Save OT object to the repository
-            Ots savedOt = otRepository.save(ot);
-            // Update attendance with OT details
-            attendanceService.updateOTForAttendance(ot.getEmployee(), ot.getDate(), savedOt);// Approve the leave if the employee is a manager
+            ot.setStatus(RequestStatus.APPROVED);  // Approve the leave if the employee is a manager
         } else {
             ot.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
         }
