@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import ems.com.ems_project.common.LocalTimeDeserializer;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.sql.Date;
 import ems.com.ems_project.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ public class OtDTO {
     private String id;
     private String employeeName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
-    private Date date;
+    private LocalDate date;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime startTime;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
@@ -58,11 +58,11 @@ public class OtDTO {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

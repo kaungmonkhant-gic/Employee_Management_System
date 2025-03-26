@@ -30,9 +30,6 @@ public class EmployeeServiceImp implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    private  EmployeeSalaryRepository employeeSalaryRepository;
-
-    @Autowired
     private EmployeeSalaryService employeeSalaryService;
     @Autowired
     private EmployeeLeaveService employeeLeaveService;
@@ -54,6 +51,8 @@ public class EmployeeServiceImp implements EmployeeService {
     private PositionsRepository positionRepository;
     @Autowired
     private EmployeeSalaryService salaryService;
+    @Autowired
+    private PositionSalaryRepository positionSalaryRepository;
     @Autowired
     private GenerateId generateId;
 
@@ -308,6 +307,12 @@ public class EmployeeServiceImp implements EmployeeService {
             Positions position = positionRepository.findById(registerDTO.getPositionId())
                     .orElseThrow(() -> new RuntimeException("Position not found for ID: " + registerDTO.getPositionId()));
 
+            // Fetch the PositionSalary based on employee's position
+            PositionSalary positionSalary = positionSalaryRepository.findByPositionId(position.getId());
+            if (positionSalary == null) {
+                throw new RuntimeException("Salary details not found for position: " + position.getPositionName());
+            }
+
             // Create new Employee
             Employee employee = new Employee();
             employee.setId(generateEmployeeId());
@@ -342,6 +347,8 @@ public class EmployeeServiceImp implements EmployeeService {
             System.out.println("department");
             employee.setPosition(position);
             System.out.println("position");
+            employee.setPositionSalary(positionSalary); // Link PositionSalary directly
+            System.out.println("positionSalary set");
 
             // Encode password
             String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(registerDTO.getPassword());
@@ -358,14 +365,11 @@ public class EmployeeServiceImp implements EmployeeService {
             Employee savedEmployee = employeeRepository.save(employee);
             System.out.println("save");
 
-//            // 🚀 Immediately create salary for the registered employee
-            EmployeeSalary employeeSalary = employeeSalaryService.createEmployeeSalary(savedEmployee);
             EmployeeLeave employeeLeave =employeeLeaveService.createEmployeeLeave(savedEmployee);
 
             // Success Response
             reqRes.setEmployee(savedEmployee);
             System.out.println("response");
-            reqRes.setEmployeeSalary(employeeSalary);
             reqRes.setEmployeeLeave(employeeLeave);
             reqRes.setStatusCode(201);
             reqRes.setMessage("Employee registered successfully.");
@@ -453,10 +457,24 @@ public class EmployeeServiceImp implements EmployeeService {
                 departmentRepository.findByDepartmentName(employeeDTO.getDepartmentName()).ifPresent(employee::setDepartment);
             }
             if (employeeDTO.getPositionName() != null) {
-                positionRepository.findByPositionName(employeeDTO.getPositionName()).ifPresent(employee::setPosition);
-                employeeSalaryService.updateEmployeeSalary(employee);
+                positionRepository.findByPositionName(employeeDTO.getPositionName()).ifPresent(newPosition -> {
+                    // Update the employee's position
+                    employee.setPosition(newPosition);
 
+                    // Fetch the PositionSalary based on employee's position
+                    PositionSalary positionSalary = positionSalaryRepository.findByPositionId(newPosition.getId());
+
+                    // If no PositionSalary is found for the position, throw an exception
+                    if (positionSalary == null) {
+                        throw new RuntimeException("Salary details not found for position: " + newPosition.getPositionName());
+                    }
+
+                    // Set the PositionSalary for the employee
+                    employee.setPositionSalary(positionSalary);
+                });
             }
+
+
             if (employeeDTO.getRoleName() != null) {
                 roleRepository.findByRoleName(employeeDTO.getRoleName()).ifPresent(employee::setRole);
             }

@@ -38,7 +38,7 @@ public class RegisterDTO {
     @ValidGender
     private String gender;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     @NotNull(message = "Date of Birth is required")
     private LocalDate dob;
 
@@ -56,11 +56,11 @@ public class RegisterDTO {
     @Size(max = 300, message = "Education should not exceed 300 characters")
     private String education;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     @NotNull(message = "Join date is required")
     private LocalDate joinDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private LocalDate resignDate;
 
     // Department, Position, Role

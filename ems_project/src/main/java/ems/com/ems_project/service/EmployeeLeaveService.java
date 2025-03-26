@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,25 +49,25 @@ public class EmployeeLeaveService {
         return new EmployeeLeaveDTO(employeeLeave, employeeName);
     }
 
-    public void updateLeaveBalance(EmployeeLeave employeeLeave, LeaveType leaveType, Double leaveDuration) {
+    public void updateLeaveBalance(EmployeeLeave employeeLeave, LeaveType leaveType, Double leaveDays) {
         switch (leaveType) {
             case ANNUAL:
-                if (employeeLeave.getAnnualLeave() < leaveDuration) {
+                if (employeeLeave.getAnnualLeave() < leaveDays) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient annual leave balance.");
                 }
-                employeeLeave.setAnnualLeave(employeeLeave.getAnnualLeave() - leaveDuration);
+                employeeLeave.setAnnualLeave(employeeLeave.getAnnualLeave() - leaveDays);
                 break;
             case CASUAL:
-                if (employeeLeave.getCasualLeave() < leaveDuration) {
+                if (employeeLeave.getCasualLeave() < leaveDays) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient casual leave balance.");
                 }
-                employeeLeave.setCasualLeave(employeeLeave.getCasualLeave() - leaveDuration);
+                employeeLeave.setCasualLeave(employeeLeave.getCasualLeave() - leaveDays);
                 break;
             case MEDICAL:
-                if (employeeLeave.getMedicalLeave() < leaveDuration) {
+                if (employeeLeave.getMedicalLeave() < leaveDays) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient medical leave balance.");
                 }
-                employeeLeave.setMedicalLeave(employeeLeave.getMedicalLeave() - leaveDuration);
+                employeeLeave.setMedicalLeave(employeeLeave.getMedicalLeave() - leaveDays);
                 break;
             default:
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid leave type.");
@@ -78,6 +79,22 @@ public class EmployeeLeaveService {
         // Save updated leave balance
         employeeLeaveRepository.save(employeeLeave);
     }
+
+    public void updateUnpaidLeaveBalance(Employee employee, LocalDate leaveDate) {
+        // Fetch the EmployeeLeave record
+        EmployeeLeave employeeLeave = employeeLeaveRepository.findByEmployeeId(employee.getId())
+                .orElseThrow(() -> new RuntimeException("Employee leave record not found"));
+
+        // Increment the unpaid leave balance
+        employeeLeave.setUnpaidLeave(employeeLeave.getUnpaidLeave() + 1);
+
+        // Update the total leave balance
+        employeeLeave.setTotal(employeeLeave.getAnnualLeave() + employeeLeave.getCasualLeave() + employeeLeave.getMedicalLeave() + employeeLeave.getUnpaidLeave());
+
+        // Save updated leave balance
+        employeeLeaveRepository.save(employeeLeave);
+    }
+
     public List<EmployeeLeaveDTO> getEmployeeLeaveRecordRoleBased(String token) {
         // Extract user details from the token
         String email = jwtutils.extractUsername(token);

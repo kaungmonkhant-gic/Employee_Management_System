@@ -45,21 +45,7 @@ public class EmployeeSalaryController {
             return ResponseEntity.status(500).build();
         }
     }
-//    @PostMapping("/temp/all")
-//    public ResponseEntity<Object> saveTempSalaries(@RequestBody List<SalaryDTO> salaryDTOList) {
-//        try {
-//            String savedHistories = tempSalaryHistoryService. saveAllTempSalaries(salaryDTOList);
-//            return ResponseEntity.ok().body("Successfully saved ");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error saving temp salaries: " + e.getMessage());
-//        }
-//    }
-//    @PostMapping("/save")
-//    public ResponseEntity<List<SalaryDTO>> saveSalaries(@RequestBody List<SalaryDTO> salaryDTOList) {
-//        // Call the service method to save the salary data
-//        List<SalaryDTO> savedSalaries = tempSalaryHistoryService.saveSalaries(salaryDTOList);
-//        return ResponseEntity.ok(savedSalaries);  // Return the saved salary data
-//    }
+
     @PostMapping("/save")
     public ResponseEntity<List<SalaryDTO>> saveSalaries(@RequestBody List<SalaryDTO> salaryDTOList) {
         try {

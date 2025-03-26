@@ -2,10 +2,12 @@ package ems.com.ems_project.service;
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.LeaveDTO;
+import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.*;
 import ems.com.ems_project.repository.EmployeeLeaveRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.LeaveRepository;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,86 +111,85 @@ public class LeaveService {
                 .collect(Collectors.toList());
     }
 
+public ReqRes submitLeaveRequest(LeaveDTO requestDTO) {
+    ReqRes response = new ReqRes();
 
-    public LeaveDTO submitLeaveRequest(LeaveDTO requestDTO) {
-
-        //  Get the logged-in username (email) from JWT token
+    try {
+        // Get the logged-in username (email) from JWT token
         String loggedInUsername = getLoggedInUsername();
 
         // Fetch employee from the database using the email (logged-in username)
-
         Employee employee = employeeRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        System.out.println("Employee Role: " + employee.getRole());
-
-
-        // Assign the employee's manager (if they have one). Manager will be null for managers.
+        // Initialize the manager variable
         Employee manager = null;
         if (!"Manager".equals(employee.getRole().getRoleName())) {
-            manager = employee.getManager();  // Get the manager if the employee is not a manager
+            manager = employee.getManager();  // Assign manager if the employee is not a manager
         }
-        // Calculate total leave days based on start date, end date, and leave duration (Full-day or Half-day)
-        double totalLeaveDays = calculateTotalLeaveDays(requestDTO.getStartDate(), requestDTO.getEndDate(), requestDTO.getLeaveDuration());
 
-        // Set the calculated total leave days in the requestDTO
-        requestDTO.setTotalDays(totalLeaveDays);
-        String leaveId = generateLeaveId();  // This will generate the new OT ID
+        // Get the start and end date from the leave request DTO
+        LocalDate newStartDate = requestDTO.getStartDate();
+        LocalDate newEndDate = requestDTO.getEndDate();
 
-        //  Create and save Leave request
+        // Check for overlapping leave requests (this checks if any existing leave overlaps with the requested dates)
+        boolean isOverlap = leaveRepository.existsLeaveOverlap(employee, newStartDate, newEndDate);
+
+        if (isOverlap) {
+            // If overlap exists, return a bad request status with the error message
+            response.setStatusCode(400);  // Bad request status
+            response.setError("You already have a leave request that overlaps with these dates.");
+            return response;  // Return early with the error message
+        }
+
+        // Generate a unique Leave ID
+        String leaveId = generateLeaveId();
+
+        // Create new Leave request object
         Leave leave = new Leave();
-        leave.setId(leaveId); // Set the generated leave ID
-        leave.setEmployee(employee);// Automatically set logged-in employee
+        leave.setId(leaveId);
+        leave.setEmployee(employee);
         leave.setManager(manager);
-        leave.setStartDate(requestDTO.getStartDate());
-        leave.setEndDate(requestDTO.getEndDate());
-        leave.setTotalDays(totalLeaveDays);
+        leave.setStartDate(newStartDate);
+        leave.setEndDate(newEndDate);
+        leave.setTotalDays(requestDTO.getTotalDays());
         leave.setReason(requestDTO.getReason());
-        leave.setStatus(requestDTO.getStatus());
         leave.setLeaveType(requestDTO.getLeaveType());
         leave.setLeaveDuration(requestDTO.getLeaveDuration());
-// Automatically set the leave status to Approved if the employee is a manager
+
+        // Auto-approve if the employee is a Manager
         if ("Manager".equals(employee.getRole().getRoleName())) {
-            leave.setStatus(RequestStatus.APPROVED);  // Approve the leave if the employee is a manager
+            leave.setStatus(RequestStatus.APPROVED);
+            // Save the leave first
+            Leave savedLeave = leaveRepository.save(leave);
+            //Reduce leave balance using EmployeeLeaveService
+            EmployeeLeave employeeLeave = employeeLeaveRepository.findByEmployeeId(leave.getEmployee().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee's leave balance not found"));
+
+            employeeLeaveService.updateLeaveBalance(employeeLeave,leave.getLeaveType(), leave.getTotalDays());
+            // Now, update the attendance for the leave period
+            attendanceService.updateAttendanceForLeave(employee, newStartDate, newEndDate, savedLeave);  // Pass the savedLeave object
+            // If manager, auto-approve, then update attendance for the leave period
         } else {
-            leave.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
+            leave.setStatus(RequestStatus.PENDING);
         }
-        // Save OT object to the repository
+
+        // Save the leave object to the repository
         Leave savedLeave = leaveRepository.save(leave);
 
-        // Return an OtDTO response including employeeName and managerName
-        return new LeaveDTO(savedLeave, employee, manager);
+        // Successful response
+        response.setStatusCode(200);  // OK status
+        response.setMessage("Leave request submitted successfully.");
+        response.setLeaveRequest(new LeaveDTO(savedLeave, employee, manager));  // Set LeaveDTO for the successful response
+        return response;
+
+    } catch (Exception e) {
+        // Handle any errors and return failure response
+        response.setStatusCode(500);  // Internal server error
+        response.setError("Error during leave request submission: " + e.getMessage());
+        return response;
     }
-
-    public double calculateTotalLeaveDays(LocalDate startDate, LocalDate endDate, LeaveDuration leaveDuration) {
-        // Handle edge case where start date is after end date
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start date cannot be after end date.");
-        }
-
-        // If the leave is half-day, immediately return 0.5
-        if (leaveDuration == LeaveDuration.MORNING_HALF || leaveDuration == LeaveDuration.EVENING_HALF) {
-            return 0.5; // Half leave is always 0.5 days
-        }
-
-        double totalDays = 0.0;
-        LocalDate currentDate = startDate;
-
-        while (!currentDate.isAfter(endDate)) {
-            // Debugging: Print each date
-            System.out.println("Checking: " + currentDate);
-
-            // Use DateService to check if the current date is a working day
-            if (dateService.isWorkingDay(currentDate)) {
-                totalDays++;
-            }
-            currentDate = currentDate.plusDays(1);
-        }
-
-        // Return the total days (this will exclude weekends and public holidays)
-        return totalDays;
-    }
-
+}
 
     public LeaveDTO processLeaveRequest(String leaveId,String action, String rejectionReason) {
         // Get logged-in manager
@@ -294,6 +295,30 @@ public class LeaveService {
         return statusCountMap;
     }
 
+    // Method to create or update leave record based on attendance status
+    public void handleEveningHalfLeave(Employee employee, LocalDate todayDate, boolean hasOT) {
+        // If checkout is after 6 PM and no OT, mark EVENING_HALF_LEAVE
+        if (!hasOT) {
+            Optional<Leave> existingLeave = leaveRepository.findByEmployeeAndDate(employee, todayDate);
+            Leave leave;
+
+            if (existingLeave.isPresent()) {
+                leave = existingLeave.get();
+                leave.setLeaveDuration(LeaveDuration.EVENING_HALF); // Set duration to evening half leave
+            } else {
+                // Create a new leave record if none exists
+                leave = new Leave();
+                leave.setEmployee(employee);
+                leave.setStartDate(todayDate);
+                leave.setEndDate(todayDate);
+                leave.setLeaveType(LeaveType.UNPAID); // Set leave type to EVENING_HALF
+                leave.setLeaveDuration(LeaveDuration.EVENING_HALF); // Set duration to evening half leave
+            }
+
+            leaveRepository.save(leave); // Save or update leave record
+        }
+    }
+
 
 
     // Helper method to get logged-in username (email) from JWT
@@ -304,6 +329,28 @@ public class LeaveService {
         } else {
             return principal.toString();
         }
+    }
+
+    public Leave handleEveningHalfLeave(Employee employee, LocalDate todayDate) {
+        // If checkout is after 6 PM and no OT, mark EVENING_HALF_LEAVE
+        Optional<Leave> existingLeave = leaveRepository.findByEmployeeAndDate(employee, todayDate);
+        Leave leave;
+
+        if (existingLeave.isPresent()) {
+            leave = existingLeave.get();
+            leave.setLeaveDuration(LeaveDuration.EVENING_HALF); // Update leave duration to EVENING_HALF
+        } else {
+            leave = new Leave();
+            leave.setId(generateLeaveId());
+            leave.setEmployee(employee);
+            leave.setStartDate(todayDate);
+            leave.setEndDate(todayDate);
+            leave.setLeaveType(LeaveType.UNPAID); // Set leave type as UNPAID (or as needed)
+            leave.setLeaveDuration(LeaveDuration.EVENING_HALF); // Set duration to EVENING_HALF
+        }
+
+        leaveRepository.save(leave); // Save or update leave record
+        return leave; // Return the leave object which contains the leave ID
     }
 
 
@@ -318,5 +365,35 @@ public class LeaveService {
         // Generate the new Attendance ID using the GenerateId class
         return generateId.generateId(lastId,prefix);
     }
+
+
+//    public double calculateTotalLeaveDays(LocalDate startDate, LocalDate endDate, LeaveDuration leaveDuration) {
+//        // Handle edge case where start date is after end date
+//        if (startDate.isAfter(endDate)) {
+//            throw new IllegalArgumentException("Start date cannot be after end date.");
+//        }
+//
+//        // If the leave is half-day, immediately return 0.5
+//        if (leaveDuration == LeaveDuration.MORNING_HALF || leaveDuration == LeaveDuration.EVENING_HALF) {
+//            return 0.5; // Half leave is always 0.5 days
+//        }
+//
+//        double totalDays = 0.0;
+//        LocalDate currentDate = startDate;
+//
+//        while (!currentDate.isAfter(endDate)) {
+//            // Debugging: Print each date
+//            System.out.println("Checking: " + currentDate);
+//
+//            // Use DateService to check if the current date is a working day
+//            if (dateService.isWorkingDay(currentDate)) {
+//                totalDays++;
+//            }
+//            currentDate = currentDate.plusDays(1);
+//        }
+//
+//        // Return the total days (this will exclude weekends and public holidays)
+//        return totalDays;
+//    }
 }
 

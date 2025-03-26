@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
-import ems.com.ems_project.model.EmployeeSalary;
 import lombok.Data;
 
 import java.util.List;
@@ -24,8 +23,8 @@ public class ReqRes {
     private RegisterDTO registerDTO;
     private AttendanceDTO attendance;
     private Employee employee;
-    private EmployeeSalary employeeSalary;
     private EmployeeLeave employeeLeave;
+    private LeaveDTO leaveRequest;
 
     public int getStatusCode() {
         return statusCode;
@@ -92,13 +91,6 @@ public class ReqRes {
         this.employee = employee;
     }
 
-    public EmployeeSalary getEmployeeSalary() {
-        return employeeSalary;
-    }
-
-    public void setEmployeeSalary(EmployeeSalary employeeSalary) {
-        this.employeeSalary = employeeSalary;
-    }
 
     public EmployeeLeave getEmployeeLeave() {
         return employeeLeave;
@@ -114,5 +106,13 @@ public class ReqRes {
 
     public void setAttendance(AttendanceDTO attendance) {
         this.attendance = attendance;
+    }
+
+    public LeaveDTO getLeaveRequest() {
+        return leaveRequest;
+    }
+
+    public void setLeaveRequest(LeaveDTO leaveRequest) {
+        this.leaveRequest = leaveRequest;
     }
 }

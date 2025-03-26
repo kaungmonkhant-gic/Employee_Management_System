@@ -3,6 +3,7 @@ package ems.com.ems_project.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.SalaryHistory;
+import jakarta.persistence.Column;
 import lombok.Data;
 import java.time.YearMonth;
 

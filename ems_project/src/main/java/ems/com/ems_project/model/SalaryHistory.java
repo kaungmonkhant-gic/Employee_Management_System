@@ -149,4 +149,5 @@ public class SalaryHistory {
     public void setSalaryMonth(String salaryMonth) {
         this.salaryMonth = salaryMonth;
     }
+
 }
