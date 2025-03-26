@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import profileController from "../Controller/profileController";
 import ResetPasswordModal from "./common/ResetPasswordModal"; // Importing the reusable modal component
-
 const EmpProfile = () => {
   const initialDetails = {
     name: "",
@@ -20,7 +19,7 @@ const EmpProfile = () => {
     workExp: "",
     joinDate: "",
     roleId: "",
-    positionID: "",
+    positionId: "",
     departmentId: "",
   };
 
@@ -45,8 +44,6 @@ const EmpProfile = () => {
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
   const [roles, setRoles] = useState([]);
-  const genders = ["Male", "Female", "Other"];
-
   const [selectedPositionId, setSelectedPositionId] = useState(details.positionID);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(details.departmentId);
   const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
@@ -65,6 +62,7 @@ const EmpProfile = () => {
         const data = await profileController.fetchEmpProfile();
         if (data.statusCode === 200) {
           const employeeProfile = data.employeeProfile;
+  
           setDetails({
             id: employeeProfile.id,
             name: employeeProfile.name,
@@ -81,11 +79,13 @@ const EmpProfile = () => {
             workExp: employeeProfile.workExp,
             joinDate: employeeProfile.joinDate,
           });
+  
           setOriginalDetails(employeeProfile);
-          setSelectedDepartmentId(employeeProfile.departmentId);
-          setSelectedPositionId(employeeProfile.positionId);
-          setSelectedRoleId(employeeProfile.roleId);
-          setSelectedGender(employeeProfile.gender);
+  
+          // ✅ Ensure selected state values are set
+          setSelectedDepartmentId(employeeProfile.departmentId || "");
+          setSelectedPositionId(employeeProfile.positionId || "");
+          setSelectedRoleId(employeeProfile.roleId || "");
         } else {
           console.error("Error fetching profile:", data.message);
         }
@@ -93,10 +93,10 @@ const EmpProfile = () => {
         console.error("Error fetching profile:", error);
       }
     };
-
+  
     fetchProfile();
   }, []);
-
+  
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -136,6 +136,55 @@ const EmpProfile = () => {
     fetchRoles();
   }, []);
 
+  //Show position in editing
+  useEffect(() => {
+      if (originalDetails.positionName) {
+        const pos = positions.find(pos => pos.positionName === originalDetails.positionName);
+        if (pos) {
+          setSelectedPositionId(pos.id);
+          console.log("Selected pos ID:", pos.id);
+        }
+        console.log("Selected position ID:", selectedPositionId);
+      }
+    }, [positions, originalDetails.positionName]);
+  
+    // useEffect(() => {
+    //   console.log("Updated Selected Position ID:", selectedPositionId);
+    // }, [selectedPositionId]);
+
+    //show department in editing]
+ useEffect(() => {
+    if (originalDetails.departmentName) {
+      const dept = departments.find(dept => dept.departmentName === originalDetails.departmentName);
+      if (dept) {
+        setSelectedDepartmentId(dept.id);
+        console.log("Selected dept ID:", dept.id);
+      }
+      console.log("Selected Department ID:", selectedDepartmentId);
+    }
+  }, [departments, originalDetails.departmentName]);
+
+  // useEffect(() => {
+  //   console.log("Updated Selected Department ID:", selectedDepartmentId);
+  // }, [selectedDepartmentId]);
+
+  //show role in edit
+   useEffect(() => {
+      if (originalDetails.roleName) {
+        const rol = roles.find(rol => rol.roleName === originalDetails.roleName);
+        if (rol) {
+          setSelectedRoleId(rol.id);
+          console.log("Selected role ID:", rol.id);
+        }
+        console.log("Selected role ID:", selectedRoleId);
+      }
+    }, [roles, originalDetails.roleName]);
+  
+    // useEffect(() => {
+    //   console.log("Updated Selected Role ID:", selectedRoleId);
+    // }, [selectedRoleId]);
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
@@ -158,12 +207,19 @@ const EmpProfile = () => {
       departmentId: selectedDepartmentId,
       roleId: selectedRoleId,
     };
-
+  
     try {
       const response = await profileController.updateProfile(updatedProfile);
       if (response.statusCode === 200) {
         alert("Profile updated successfully!");
         setIsEditing(false);
+        // Update displayed details
+        setDetails({
+          ...details,
+          position: positions.find(pos => pos.id === selectedPositionId)?.positionName || "",
+          department: departments.find(dept => dept.id === selectedDepartmentId)?.departmentName || "",
+          role: roles.find(role => role.id === selectedRoleId)?.roleName || "",
+        });
       } else {
         alert("Failed to update profile.");
       }
@@ -172,16 +228,15 @@ const EmpProfile = () => {
       alert("An error occurred while updating the profile.");
     }
   };
-
+  
   const handleCancelEditing = () => {
     setIsEditing(false);
-    // Reset selected values to original details when canceling editing
-    setSelectedPositionId(originalDetails.positionID);
+    setSelectedPositionId(originalDetails.positionId);
     setSelectedDepartmentId(originalDetails.departmentId);
     setSelectedRoleId(originalDetails.roleId);
-    setSelectedGender(originalDetails.gender);
     setDetails(originalDetails); // Restore original details
   };
+  
 
   const handleResetPassword = async (currentPassword, newPassword, confirmPassword) => {
     console.log("handleResetPassword called with:", { currentPassword, newPassword, confirmPassword });
@@ -289,8 +344,8 @@ const EmpProfile = () => {
               />
             </div>
 
-            {/* Gender */}
-            <div className="col-md-6 mb-4">
+             {/* Marital Status */}
+             <div className="col-md-6 mb-4">
               <label className="form-label fw-bold">Gender</label>
               {!isEditing ? (
                 <input
@@ -301,17 +356,16 @@ const EmpProfile = () => {
                 />
               ) : (
                 <select
-                  value={selectedGender}
-                  onChange={handleGenderChange}
+                  name="gender"
+                  value={details.gender}
+                  onChange={handleInputChange}
                   className="form-control"
                   required
                 >
-                  <option value="">-- Select Gender --</option>
-                  {genders.map((gender) => (
-                    <option key={gender} value={gender}>
-                      {gender}
-                    </option>
-                  ))}
+                  <option value="">-- Select Gneder --</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  
                 </select>
               )}
             </div>
@@ -411,6 +465,7 @@ const EmpProfile = () => {
                 </select>
               )}
             </div>
+
 
             {/* Department */}
             <div className="col-md-6 mb-4">
@@ -521,9 +576,7 @@ const EmpProfile = () => {
        show={showResetPasswordModal}
        onClose={() => setShowResetPasswordModal(false)}
        onSubmit={handleResetPassword} // ✅ Ensure function is passed
-     />
-     
-      
+     />      
       )}
 
 {message && (

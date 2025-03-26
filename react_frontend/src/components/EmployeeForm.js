@@ -20,7 +20,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
       <Form.Label className="fw-semibold">{label}</Form.Label>
       {type === "select" ? (
         <Form.Control as="select" name={name} value={value} onChange={onChange} className="form-select-lg" required={required} style={style}>
-          <option value="">Select {label}</option>
+          <option value=""> {label}</option>
           {options && options.map((option, index) => (
             <option key={index} value={option.value}>
               {option.label}
@@ -81,79 +81,61 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
     fetchData();
   }, []);
   
-  // Set selected department id when department name changes
-  useEffect(() => {
-    if (employeeData.departmentName) {
-      const dept = departments.find(dept => dept.departmentName === employeeData.departmentName);
-      if (dept) {
-        setSelectedDepartmentId(dept.id);
-        console.log("Selected dept ID:", dept.id);
-      }
-      console.log("Selected Department ID:", selectedDepartmentId);
-    }
-  }, [departments, employeeData.departmentName]);
+ // Update selected IDs when department, position, or role name changes
+useEffect(() => {
+  const dept = departments.find(d => d.departmentName === employeeData.departmentName);
+  const pos = positions.find(p => p.positionName === employeeData.positionName);
+  const rol = roles.find(r => r.roleName === employeeData.roleName);
 
-  useEffect(() => {
-    console.log("Updated Selected Department ID:", selectedDepartmentId);
-  }, [selectedDepartmentId]);
+  if (dept) setSelectedDepartmentId(dept.id);
+  if (pos) setSelectedPositionId(pos.id);
+  if (rol) setSelectedRoleId(rol.id);
+}, [departments, positions, roles, employeeData.departmentName, employeeData.positionName, employeeData.roleName]);
 
-  // for position show in editing
-  useEffect(() => {
-    if (employeeData.positionName) {
-      const pos = positions.find(pos => pos.positionName === employeeData.positionName);
-      if (pos) {
-        setSelectedPositionId(pos.id);
-        console.log("Selected pos ID:", pos.id);
-      }
-      console.log("Selected position ID:", selectedPositionId);
-    }
-  }, [positions, employeeData.positionName]);
+// Log updated IDs when they change
+useEffect(() => console.log("Updated Selected Department ID:", selectedDepartmentId), [selectedDepartmentId]);
+useEffect(() => console.log("Updated Selected Position ID:", selectedPositionId), [selectedPositionId]);
+useEffect(() => console.log("Updated Selected Role ID:", selectedRoleId), [selectedRoleId]);
 
-  useEffect(() => {
-    console.log("Updated Selected Position ID:", selectedPositionId);
-  }, [selectedPositionId]);
-
-  //for role show in editing
-  useEffect(() => {
-    if (employeeData.roleName) {
-      const rol = roles.find(rol => rol.roleName === employeeData.roleName);
-      if (rol) {
-        setSelectedRoleId(rol.id);
-        console.log("Selected role ID:", rol.id);
-      }
-      console.log("Selected role ID:", selectedRoleId);
-    }
-  }, [roles, employeeData.roleName]);
-
-  useEffect(() => {
-    console.log("Updated Selected Role ID:", selectedRoleId);
-  }, [selectedRoleId]);
-
-  //for join Date show in editing
+  // For join Date show in editing
   useEffect(() => {
     if (editingEmployee) {
-      const { nrc } = editingEmployee || "";
-      const nrcParts = nrc ? nrc.match(/^(\d+)([A-Z]+)\((\w+)\)(\d+)$/) : [];
+      console.log("Editing Employee Data:", editingEmployee);
   
+      // Extract NRC from editingEmployee
+      const { nrc } = editingEmployee || "";
+      console.log("Original NRC from editingEmployee:", nrc);
+  
+      // Updated regex to match NRC, excluding the township part
+      const nrcParts = nrc ? nrc.match(/^(\d+)\(([^)]+)\)\s([^\(]+)\(([^)]+)\)(\d+)$/) : null;
+  
+      if (nrcParts) {
+        console.log("Parsed NRC Parts:", nrcParts);
+      } else {
+        console.log("No NRC match found, using empty values.");
+      }
+  
+      // Update state with NRC data, excluding the third part (nrcTownship)
       setEmployeeData(prevState => ({
         ...prevState,
-        ...editingEmployee,
         joinDate: editingEmployee.joinDate ? new Date(editingEmployee.joinDate).toISOString().split("T")[0] : "",
         dob: editingEmployee.dob ? new Date(editingEmployee.dob).toISOString().split("T")[0] : "",
         nrcRegion: nrcParts?.[1] || "",
-        nrcTownship: nrcParts?.[2] || "",
-        nrcType: nrcParts?.[3] || "",
-        nrcDetails: nrcParts?.[4] || ""
+        nrcTownship: "", // Leave it empty to exclude the township part
+        nrcType: nrcParts?.[3] || "", // Use the fourth part for nrcType
+        nrcDetails: nrcParts?.[4] || "", // Use the fifth part for nrcDetails
       }));
     }
   }, [editingEmployee]);
   
   
-
+  
+  
+  
 // Generic handle change function
 const handleChange = (e) => {
   const { name, value } = e.target;
-  
+
   // Check for specific fields (department, position, role)
   if (name === "departmentId") {
     setSelectedDepartmentId(value);
@@ -166,25 +148,17 @@ const handleChange = (e) => {
     console.log("Selected Role ID:", value);
   }
 
-  // Update NRC field dynamically
-  if (["nrcRegion", "nrcTownship", "nrcType", "nrcDetails"].includes(name)) {
-    setEmployeeData((employeeData) => ({
-      ...employeeData,
-      nrc: `${employeeData.nrcRegion || ""}${employeeData.nrcTownship || ""}${employeeData.nrcType || ""}${employeeData.nrcDetails || ""}`,
-      [e.target.name]: e.target.value
-    }));
-  } else {
-    // Update other fields
-    setEmployeeData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  }
-};
+  setEmployeeData(prevState => {
+    const updatedData = { ...prevState, [name]: value };
 
-useEffect(() => {
-  console.log("Updated Employee Data after NRC update:", employeeData);
-}, [employeeData]); 
+    // Update NRC dynamically when any NRC field changes
+    if (["nrcRegion", "nrcTownship", "nrcType", "nrcDetails"].includes(name)) {
+      updatedData.nrc = `${updatedData.nrcRegion || ""}${updatedData.nrcTownship || ""}(${updatedData.nrcType || ""})${updatedData.nrcDetails || ""}`;
+    }
+
+    return updatedData;
+  });
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
@@ -331,26 +305,6 @@ useEffect(() => {
                     options={[...new Set(nrcData.data.map(item => item.nrc_code))].map(code => ({ value: code, label: code }))}
                   />
 
-                  
-                  {/* <Form.Control
-                    as="select"
-                    name="nrcTownship"
-                    value={employeeData.nrcTownship}
-                    onChange={handleChange}
-                    className="form-select-lg"
-                    style={{ flex: 2 }}
-                    required
-                  >
-                    <option value="">Township</option>
-                    {nrcData.data
-                      .filter(item => item.nrc_code === employeeData.nrcRegion)
-                      .map((item, index) => (
-                        <option key={index} value={item.name_mm}>
-                          {item.name_en} ({item.name_mm})
-                        </option>
-                      ))}
-                  </Form.Control> */}
-
                   <FormControlField
                     style={{ flex: 2 }}
                     label="Township"
@@ -362,32 +316,34 @@ useEffect(() => {
                       { value: item.name_mm, label: `${item.name_en} (${item.name_mm})` }
                     ))}
                   />
-                  
-                  <Form.Control
-                    as="select"
-                    name="nrcType"
-                    value={employeeData.nrcType}
-                    onChange={handleChange}
-                    className="form-select-lg"
-                    style={{ flex: 1 }}
-                    required
-                  >
-                    <option value="">(N/T/S)</option>
-                    <option value="(N)">(N)</option>
-                    <option value="(T)">(T)</option>
-                    <option value="(S)">(S)</option>
-                  </Form.Control>
-                  
-                  <Form.Control
-                    type="text"
-                    name="nrcDetails"
-                    value={employeeData.nrcDetails}
-                    onChange={handleChange}
-                    placeholder="Details"
-                    style={{ flex: 2 }}
-                    className="form-control-lg"
-                    required
-                  />
+                  <FormControlField
+                  style={{ flex: 1 }}
+                  label="Type"
+                  name="nrcType"
+                  type="select"
+                  value={employeeData.nrcType}
+                  onChange={handleChange}
+                  placeholder="Type"
+                  options={[
+                    { value: "", label: "(N/T/S)" },
+                    { value: "(N)", label: "(N)" },
+                    { value: "(T)", label: "(T)" },
+                    { value: "(S)", label: "(S)" }
+                  ]}
+                />
+
+                  <FormControlField
+                  style={{ flex: 2 }}
+                  label="Details"
+                  name="nrcDetails"
+                  type="text"
+                  value={employeeData.nrcDetails}
+                  onChange={handleChange}
+                  placeholder="Details"
+                  className="form-control-lg"
+                  required
+                />
+
                 </div>
               </Form.Group>
   
@@ -524,7 +480,7 @@ useEffect(() => {
                 />
               </Form.Group>
   
-              <Form.Group className="mb-3">
+              {/* <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Resign Date</Form.Label>
                 <Form.Control
                   type="date"
@@ -533,7 +489,7 @@ useEffect(() => {
                   onChange={handleChange}
                   className="form-control-lg"
                 />
-              </Form.Group>
+              </Form.Group> */}
   
               {!editingEmployee && (
                 <Form.Group className="mb-3">

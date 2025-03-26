@@ -188,7 +188,7 @@ function AdminDashboard() {
                 <i className="bi bi-bar-chart-line me-2"></i>
               Salary History</Link>
 
-                  <Link to="/admin-dashboard/calculate-salary me-2" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <Link to="/admin-dashboard/calculate-salary" className="nav-link" style={{ color: "#FFFFFF" }}>
                   <i className="bi bi-cash-stack" style={{ marginRight: '8px' }}></i>
                 Calculate Salary</Link>
 

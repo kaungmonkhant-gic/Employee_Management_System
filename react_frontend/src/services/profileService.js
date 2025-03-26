@@ -7,7 +7,6 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`; // Add the token to the headers
     }
     config.headers["Content-Type"] = "application/json"; // Explicitly set Content-Type
-    console.log("Token:", localStorage.getItem("token"));
     return config;
     
   },
