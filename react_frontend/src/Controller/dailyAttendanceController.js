@@ -1,6 +1,7 @@
 import dailyAttendanceService from "../services/dailyAttendanceService.js";
 
 const dailyAttendanceController = {
+  
   getAllAttendance: async () => {
     try {
       const attendanceRecords = await dailyAttendanceService.getAllAttendance();

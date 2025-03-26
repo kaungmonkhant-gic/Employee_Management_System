@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
 import { Modal, Button } from "react-bootstrap";
-import LeaveForm from "../common/LeaveForm";
 import apiClient from "../api/apiclient";
 import DataTable from "../common/DataTable";
 import { useNavigate } from "react-router-dom";
@@ -14,94 +12,127 @@ const Attendance = () => {
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [lateTimeDisplay, setLateTimeDisplay] = useState(null);
+  const [isOnLeave, setIsOnLeave] = useState(false); // Track leave status
 
+  // Loa=d Check-in State from Local Storage on Component Mount
+  useEffect(() => {
+    const savedCheckInStatus = localStorage.getItem("isCheckedIn");
+    const savedCheckInTime = localStorage.getItem("checkInTime");
+    const savedLateTime = localStorage.getItem("lateTime");
+    const savedLeaveStatus = localStorage.getItem("isOnLeave"); // Get Leave status from Local Storage
 
-    // Load Check-in State from Local Storage on Component Mount
-    useEffect(() => {
-      const savedCheckInStatus = localStorage.getItem("isCheckedIn");
-      const savedCheckInTime = localStorage.getItem("checkInTime");
-  
-      if (savedCheckInStatus === "true" && savedCheckInTime) {
-        setIsCheckedIn(true);
-        setCheckInTime(savedCheckInTime);
-      }
-    }, []);
-   // Handle check-in
-    const handleCheckIn = async () => {
-      if (isCheckingIn) return;
-      setIsCheckingIn(true);
-    
-      const now = new Date();
-      const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
-    
-      // Define official check-in time (e.g., 9:00 AM)
-      const officialCheckInTime = new Date();
-      officialCheckInTime.setHours(9, 0, 0, 0); // 09:00 AM
-    
-      // Calculate late minutes
-      const lateMin = now > officialCheckInTime ? Math.floor((now - officialCheckInTime) / 60000) : 0;
-    
-      // Prevent multiple check-ins in a day
-      const todayDate = now.toISOString().split("T")[0];
-      const hasCheckedInToday = attendanceData.some(
-        (entry) => entry.date === todayDate && entry.checkInTime
-      );
-    
-      if (hasCheckedInToday) {
-        alert("You have already checked in today.");
-        setIsCheckingIn(false);
-        return;
-      }
-    
+    if (savedCheckInStatus === "true" && savedCheckInTime) {
+      setIsCheckedIn(true);
+      setCheckInTime(savedCheckInTime);
+    }
+
+    if (savedLateTime) {
+      setLateTimeDisplay(savedLateTime);
+    }
+
+    if (savedLeaveStatus === "true") {
+      setIsOnLeave(true); // Disable check-in if the user is on leave
+    }
+
+    // Fetch Attendance Data
+    const fetchAttendanceData = async () => {
       try {
-        console.log("Attempting Check-in:", { formattedTime, lateMin });
-    
-        // Send check-in time & late minutes to backend
-        const newAttendance = await EmpAttendanceService.checkIn(formattedTime, lateMin);
-        console.log("Check-in Successful:", newAttendance);
-    
-        setAttendanceData((prevData) => [...prevData, newAttendance]);
-        setIsCheckedIn(true);
-        setCheckInTime(formattedTime);
-    
-        // ✅ Save Check-in State to Local Storage
-        localStorage.setItem("isCheckedIn", "true");
-        localStorage.setItem("checkInTime", formattedTime);
-    
+        const data = await EmpAttendanceService.getAllAttendance();
+        setAttendanceData(data); // Set the data in the state
       } catch (error) {
-        console.error("Check-in failed:", error.response?.data || error.message);
-      } finally {
-        setIsCheckingIn(false);
+        console.error("Error fetching attendance data:", error);
       }
     };
+
+    fetchAttendanceData();
+  }, []);
+
+  // Helper function to format late time
+    const formatMinutesToHours = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  };
+
+  // Handle check-in
+  const handleCheckIn = async () => {
+    if (isCheckingIn || isOnLeave) return; // Prevent check-in if user is on leave or already checking in
+    setIsCheckingIn(true);
+  
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
+  
+    // Define official check-in time (e.g., 9:00 AM)
+    const officialCheckInTime = new Date();
+    officialCheckInTime.setHours(9, 0, 0, 0); // 09:00 AM
+  
+    // Calculate late minutes
+    const lateMin = now > officialCheckInTime ? Math.floor((now - officialCheckInTime) / 60000) : 0;
+  
+    // Format late time for display
+    const lateTimeFormatted = formatMinutesToHours(lateMin);
+  
+    try {
+      console.log("Attempting Check-in:", { formattedTime, lateMin });
+  
+      // Send check-in time & late minutes to backend
+    const newAttendance = await EmpAttendanceService.checkIn(formattedTime, lateMin);
+    console.log("Check-in Successful:", newAttendance);
+
+    // Add the new attendance data to the state
+    setAttendanceData((prevData) => {
+      const updatedData = [...prevData, newAttendance];
+      console.log("Updated attendance data:", updatedData); // Log updated state
+      return updatedData;
+    });
     
+    setIsCheckedIn(true);
+    setCheckInTime(formattedTime);
   
-    // Handle Check-out
-    const handleCheckOut = async () => {
-      if (isCheckingOut) return;
-      setIsCheckingOut(true);
+      // Save late time and check-in status for local storage
+      setLateTimeDisplay(lateTimeFormatted);
+      localStorage.setItem("isCheckedIn", "true");
+      localStorage.setItem("checkInTime", formattedTime);
+      localStorage.setItem("lateTime", lateTimeFormatted);
+    } catch (error) {
+      console.error("Check-in failed:", error.response?.data || error.message);
+    } finally {
+      setIsCheckingIn(false);
+    }
+  };
   
-      const now = new Date();
-      const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
-  
-      try {
-        console.log("Attempting Check-out:", { formattedTime });
-  
-        const updatedAttendance = await EmpAttendanceService.checkOut(formattedTime);
-        console.log("Check-out Successful:", updatedAttendance);
-  
-        setAttendanceData((prevData) => [...prevData, updatedAttendance]);
-        setIsCheckedIn(false);
-  
-        // ✅ Remove Check-in State from Local Storage
-        localStorage.removeItem("isCheckedIn");
-        localStorage.removeItem("checkInTime");
-      } catch (error) {
-        console.error("Check-out failed:", error.response?.data || error.message);
-      } finally {
-        setIsCheckingOut(false);
-      }
-    };
+
+  // Handle check-out
+  const handleCheckOut = async () => {
+    if (isCheckingOut || isOnLeave) return; // Prevent check-in if user is on leave or already checking in
+    setIsCheckingOut(true);
+
+
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
+
+    try {
+      console.log("Attempting Check-out:", { formattedTime });
+
+      // Send check-out time to backend
+      const updatedAttendance = await EmpAttendanceService.checkOut(formattedTime);
+      console.log("Check-out Successful:", updatedAttendance);
+
+      // Use spread operator to add the updated attendance to the existing state
+      setAttendanceData((prevData) => [...prevData, updatedAttendance]);
+      setIsCheckedIn(false);
+
+      // Remove check-in data from local storage
+      localStorage.removeItem("isCheckedIn");
+      localStorage.removeItem("checkInTime");
+      localStorage.removeItem("lateTime");
+    } catch (error) {
+      console.error("Check-out failed:", error.response?.data || error.message);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   // Define columns for DataTable
   const columns = [
@@ -110,20 +141,40 @@ const Attendance = () => {
     { field: "employeeName", headerName: "Employee Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "checkInTime", headerName: "Check-In Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "checkOutTime", headerName: "Check-Out Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "lateMin", headerName: "Late Minutes", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    {
+      field: "lateMin",
+      headerName: "Late Minutes",
+      minWidth: 80,
+      flex: 0.5,
+      cellClassName: "text-center",
+      renderCell: ({ value }) => formatMinutesToHours(value || 0),
+    },
+    {  headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "status", headerName: "Leave Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    {  headerName: "Attendance Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (
     <div className="container mt-4">
       <h2>Daily Attendance</h2>
 
-      <Button variant={isCheckedIn ? "danger" : "primary"} onClick={isCheckedIn ? handleCheckOut : handleCheckIn} disabled={isCheckingIn || isCheckingOut}>
-        {isCheckingIn ? "Checking in..." : isCheckingOut ? "Checking out..." : isCheckedIn ? "Check Out": "Check In"}
+      {/* Disable check-in button if user is on leave */}
+      <Button
+        variant={isCheckedIn ? "danger" : "primary"}
+        onClick={isCheckedIn ? handleCheckOut : handleCheckIn}
+        disabled={isCheckingIn || isCheckingOut || isOnLeave} // Disable if checking in or out or on leave
+        className={`px-4 py-2 font-semibold rounded 
+          ${isCheckingIn || isCheckingOut ? "bg-gray-400 cursor-not-allowed" : isCheckedIn ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"}`}
+      >
+        {isCheckingIn ? "Checking in..." : isCheckingOut ? "Checking out..." : isCheckedIn ? "Check Out" : "Check In"}
       </Button>
 
+      {/* Show leave message if user is on leave */}
+      {isOnLeave && <p>You are on leave today. You cannot check in.</p>}
+
+      {/* Render the attendance data */}
       <div className="mt-3">
-        <DataTable fetchData={EmpAttendanceService.getAllAttendance} columns={columns} keyField="id" />
+        <DataTable fetchData={EmpAttendanceService.getAllAttendance} data={attendanceData} columns={columns} keyField="id" />
       </div>
     </div>
   );

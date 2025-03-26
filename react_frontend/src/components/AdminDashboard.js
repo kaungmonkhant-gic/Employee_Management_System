@@ -104,34 +104,40 @@ function AdminDashboard() {
           <Link to="/admin-dashboard" className="nav-link" style={{ color: "#FFFFFF" }}>
           <i className="bi bi-house-door"></i> Dashboard</Link>
           {/* Employee Dropdown */}
-          <div className="nav-link text-light" onClick={() => toggleMenu("employee")} style={{ cursor: "pointer" }}>
-          <i className="bi bi-person-fill"></i>  Employee
-            <i className={`bi ms-2 ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          <div className="nav-link text-light d-flex justify-content-between align-items-center" onClick={() => toggleMenu("employee")}
+           style={{ cursor: "pointer" }}>
+          <span>
+            <i className="bi bi-person-fill"></i> Employee
+          </span>
+          <i className={`bi ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }}/>
           </div>
+
           {menuState.employee && (
             <div className="ms-3">
               <Link to="/admin-dashboard/employee" className="nav-link" style={{ color: "#FFFFFF" }}>
               <i className="bi bi-person-lines-fill"></i>Employee List</Link>
               <Link to="/admin-dashboard/showleave" className="nav-link" style={{ color: "#FFFFFF" }}>
-              <i className="bi bi-calendar-check"></i>Show Leave</Link>
+              <i className="bi bi-calendar-check "></i>Show Leave</Link>
               <Link to="/admin-dashboard/salary" className="nav-link" style={{ color: "#FFFFFF" }}>
               <i className="bi bi-cash"></i>Show Salary</Link>
             </div>
           )}
           {/* Attendance Dropdown */}
-          <div className="nav-link text-light" onClick={() => toggleMenu("attendance")} style={{ cursor: "pointer" }}>
-          <i className="bi bi-person-check"></i>
-          Attendance
-            <i className={`bi ms-2 ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+          <div className="nav-link text-light d-flex justify-content-between align-items-center" onClick={() => toggleMenu("attendance")}
+           style={{ cursor: "pointer" }}>
+          <span>
+          <i className="bi bi-person-check"></i> Attendance
+          </span>
+          <i className={`bi ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }}/>
           </div>
           {menuState.attendance && (
             <div className="ms-3">
               <Link to="/admin-dashboard/attendance/daily-attendance" className="nav-link" style={{ color: "#FFFFFF" }}>
-              <i className="bi bi-alarm"></i>
+              <i className="bi bi-alarm me-2"></i>
               Daily Attendance
               </Link>
               <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link" style={{ color: "#FFFFFF" }}>
-              <i className="bi bi-file-earmark-text"></i>
+              <i className="bi bi-file-earmark-text me-2"></i>
               Attendance Record
               </Link>
             </div>
@@ -139,50 +145,50 @@ function AdminDashboard() {
 
     
           {/* Overtime Dropdown */}
-          <div className="nav-link text-light" onClick={() => toggleMenu("overtime")} style={{ cursor: "pointer" }}>
-          <i className="bi bi-hourglass-split"></i>
-          Overtime
-            <i className={`bi ms-2 ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+
+          <div className="nav-link text-light d-flex justify-content-between align-items-center" onClick={() => toggleMenu("overtime")}
+           style={{ cursor: "pointer" }}>
+          <span>
+          <i className="bi bi-hourglass-split"></i> Overtime
+          </span>
+          <i className={`bi ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }}/>
           </div>
               {menuState.overtime && (
                 <div className="ms-3">
                   <Link to="/admin-dashboard/ot" className="nav-link" style={{ color: "#FFFFFF" }}>
-                  <i className="bi bi-arrow-repeat"></i>
-
-
-                  Incoming OT Request</Link>
+                  <i className="bi bi-arrow-repeat me-2"></i>Incoming Request</Link>
                   <Link to="/admin-dashboard/submit-ot" className="nav-link" style={{ color: "#FFFFFF" }}>
-                  <i className="bi bi-pencil-square"></i>
+                  <i className="bi bi-pencil-square me-2"></i>
 
                   Apply for OT</Link>
                 </div>
             )}
               
           <Link to="/admin-dashboard/admin-Leave" className="nav-link" style={{ color: "#FFFFFF" }}>
-          <i className="bi bi-calendar-x"></i>
+          <i className="bi bi-calendar-x me-2"></i>
           Leave</Link>
 
           <Link to="/admin-dashboard/profile" className="nav-link" style={{ color: "#FFFFFF" }}>
-          <i className="bi bi-person-circle"></i>
+          <i className="bi bi-person-circle me-2"></i>
           Profile</Link>
-          
-          <Link to="/admin-dashboard/generate-payroll" className="nav-link" style={{ color: "#FFFFFF" }}>
-          Generate Payroll</Link>
 
           {/* Salary Dropdown */}
-          <div className="nav-link text-light" onClick={() => toggleMenu("salary")} style={{ cursor: "pointer" }}>
-          <i className="bi bi-coin" style={{ marginRight: '8px' }}></i>
-          Salary
-            <i className={`bi ms-2 ${menuState.salary ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }} />
+
+          <div className="nav-link text-light d-flex justify-content-between align-items-center" onClick={() => toggleMenu("salary")}
+           style={{ cursor: "pointer" }}>
+          <span>
+          <i className="bi bi-coin"></i> Salary
+          </span>
+          <i className={`bi ${menuState.salary ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }}/>
           </div>
-              {menuState.salary && (
+          {menuState.salary && (
                 <div className="ms-3">
 
                   <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
-                <i className="bi bi-bar-chart-line"></i>
+                <i className="bi bi-bar-chart-line me-2"></i>
               Salary History</Link>
 
-                  <Link to="/admin-dashboard/calculate-salary" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <Link to="/admin-dashboard/calculate-salary me-2" className="nav-link" style={{ color: "#FFFFFF" }}>
                   <i className="bi bi-cash-stack" style={{ marginRight: '8px' }}></i>
                 Calculate Salary</Link>
 
