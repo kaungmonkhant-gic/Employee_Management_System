@@ -2,18 +2,15 @@ package ems.com.ems_project.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import ems.com.ems_project.common.LocalTimeDeserializer;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
-@Setter
 @Entity
-@Table(name = "emp_daily_atts")
+@Table(name = "emp_daily_atts", uniqueConstraints = @UniqueConstraint(columnNames = {"employee_id", "date"}))
 @Data
 public class EmpDailyAtts {
 
@@ -27,36 +24,26 @@ public class EmpDailyAtts {
     private LocalDate date;
 
     @Column(name = "check_in_time")
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime checkInTime;
 
-    @Column(name = "updated_check_in_time")
-    private LocalTime updatedCheckInTime;
-
     @Column(name = "check_out_time")
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime checkOutTime;
-
-    @Column(name = "updated_check_out_time")
-    private LocalTime updatedCheckOutTime;
-
-    @Column(name = "lunch_break")
-    private String lunchBreak;
 
     @Column(name = "late_min")
     private Integer lateMin = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private AttendanceStatus status = AttendanceStatus.ABSENT;
+    private AttendanceStatus status;
 
-    @Column(name = "leave_early")
-    private Boolean leaveEarly;
+    @Column(name = "is_ot")
+    private Boolean hasOT = Boolean.FALSE;
 
-    @Column(name = "reason")
-    private String reason;
+    @Column(name = "is_leave")
+    private Boolean hasLeave = Boolean.FALSE;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "request_status")
-    private RequestStatus requestStatus = RequestStatus.PENDING;
     @ManyToOne
     @JoinColumn(name = "leave_id", referencedColumnName = "id")
     private Leave leave;
@@ -69,12 +56,6 @@ public class EmpDailyAtts {
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @JsonIgnore
     private Employee employee;
-
-    // Add the manager field
-    @ManyToOne(fetch = FetchType.LAZY) // Lazy loading is used to prevent unnecessary loading of manager data
-    @JoinColumn(name = "manager_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Employee manager;  // Assuming the manager is also an Employee
 
     public String getId() {
         return id;
@@ -109,24 +90,8 @@ public class EmpDailyAtts {
         this.checkOutTime = checkOutTime;
     }
 
-    public String getLunchBreak() {
-        return lunchBreak;
-    }
-
-    public void setLunchBreak(String lunchBreak) {
-        this.lunchBreak = lunchBreak;
-    }
-
     public void setStatus(AttendanceStatus status) {
         this.status = status;
-    }
-
-    public Boolean getLeaveEarly() {
-        return leaveEarly;
-    }
-
-    public void setLeaveEarly(Boolean leaveEarly) {
-        this.leaveEarly = leaveEarly;
     }
 
     public Ots getOvertime() {
@@ -153,57 +118,31 @@ public class EmpDailyAtts {
         this.leave = leave;
     }
 
-    public LocalTime getUpdatedCheckInTime() {
-        return updatedCheckInTime;
-    }
-
-    public void setUpdatedCheckInTime(LocalTime updatedCheckInTime) {
-        this.updatedCheckInTime = updatedCheckInTime;
-    }
-
-    public LocalTime getUpdatedCheckOutTime() {
-        return updatedCheckOutTime;
-    }
-
-    public void setUpdatedCheckOutTime(LocalTime updatedCheckOutTime) {
-        this.updatedCheckOutTime = updatedCheckOutTime;
-    }
-
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-
-    public Employee getManager() {
-        return manager;
-    }
-
-    public void setManager(Employee manager) {
-        this.manager = manager;
-    }
-
-    public AttendanceStatus getStatus() {
-        return status;
-    }
-
-    public RequestStatus getRequestStatus() {
-        return requestStatus;
-    }
-
-    public void setRequestStatus(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
-    }
-
     public Integer getLateMin() {
         return lateMin;
     }
 
     public void setLateMin(Integer lateMin) {
         this.lateMin = lateMin;
+    }
+
+    public Boolean getHasOT() {
+        return hasOT;
+    }
+
+    public void setHasOT(Boolean hasOT) {
+        this.hasOT = hasOT;
+    }
+
+    public AttendanceStatus getStatus() {
+        return status;
+    }
+
+    public Boolean getHasLeave() {
+        return hasLeave;
+    }
+
+    public void setHasLeave(Boolean hasLeave) {
+        this.hasLeave = hasLeave;
     }
 }

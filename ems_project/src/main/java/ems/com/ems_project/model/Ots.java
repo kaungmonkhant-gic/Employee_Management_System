@@ -8,9 +8,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.sql.Date;
+
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -26,8 +26,8 @@ public class Ots {
     private String id;
 
     @Column(name = "date")
-    @JsonFormat(pattern = "MM-dd-yyyy")
-    private Date date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     @Column(name = "start_time")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
@@ -74,11 +74,11 @@ public class Ots {
     }
 
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

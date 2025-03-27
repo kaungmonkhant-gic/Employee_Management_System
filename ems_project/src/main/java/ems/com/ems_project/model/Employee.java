@@ -10,13 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "employees")
 @Data
@@ -91,6 +87,11 @@ public class Employee implements UserDetails {
     @JsonIgnore
     // This references another Employee
     private Employee manager;
+
+    @ManyToOne
+    @JoinColumn(name = "position_salary_id")
+    @JsonIgnore
+    private PositionSalary positionSalary;
 
     @JsonIgnore
     @Override
@@ -335,4 +336,11 @@ public class Employee implements UserDetails {
         this.password = password;
     }
 
+    public PositionSalary getPositionSalary() {
+        return positionSalary;
+    }
+
+    public void setPositionSalary(PositionSalary positionSalary) {
+        this.positionSalary = positionSalary;
+    }
 }

@@ -1,10 +1,9 @@
 package ems.com.ems_project.controller;
 
 import ems.com.ems_project.dto.LeaveDTO;
-import ems.com.ems_project.model.LeaveDuration;
+import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,41 +30,54 @@ public class LeaveController {
         return ResponseEntity.ok(leaveDTO);
     }
 
-    // Generate a new OT ID
-    @GetMapping("/generate-id")
-    public String generateLeaveId() {
-        return leaveService.generateLeaveId();
-    }
-
     @PostMapping("/submit")
-    public ResponseEntity<LeaveDTO> submitLeaveRequest(@RequestBody LeaveDTO leaveDTO) {
-        try {
-            LeaveDTO createdLeaveDTO = leaveService.submitLeaveRequest(leaveDTO);
+    public ResponseEntity<ReqRes> submitLeaveRequest(@RequestBody LeaveDTO leaveRequest) {
+        // Call the service to submit the leave request
+        ReqRes response = leaveService.submitLeaveRequest(leaveRequest);
 
-            return new ResponseEntity<>(createdLeaveDTO, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        // Check the status code in the response
+        if (response.getStatusCode() == 200) {
+            // Return successful response with status code 200
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else if (response.getStatusCode() == 400) {
+            // Return bad request response in case of validation errors
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            // Return internal server error response in case of unexpected errors
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Endpoint to calculate total leave days based on start date, end date, and leave type
-    @PostMapping("/totaldays")
-    public ResponseEntity<Double> getTotalLeaveDays(@RequestBody LeaveDTO leaveDTO) {
-        // Extract startDate, endDate, and leaveDuration from the request body
-        LocalDate startDate = leaveDTO.getStartDate();
-        LocalDate endDate = leaveDTO.getEndDate();
-        LeaveDuration leaveDuration = leaveDTO.getLeaveDuration();
 
-        // Validate dates
-        if (startDate == null || endDate == null || leaveDuration == null) {
-            return ResponseEntity.badRequest().body(0.0);
-        }
-
-        // Calculate total leave days
-        double totalDays = leaveService.calculateTotalLeaveDays(startDate, endDate, leaveDuration);
-
-        return ResponseEntity.ok(totalDays);
-    }
+//    @PostMapping("/submit")
+//    public ResponseEntity<LeaveDTO> submitLeaveRequest(@RequestBody LeaveDTO leaveDTO) {
+//        try {
+//            LeaveDTO createdLeaveDTO = leaveService.submitLeaveRequest(leaveDTO);
+//
+//            return new ResponseEntity<>(createdLeaveDTO, HttpStatus.CREATED);
+//        } catch (RuntimeException e) {
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        }
+//    }
+//
+//    // Endpoint to calculate total leave days based on start date, end date, and leave type
+//    @PostMapping("/totaldays")
+//    public ResponseEntity<Double> getTotalLeaveDays(@RequestBody LeaveDTO leaveDTO) {
+//        // Extract startDate, endDate, and leaveDuration from the request body
+//        LocalDate startDate = leaveDTO.getStartDate();
+//        LocalDate endDate = leaveDTO.getEndDate();
+//        LeaveDuration leaveDuration = leaveDTO.getLeaveDuration();
+//
+//        // Validate dates
+//        if (startDate == null || endDate == null || leaveDuration == null) {
+//            return ResponseEntity.badRequest().body(0.0);
+//        }
+//
+//        // Calculate total leave days
+//        double totalDays = leaveService.calculateTotalLeaveDays(startDate, endDate, leaveDuration);
+//
+//        return ResponseEntity.ok(totalDays);
+//    }
 
     // Get leave status count based on role (Admin/Manager)
     @GetMapping("/role-status-count")

@@ -3,11 +3,10 @@ import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
-import ems.com.ems_project.model.Employee;
-import ems.com.ems_project.model.Leave;
-import ems.com.ems_project.model.Ots;
-import ems.com.ems_project.model.RequestStatus;
+import ems.com.ems_project.model.*;
+import ems.com.ems_project.repository.DailyAttendanceRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
+import ems.com.ems_project.repository.LeaveRepository;
 import ems.com.ems_project.repository.OtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +32,12 @@ public class OtService {
     private EmployeeService employeeService;
     @Autowired
     private JWTUtils jwtutils;
+    @Autowired
+    private AttendanceService attendanceService;
+    @Autowired
+    private LeaveRepository leaveRepository;
+    @Autowired
+    private DailyAttendanceRepository attendanceRepository;
 
 
     public List<OtDTO> getOtRecordRoleBased(String token) {
@@ -92,6 +97,73 @@ public class OtService {
     }
 
 
+//    public OtDTO submitOTRequest(OtDTO requestDTO) {
+//
+//        //  Get the logged-in username (email) from JWT token
+//        String loggedInUsername = getLoggedInUsername();
+//
+//        // Fetch employee from the database using the email (logged-in username)
+//
+//        Employee employee = employeeRepository.findByEmail(loggedInUsername)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
+//
+//        // Check if the employee has a leave on the given date using the custom query
+//        Optional<Leave> leave = leaveRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
+//        if (leave.isPresent()) {
+//            // If the leave exists, prevent OT submission
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request cannot be submitted while on leave.");
+//        }
+//
+//        // Check if the employee is marked as "Present" for the given date using EmpDailyAtts
+//        EmpDailyAtts attendance = attendanceRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
+//        if (attendance == null || !AttendanceStatus.PRESENT.equals(attendance.getStatus())) {
+//            // If no attendance record or status is not "Present", prevent OT submission
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted if you are marked as Present.");
+//        }
+//
+//        // Check if the employee has a check-in time for the given date
+//        if (attendance.getCheckInTime() == null) {
+//            // If there is no check-in time, prevent OT submission
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted after check-in.");
+//        }
+//
+//        // Assign the employee's manager (if they have one). Manager will be null for managers.
+//        Employee manager = null;
+//        if (!"Manager".equals(employee.getRole().getRoleName())) {
+//            manager = employee.getManager();  // Get the manager if the employee is not a manager
+//        }
+//
+//        // Generate OT ID
+//        String otId = generateOtId();
+//
+//        //  Create and save OT request
+//        Ots ot = new Ots();
+//        ot.setId(otId); // Set the generated OT ID
+//        ot.setEmployee(employee);// Automatically set logged-in employee
+//        ot.setManager(manager);
+//        ot.setDate(requestDTO.getDate());
+//        ot.setStartTime(requestDTO.getStartTime());
+//        ot.setEndTime(requestDTO.getEndTime());
+//        ot.setOtTime(requestDTO.getOtTime());
+//        ot.setReason(requestDTO.getReason());
+//        ot.setStatus(requestDTO.getOtStatus());
+//
+//        if ("Manager".equals(employee.getRole().getRoleName())) {
+//            ot.setStatus(RequestStatus.APPROVED);
+//            // Save OT object to the repository
+//            Ots savedOt = otRepository.save(ot);
+//            // Update attendance with OT details
+//            attendanceService.updateOTForAttendance(ot.getEmployee(), ot.getDate(), savedOt);// Approve the leave if the employee is a manager
+//        } else {
+//            ot.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
+//        }
+//        // Save OT object to the repository
+//        Ots savedOt = otRepository.save(ot);
+//
+//        // Return an OtDTO response including employeeName and managerName
+//        return new OtDTO(savedOt, employee, manager);
+//    }
+
     public OtDTO submitOTRequest(OtDTO requestDTO) {
 
         //  Get the logged-in username (email) from JWT token
@@ -149,6 +221,8 @@ public class OtService {
                 .map(ots-> new OtDTO(ots, ots.getEmployee(), ots.getManager()))
                 .collect(Collectors.toList());
     }
+
+
     public OtDTO processOTRequest(String otId, String action, String rejectionReason) {
         // Get the logged-in username (email) from JWT token
         String loggedInUsername = getLoggedInUsername();
@@ -171,13 +245,18 @@ public class OtService {
             if ("approve".equalsIgnoreCase(action)) {
                 ot.setStatus(RequestStatus.APPROVED);
                 ot.setRejectionReason(null);  // Clear rejection reason if approving
+
+
+                // Update attendance with OT details
+                attendanceService.updateOTForAttendance(ot.getEmployee(), ot.getDate(), ot);
+
             } else if ("reject".equalsIgnoreCase(action)) {
                 // If rejecting, a rejection reason must be provided
                 if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
                 }
                 ot.setStatus(RequestStatus.REJECTED);
-                ot.setRejectionReason(rejectionReason);  // Set rejection reason
+                ot.setRejectionReason(rejectionReason);
             }
         }
         // Check if Admin is marking OT as paid
@@ -197,12 +276,54 @@ public class OtService {
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve', 'reject', or 'paid'.");
         }
+
         // Save the updated OT request to the database
         Ots updatedOt = otRepository.save(ot);
-
-        // Return updated OT DTO with rejection reason
         return new OtDTO(updatedOt, ot.getEmployee(), ot.getManager());
     }
+
+//    public OtDTO processOTRequest(String otId, String action, String rejectionReason) {
+//        // Get the logged-in username (email) from JWT token
+//        String loggedInUsername = getLoggedInUsername();
+//
+//        // Fetch the logged-in employee (manager)
+//        Employee employee = employeeRepository.findByEmail(loggedInUsername)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found"));
+//
+//        // Fetch the OT request by ID
+//        Ots ot = otRepository.findById(otId)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OT request not found"));
+//
+//        // Check if Manager is approving/rejecting OT
+//        if ("approve".equalsIgnoreCase(action) || "reject".equalsIgnoreCase(action)) {
+//            // Ensure only the assigned manager can approve/reject
+//            if (!ot.getManager().getEmail().equals(loggedInUsername)) {
+//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the assigned manager can process this OT request.");
+//            }
+//
+//            if ("approve".equalsIgnoreCase(action)) {
+//                ot.setStatus(RequestStatus.APPROVED);
+//                ot.setRejectionReason(null);
+////                Update attendance with OT details
+////                attendanceService.updateOTForAttendance(ot.getEmployee(), ot.getDate(), ot);
+//            } else if ("reject".equalsIgnoreCase(action)) {
+//                // If rejecting, a rejection reason must be provided
+//                if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rejection reason is required.");
+//                }
+//                ot.setStatus(RequestStatus.REJECTED);
+//                ot.setRejectionReason(rejectionReason);  // Set rejection reason
+//            }
+//        }
+//        else {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve', 'reject', or 'paid'.");
+//        }
+//        // Save the updated OT request to the database
+//        Ots updatedOt = otRepository.save(ot);
+//
+//        // Return updated OT DTO with rejection reason
+//        return new OtDTO(updatedOt, ot.getEmployee(), ot.getManager());
+//    }
     public Map<String, Long> getOtStatusCountForLoggedInUser() {
         // Find employee by email from SecurityContext
         Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())

@@ -21,33 +21,103 @@ const EmployeeSalaryCalculation = () => {
   useEffect(() => {
     const fetchSalaryData = async () => {
       if (!selectedDate) return;
-
+    
+      setLoading(true);
+      const selectedMonth = selectedDate.month() + 1; // Month is zero-based, so add 1
+      const selectedYear = selectedDate.year();
+      const selectedSalaryMonth = `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`;
+    
+      console.log(`Fetching salary for: ${selectedSalaryMonth}`);
+    
       try {
-        setLoading(true);
-        const selectedMonth = selectedDate.month() + 1;
-        const selectedYear = selectedDate.year();
-
-        const response = await axios.get(`${API_BASE_URL}/salary/data`, {
+        const historyResponse = await axios.get(`${API_BASE_URL}/salary-history`, {
           params: { year: selectedYear, month: selectedMonth },
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        const updatedEmployees = response.data.map((emp) => ({
-          ...emp,
-          bonus: emp.bonus || 0,
-          manualAdjustment: emp.manualAdjustment || 0,
-        }));
-
-        setEmployees(updatedEmployees);
+    
+        const confirmedSalaries = historyResponse.data.filter(
+          (emp) => emp.salaryMonth === selectedSalaryMonth
+        );
+    
+        if (confirmedSalaries.length > 0) {
+          console.log("Confirmed salary data found:", confirmedSalaries);
+    
+          setEmployees(
+            confirmedSalaries.map((emp) => ({
+              ...emp,
+              finalSalary: emp.finalSalary ?? "0.00", // Ensure finalSalary is set
+            }))
+          );
+    
+          console.log("Final Salary in State:", confirmedSalaries.map(emp => emp.finalSalary));
+          
+          setConfirmed(true);
+        } else {
+          console.log("No confirmed salary data, fetching unconfirmed data.");
+          setConfirmed(false);
+          await fetchUnconfirmedSalaryData(selectedYear, selectedMonth);
+        }
       } catch (error) {
         console.error("Error fetching salary data:", error);
       } finally {
         setLoading(false);
       }
     };
-
+    
+      
+    console.log("Fetching salary data for:", selectedDate?.format("YYYY-MM"));
     fetchSalaryData();
-  }, [selectedDate, token]);
+  }, [selectedDate, token]); // Make sure `selectedDate` is in the dependency array
+  
+
+  const fetchUnconfirmedSalaryData = async (year, month) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/salary/data`, {
+        params: { year, month },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      console.log("Unconfirmed salary data:", response.data);
+      const selectedSalaryMonth = `${year}-${month.toString().padStart(2, "0")}`; // Format as YYYY-MM
+
+      setEmployees(
+        response.data.map((emp) => {
+          // Ensure values are numbers (or 0 if missing)
+          const basicSalary = Number(emp.basicSalary) || 0;
+          const otTime = Number(emp.otTime) || 0;
+          const unpaidLeave = Number(emp.unpaidLeave) || 0;
+          const lateMinutes = Number(emp.lateMinutes) || 0;
+          const bonus = Number(emp.bonus) || 0;
+          const manualAdjustment = Number(emp.manualAdjustment) || 0;
+          const salaryMonth = selectedSalaryMonth;
+  
+          // Avoid division by zero
+          const validWorkingDays = workingDays > 0 ? workingDays : 1;
+  
+          // Calculate OT Fee
+          const totalOtFee = (basicSalary * (otTime / 60)) / (validWorkingDays * 8);
+  
+          // Calculate Leave Over Fee
+          const totalLeaveOverFee = (basicSalary * unpaidLeave) / validWorkingDays;
+  
+          // Calculate Late Deduction Fee (Ensure it's a number)
+          const lateDeductionFee = Number(calculateLateDeductionFee({ ...emp, basicSalary })) || 0;
+  
+          return {
+            ...emp,
+            bonus,
+            manualAdjustment,
+            salaryMonth,
+            otFee: totalOtFee.toFixed(2),
+            leaveOverFee: totalLeaveOverFee.toFixed(2),
+            lateOverFee: lateDeductionFee.toFixed(2),  // ✅ Fixed
+          };
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching unconfirmed salary data:", error);
+    }
+  };
 
   // Function to calculate total salary dynamically
   const calculateTotalSalary = (emp) => {
@@ -57,8 +127,8 @@ const EmployeeSalaryCalculation = () => {
     const otTimeInHours = emp.otTime / 60;
     
     // Calculate OT Fee (based on monthly salary and monthly working hours)
-    const totalOtFee = (emp.basicSalary * otTimeInHours) / (workingDays * 8); // assuming 8 working hours per day
-    
+    const totalOtFee = (emp.basicSalary * 12 * 2 * otTimeInHours) / (52 * 44);
+
     // Calculate Leave Deduction (based on unpaid leave days)
     const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / workingDays;
     
@@ -96,30 +166,6 @@ const EmployeeSalaryCalculation = () => {
       )
     );
   };
-
-  // Confirm salary and save to database
-  // const confirmSalary = async () => {
-  //   try {
-  //     await axios.post(
-  //       `${API_BASE_URL}/salary-history/save`,
-  //       employees.map((emp) => ({
-  //         ...emp,
-  //         finalSalary: calculateTotalSalary(emp),
-  //       })),
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-
-  //     // await axios.delete(`${API_BASE_URL}/clear-temp`, {
-  //     //   headers: { Authorization: `Bearer ${token}` },
-  //     // });
-
-  //     alert("Salary confirmed successfully!");
-  //     setEmployees([]);
-  //   } catch (error) {
-  //     console.error("Error confirming salaries:", error);
-  //     alert("Failed to confirm salaries. Please try again.");
-  //   }
-  // };
   
   // Confirm salary and save to the backend
 const confirmSalary = async () => {
@@ -178,18 +224,24 @@ const confirmSalary = async () => {
 
 // Function to calculate the late deduction fee
 const calculateLateDeductionFee = (emp) => {
+  const basicSalary = Number(emp.basicSalary) || 0;
+  const lateMinutes = Number(emp.lateMinutes) || 0;
+  const validWorkingDays = workingDays > 0 ? workingDays : 1;
+
   let lateHours = 0;
-  if (emp.lateMinutes > 0 && emp.lateMinutes <= 30) {
-    lateHours = 0.5; // Deduct 30 minutes salary
-  } else if (emp.lateMinutes > 30 && emp.lateMinutes <= 60) {
-    lateHours = 1; // Deduct 1 hour salary
-  } else if (emp.lateMinutes > 60) {
-    lateHours = 2; // Deduct 2 hours salary
+  if (lateMinutes > 0 && lateMinutes <= 30) {
+    lateHours = 0.5;
+  } else if (lateMinutes > 30 && lateMinutes <= 60) {
+    lateHours = 1;
+  } else if (lateMinutes > 60) {
+    lateHours = 2;
   }
-  
-  // Calculate Late Deduction Fee
-  return (emp.basicSalary / (workingDays * 8)) * lateHours; // assuming 8 hours a day
+
+  // Ensure it returns a valid number
+  const lateFee = (basicSalary / (validWorkingDays * 8)) * lateHours;
+  return isNaN(lateFee) ? 0 : lateFee;  // ✅ Fixed
 };
+
 
    // Function to download the confirmed salary details as an Excel file
    const downloadExcel = () => {
@@ -200,9 +252,9 @@ const calculateLateDeductionFee = (emp) => {
         "Basic Salary": emp.basicSalary,
         "House Allowance": emp.houseAllowance,
         "Transportation": emp.transportation,
-        "OT Time (minutes)": emp.otTime,
-        "Late Minutes": emp.lateMinutes,
-        "Unpaid Leaves": emp.unpaidLeave,
+        "OT Fee": emp.otFee,
+        "Late Over Fee": emp.lateOverFee,
+        "Unpaid Leaves": emp.leaveOverFee,
         "Bonus": emp.bonus,
         "Manual Adjustment": emp.manualAdjustment,
         "Final Salary": calculateTotalSalary(emp),
@@ -220,31 +272,40 @@ const calculateLateDeductionFee = (emp) => {
 
 
   const columns = [
+    { field: "salaryMonth", headerName: "Salary Month", flex: 1 },
     { field: "employeeId", headerName: "Emp ID", flex: 0.5 },
     { field: "employeeName", headerName: "Emp Name", flex: 1 },
     { field: "basicSalary", headerName: "Basic Salary", flex: 1 },
     { field: "houseAllowance", headerName: "House Allowance", flex: 1 },
     { field: "transportation", headerName: "Transportation", flex: 1 },
-    { field: "otTime", headerName: "Total OT Hours", flex: 1, 
-      render: (row) => <span>{(row.otTime / 60).toFixed(2)} hours</span> }, // Convert OT time to hours
-    { field: "lateMinutes", headerName: "Late Minutes", flex: 1 },
-    { field: "unpaidLeave", headerName: "Unpaid Leaves", flex: 1 },
-    {
-      field: "bonus",
-      headerName: "     Bonus    ",
-      flex: 1, // Normal flex value
-      minWidth: 400, // Minimum width of the column
-      render: (row) => (
-        <input
-          type="number"
-          value={row.bonus ?? ""}
-          onChange={(e) => handleInputChange(row.employeeId, "bonus", Number(e.target.value))}
-          className="form-control text-center"
-        />
-      ),
-    },
-    
-    
+    // Show OT Fee
+  // Ensure values are never null
+  { field: "otFee", headerName: "OT Fee", flex: 1, render: (row) => <span>{row.otFee ?? "0.00"}</span> },
+  { field: "lateOverFee", headerName: "Late Over Fee", flex: 1, render: (row) => <span>{row.lateOverFee ?? "0.00"}</span> },
+  { field: "leaveOverFee", headerName: "Leave Over Fee", flex: 1, render: (row) => <span>{row.leaveOverFee ?? "0.00"}</span> },
+  {
+    field: "bonus",
+    headerName: "Bonus",
+    flex: 1,
+    render: (row) => (
+      <input
+        type="number"
+        value={row.bonus ?? ""}
+        min="0" // 🔹 Prevents negative values in UI
+        onChange={(e) => {
+          let value = Number(e.target.value);
+          if (value < 0) {
+            alert("Bonus cannot be negative!"); // 🔹 Show alert for invalid input
+            return;
+          }
+          !confirmed && handleInputChange(row.employeeId, "bonus", value);
+        }}
+        className="form-control text-center"
+        disabled={confirmed} // Disable if data is confirmed
+      />
+    ),
+  },
+  
     {
       field: "manualAdjustment",
       headerName: "Manual Adjustment",
@@ -253,17 +314,26 @@ const calculateLateDeductionFee = (emp) => {
         <input
           type="number"
           value={row.manualAdjustment ?? ""}
-          onChange={(e) => handleInputChange(row.employeeId, "manualAdjustment", Number(e.target.value))}
+          onChange={(e) =>
+            !confirmed && handleInputChange(row.employeeId, "manualAdjustment", Number(e.target.value))
+          }
           className="form-control text-center"
+          disabled={confirmed} // Disable if data is confirmed
         />
       ),
     },
+    
     {
-      field: "totalSalary",
+      field: "finalSalary",
       headerName: "Total Salary",
       flex: 1,
-      render: (row) => <span>{calculateTotalSalary(row)}</span>,
+      render: (row) => (
+        <span>
+          {confirmed ? row.finalSalary : calculateTotalSalary(row)}
+        </span>
+      ),
     },
+    
   ];
 
   return (
@@ -293,28 +363,43 @@ const calculateLateDeductionFee = (emp) => {
 
           <Col span={8}>
             <Form.Item label="Select Month & Year">
-              <DatePicker
-                picker="month"
-                value={selectedDate}
-                onChange={setSelectedDate}
-                className="form-control"
-                format="MMMM YYYY"
-              />
+            <DatePicker
+  picker="month"
+  value={selectedDate}
+  onChange={(date) => {
+    if (date) {
+      setSelectedDate(dayjs(date));
+    }
+  }}
+  
+  className="form-control"
+  format="MMMM YYYY"
+/>
+
             </Form.Item>
           </Col>
         </Row>
 
         <Row>
+        {/* Show "Confirm Salary" button only if not confirmed */}
+        {!confirmed && (
+          <Col span={12} className="text-center">
+            <Button type="primary" onClick={confirmSalary}>
+              Confirm Salary
+            </Button>
+          </Col>
+        )}
 
-          {/* Enable Download Button Only After Confirmation */}
-          {confirmed && (
-            <Col span={12} className="text-center">
-              <Button className="btn btn-primary" onClick={downloadExcel}>
-                Download Excel
-              </Button>
-            </Col>
-          )}
-        </Row>
+        {/* Show "Download Excel" button only if confirmed */}
+        {confirmed && (
+          <Col span={12} className="text-center">
+            <Button className="btn btn-success" onClick={downloadExcel}>
+              Download Excel
+            </Button>
+          </Col>
+        )}
+      </Row>
+
       </Form>
 
       {loading ? (
@@ -335,14 +420,14 @@ const calculateLateDeductionFee = (emp) => {
 <Row gutter={24}>
 
         <Col span={12} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-    <Button 
+    {/* <Button 
       type="primary" 
       size="large"
       onClick={confirmSalary}
       style={{ width: "100%", maxWidth: "250px", fontSize: "16px", fontWeight: "bold", padding: "10px" }}
     >
       Confirm Salary
-    </Button>
+    </Button> */}
   </Col>
   </Row>
   </Form>

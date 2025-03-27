@@ -3,8 +3,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ems.com.ems_project.model.*;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
 
 @Data
 public class SalaryDTO {
@@ -25,20 +23,26 @@ public class SalaryDTO {
     @JsonFormat(pattern = "yyyy-MM")
     private String salaryMonth; // From Employee Leave/
 
-    public SalaryDTO() {
+
+    public SalaryDTO(Employee employee, Integer lateMinutes, Integer otTime, Double unpaidLeave) {
+        this.employeeId = employee.getId();
+        this.employeeName = employee.getName();
+
+        // Fetch salary details from the employee's positionSalary
+        PositionSalary positionSalary = employee.getPositionSalary();
+
+        this.basicSalary = (positionSalary != null && positionSalary.getBasicSalary() != null)
+                ? positionSalary.getBasicSalary() : 0.0;
+        this.houseAllowance = (positionSalary != null && positionSalary.getHouseAllowance() != null)
+                ? positionSalary.getHouseAllowance() : 0.0;
+        this.transportation = (positionSalary != null && positionSalary.getTransportation() != null)
+                ? positionSalary.getTransportation() : 0.0;
+
+        this.lateMinutes = (lateMinutes != null) ? lateMinutes : 0;
+        this.otTime = (otTime != null) ? otTime : 0;
+        this.unpaidLeave = (unpaidLeave != null) ? unpaidLeave : 0.0;
     }
 
-    public SalaryDTO(EmployeeSalary employeeSalary, String employeeName, Integer lateMinutes, Integer otTime, Double unpaidLeave) {
-        this.employeeId = employeeSalary.getEmployee().getId();
-        this.employeeName = employeeName;
-        this.basicSalary = employeeSalary.getPositionSalary().getBasicSalary();
-        this.houseAllowance = employeeSalary.getPositionSalary().getHouseAllowance();
-        this.transportation = employeeSalary.getPositionSalary().getTransportation();
-        this.lateMinutes = (lateMinutes != null) ? lateMinutes : 0;  // default value if null
-        this.otTime = (otTime != null) ? otTime : 0;  // default value if null
-        this.unpaidLeave = (unpaidLeave != null) ? unpaidLeave : 0.0;
-        // totalSalary can be removed if no calculation is needed
-    }
 
     public SalaryDTO(TempSalaryHistory tempSalaryHistory) {
         this.employeeId = tempSalaryHistory.getEmployee().getId();

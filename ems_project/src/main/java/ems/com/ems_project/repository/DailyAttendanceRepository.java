@@ -22,8 +22,6 @@ public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, I
    @Query(value = "SELECT id FROM emp_daily_atts ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLastAttendanceId();
 
-    List<EmpDailyAtts> findByManagerId(String id);
-
     @Query("SELECT COALESCE(SUM(e.lateMin), 0) FROM EmpDailyAtts e WHERE e.employee.id = :employeeId")
     Integer findTotalLateMinutesByEmployeeId(String employeeId);
 

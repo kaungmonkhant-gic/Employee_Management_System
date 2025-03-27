@@ -1,5 +1,6 @@
 package ems.com.ems_project.repository;
 
+import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.EmployeeLeave;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,5 @@ public interface EmployeeLeaveRepository extends JpaRepository<EmployeeLeave, St
     void deleteByEmployeeId(String employeeId);
     @Query("SELECT COALESCE(SUM(e.unpaidLeave), 0.0) FROM EmployeeLeave e WHERE e.employee.id = :employeeId")
     Double findTotalUnpaidLeaveByEmployeeId(String employeeId);
+
 }

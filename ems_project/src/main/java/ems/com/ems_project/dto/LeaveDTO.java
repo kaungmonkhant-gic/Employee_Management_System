@@ -11,9 +11,9 @@ public class LeaveDTO {
     private String id;
     private LeaveType leaveType;
     private LeaveDuration leaveDuration;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private LocalDate startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private LocalDate endDate;
     private Double totalDays;
     private String reason;

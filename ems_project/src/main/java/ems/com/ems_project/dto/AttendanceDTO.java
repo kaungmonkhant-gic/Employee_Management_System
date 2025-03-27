@@ -16,37 +16,33 @@ public class AttendanceDTO {
 
     private String id;
     private LocalDate date;
+    private String employeeName;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime checkInTime;
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime checkOutTime;
-    private String lunchBreak;
     private Integer lateMin;
-    private Boolean leaveEarly;
-
-    private String employeeName;
-    private String managerName;
-
+    private Boolean hasOT = Boolean.FALSE;
 
     private String leaveId;  // New field to store leave ID
-    private AttendanceStatus status = AttendanceStatus.ABSENT;
+    private AttendanceStatus status;
 
     // No-argument constructor for ModelMapper
     public AttendanceDTO() {
-    } // New field to track attendance status (LEAVE, PRESENT, HALF_LEAVE)
-    public AttendanceDTO(EmpDailyAtts attendance, Employee employee, Employee manager) {
+    }
+    public AttendanceDTO(EmpDailyAtts attendance, Employee employee) {
         this.id = attendance.getId();
         this.date = attendance.getDate();
         // Directly set check-in and check-out times with default fallbacks if needed
         this.checkInTime = attendance.getCheckInTime() != null ? attendance.getCheckInTime() : LocalTime.MIDNIGHT;
         this.checkOutTime = attendance.getCheckOutTime() != null ? attendance.getCheckOutTime() : LocalTime.MIDNIGHT;
-        this.lunchBreak = attendance.getLunchBreak();
         this.lateMin = attendance.getLateMin();
-        this.leaveEarly = attendance.getLeaveEarly();
+        this.hasOT = attendance.getHasOT();
         this.status = attendance.getStatus();
 
         // Employee and Manager names
         this.employeeName = (employee != null) ? employee.getName() : null;
-        this.managerName = (manager != null) ? manager.getName() : null;
+//        this.managerName = (manager != null) ? manager.getName() : null;
 
         // Handle leave ID (could be null if there's no leave associated)
         this.leaveId = (attendance.getLeave() != null) ? attendance.getLeave().getId() : null;
@@ -88,14 +84,6 @@ public class AttendanceDTO {
         this.checkOutTime = checkOutTime;
     }
 
-    public String getLunchBreak() {
-        return lunchBreak;
-    }
-
-    public void setLunchBreak(String lunchBreak) {
-        this.lunchBreak = lunchBreak;
-    }
-
     public Integer getLateMin() {
         return lateMin;
     }
@@ -103,27 +91,6 @@ public class AttendanceDTO {
     public void setLateMin(Integer lateMin) {
         this.lateMin = lateMin;
     }
-
-
-    public Boolean getLeaveEarly() {
-        return leaveEarly;
-    }
-
-    public void setLeaveEarly(Boolean leaveEarly) {
-        this.leaveEarly = leaveEarly;
-    }
-
-
-
-    public String getManagerName() {
-        return managerName;
-    }
-
-    public void setManagerName(String managerName) {
-        this.managerName = managerName;
-    }
-
-
 
     public String getEmployeeName() {
         return employeeName;
@@ -148,4 +115,14 @@ public class AttendanceDTO {
     public void setStatus(AttendanceStatus status) {
         this.status = status;
     }
+
+
+    public Boolean getHasOT() {
+        return hasOT;
+    }
+
+    public void setHasOT(Boolean hasOT) {
+        this.hasOT = hasOT;
+    }
+
 }
