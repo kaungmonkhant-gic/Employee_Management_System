@@ -1,59 +1,58 @@
-// src/pages/attendanceRecord.js
 import React, { useEffect, useState } from "react";
-import attendanceRecordController from "../Controller/attendanceRecordController";
+import AttendanceRecordService from "../services/attendanceRecordService";
 import DataTable from "./common/DataTable";
-import AttendanceForm from "./common/AttendanceForm";
-import { FaEdit, FaTrash } from "react-icons/fa";
+
 
 const AttendanceRecord = () => {
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [editingAttendance,setEditingAttendance] = useState(null);
-  const [HeaderText,setHeaderText] = useState();
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const attendanceData = attendanceRecords.map((record) => ({
+    id: record.id,
+    date: record.date,
+    employeeName: record.employeeName,
+    checkInTime: record.checkInTime,
+    checkOutTime: record.checkOutTime,
+    lateMinutes: record.lateMin,
+    status: record.status,
+    is_ot: record.is_ot,
+  }));
 
-  attendanceData.map((data, index) => { data.id = index + 1; return data; });
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const data = await AttendanceRecordService.fetchAllAttendance();
+        setAttendanceRecords(data);
+      } catch (error) {
+        console.error("Error fetching attendance records:", error);
+      }
+    };
 
-  const handleEdit = (attendance) => {
-    setHeaderText("Edit Attendance");
-    setEditingAttendance(attendance);
-  };
+    fetchAttendance();
+  }, []);
 
-
-  // Define columns for DataTable
+  // Table Columns
   const columns = [
     { field: "id", headerName: "Att.ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "date", headerName: "Date", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "employeeName", headerName: "Employee Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
-    { field: "checkInTime", headerName: "Check-In Time", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "checkOutTime", headerName: "Check-Out Time", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "lateMin", headerName: "Late Minutes", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "lunchBreak", headerName: "Lunch Break", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "status", headerName: "Status", minWidth: 100, flex: 1, cellClassName: "text-center" },
-    { field: "actions",
-      headerName: "Actions",
-      minWidth: 120,
-      flex: 0.8,
+    { field: "date", headerName: "Date", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "employeeName", headerName: "Employee Name", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "checkInTime", headerName: "Check-In Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "checkOutTime", headerName: "Check-Out Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    {
+      field: "lateMin",
+      headerName: "Late Minutes",
+      minWidth: 50,
+      flex: 0.5,
       cellClassName: "text-center",
-      render: (row) => (
-      <div className="d-flex justify-content-center gap-2"> {/* Center actions */}
-      <button onClick={handleEdit(row)}>
-      <FaEdit />
-      </button>
-      <button >
-      <FaTrash />
-      </button>
-      </div>
-            ),
-          },
+    //   renderCell: ({ value }) => formatMinutesToHours(value || 0),
+    },
+    // {  headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "status", headerName: "Leave Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "is_ot",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (
     <div className="container mt-4">
-      <h2>Attendance Record</h2>
-      <div className="mt-3">
-        
-        <DataTable fetchData={attendanceRecordController.fetchAttendance} columns={columns} keyField="id" />
-        {/* <AttendanceForm/> */}
-      </div>
+      <h2>Employee Attendance Records</h2>
+      <DataTable fetchData={AttendanceRecordService.fetchAllAttendance} data={attendanceData} columns={columns} keyField="id" />
     </div>
   );
 };

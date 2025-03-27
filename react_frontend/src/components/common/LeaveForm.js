@@ -30,22 +30,45 @@ const LeaveForm = ({}) => {
     endDateError: "",
   });
 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      const balance = await EmpLeaveRequestController.getLeaveBalance();
-      setLeaveBalance(balance);
-    };
-    fetchBalance();
-  }, []);
+  // useEffect(() => {
+  //   const fetchBalance = async () => {
+  //     const balance = await EmpLeaveRequestController.getLeaveBalance();
+  //     setLeaveBalance(balance);
+  //   };
+  //   fetchBalance();
+  // }, []);
+    // Fetch leave balance when the leaveType changes
+    useEffect(() => {
+      const fetchLeaveBalance = async () => {
+        if (formData.leaveType) {
+          try {
+            const balance = await EmpLeaveRequestController.getLeaveBalance(formData.leaveType);
+            setLeaveBalance(balance);
+          } catch (error) {
+            console.error("Error fetching leave balance:", error);
+          }
+        }
+      };
+  
+      fetchLeaveBalance();
+    }, [formData.leaveType]); // Dependency on leaveType
 
   // Fetch remaining leave days when leave type changes
   useEffect(() => {
-    if (formData.leaveType) {
-      EmpLeaveRequestController.fetchRemainingLeaveDays(formData.leaveType)
-        .then(setRemainingLeaveDays)
-        .catch((error) => console.error("Failed to fetch remaining leave days", error));
-    }
-  }, [formData.leaveType]);
+    const fetchRemainingLeaveDays = async () => {
+      if (formData.leaveType) {
+        try {
+          const remainingDays = await EmpLeaveRequestController.fetchRemainingLeaveDays(formData.leaveType);
+          setRemainingLeaveDays(remainingDays); // Update state with fetched balance
+        } catch (error) {
+          console.error("Failed to fetch remaining leave days:", error);
+        }
+      }
+    };
+  
+    fetchRemainingLeaveDays();
+  }, [formData.leaveType]); // Runs when leaveType changes
+  
 
   // Check if startDate and endDate are working days
   useEffect(() => {
@@ -356,6 +379,23 @@ const LeaveForm = ({}) => {
                 />
               </div>
             </div>
+
+             {/* Leave Balance Display */}
+            {/* Remaining Leave Balance */}
+            {formData.leaveType && (
+            <div className="row align-items-center mb-3">
+            <div className="col-4 text-muted">Remaining Leave Days:</div>
+            <div className="col-8">
+            <input
+              type="text"
+              className="form-control border-0 border-bottom"
+              value={remainingLeaveDays || "0"} // Display remaining days
+              readOnly
+            />
+            </div>
+            </div>
+            )}
+
 
             {/* Reason */}
             <div className="row align-items-center mb-3">

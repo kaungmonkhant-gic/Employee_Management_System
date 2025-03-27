@@ -108,17 +108,9 @@ function LeaveRequests() {
 
       <div className="p-3 border rounded shadow-sm bg-white">
         <h5 className="mb-3">Leave Requests</h5>
-        {/* <p>Available Leave Balance: {availableLeaveDays} days</p> */}
         <Button variant="secondary" onClick={() => setShowModal(true)}>
           Apply for leave
         </Button>
-        {/* <button className="btn btn-primary mb-3">
-            View Confirmed Requests
-          </button> */}
-
-        {/* <Button variant="secondary" className="ms-3" onClick={() => navigate("/employee-dashboard/leave-confirmed")}>
-              Confirmed Requests
-            </Button> */}
 
       </div>
 

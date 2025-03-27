@@ -136,7 +136,7 @@ function AdminDashboard() {
               <i className="bi bi-alarm me-2"></i>
               Daily Attendance
               </Link>
-              <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link" style={{ color: "#FFFFFF" }}>
+              <Link to="/admin-dashboard/attendance/attendance-record" className="nav-link" style={{ color: "#FFFFFF" }}>
               <i className="bi bi-file-earmark-text me-2"></i>
               Attendance Record
               </Link>
@@ -184,12 +184,12 @@ function AdminDashboard() {
           {menuState.salary && (
                 <div className="ms-3">
 
-                  <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
+                <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
                 <i className="bi bi-bar-chart-line me-2"></i>
               Salary History</Link>
 
-                  <Link to="/admin-dashboard/calculate-salary me-2" className="nav-link" style={{ color: "#FFFFFF" }}>
-                  <i className="bi bi-cash-stack" style={{ marginRight: '8px' }}></i>
+                  <Link to="/admin-dashboard/calculate-salary" className="nav-link" style={{ color: "#FFFFFF" }}>
+                  <i className="bi bi-cash-stack me-2" style={{ marginRight: '8px' }}></i>
                 Calculate Salary</Link>
 
                 </div>
