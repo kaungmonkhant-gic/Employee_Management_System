@@ -64,34 +64,27 @@ function ManagerDashboard() {
               style={{ color: "white" }}
             />
           </div> */}
-          <div 
-  className="nav-link text-white d-flex justify-content-between align-items-center" 
-  onClick={() => toggleMenu("employee")} 
-  style={{ 
-    cursor: "pointer", 
-    transition: "background 0.3s ease", 
-    padding: "10px", 
-    borderRadius: "5px" 
-  }}
-  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
-  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
->
-  <span>
-    <i className="bi bi-person-fill me-2"></i> Employee
-  </span>
-  <i 
-    className={`bi ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} 
-    style={{ color: "white", transition: "transform 0.3s ease" }}
-  />
-</div>
+        <div className="nav-link text-white d-flex justify-content-between align-items-center" onClick={() => toggleMenu("employee")} 
+          style={{ 
+                 cursor: "pointer", 
+                 transition: "background 0.3s ease", 
+                 padding: "10px", 
+                 borderRadius: "5px" 
+                }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+          <span><i className="bi bi-person-fill me-2"></i> Employee</span>
+          <i className={`bi ${menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} 
+          style={{ color: "white", transition: "transform 0.3s ease" }}/>
+        </div>
 
           {menuState.employee && (
             <div className="ms-3">
               <Link to="/manager-dashboard/view-employeelist" className="nav-link text-white">
-              <i className="bi bi-person-lines-fill"></i>Employee List
+              <i className="bi bi-person-lines-fill me-2"></i>Employee List
               </Link>
               <Link to="/manager-dashboard/view-leave-balance" className="nav-link text-white">
-              <i className="bi bi-calendar-check"></i>View Leave Balance
+              <i className="bi bi-calendar-check me-2"></i>Leave Balance
               </Link>
               {/* <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-white">
                 Employee Leave
@@ -99,31 +92,30 @@ function ManagerDashboard() {
             </div>
           )}
 
+         
           {/* Attendance Dropdown */}
-          <Link to="/manager-dashboard/manager-leave" className="nav-link text-white d-flex align-items-center" 
-          style={{ 
-                  transition: "background 0.3s ease, padding 0.2s ease", 
-                  padding: "10px", 
-                  borderRadius: "5px"
-                }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-          <i className="bi bi-envelope me-2"></i> Leave
-          </Link>
-
-          {menuState.attendance && (
-            <div className="ms-3">
-              <Link to="/manager-dashboard/attendance/daily-attendance" className="nav-link text-white">
-                Daily Attendance
-              </Link>
-              <Link to="/manager-dashboard/attendance/attendance-Record" className="nav-link text-white">
-                Attendance Record
-              </Link>
-            </div>
-          )}
+                    <div className="nav-link text-light d-flex justify-content-between align-items-center" onClick={() => toggleMenu("attendance")}
+                     style={{ cursor: "pointer" }}>
+                    <span>
+                    <i className="bi bi-person-check"></i> Attendance
+                    </span>
+                    <i className={`bi ${menuState.attendance ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} style={{ color: "white" }}/>
+                    </div>
+                    {menuState.attendance && (
+                      <div className="ms-3">
+                        <Link to="/manager-dashboard/attendance/manager-daily-attendance" className="nav-link" style={{ color: "#FFFFFF" }}>
+                        <i className="bi bi-alarm me-2"></i>
+                        Daily Attendance
+                        </Link>
+                        <Link to="/manager-dashboard/attendance/manager-attendance-record" className="nav-link" style={{ color: "#FFFFFF" }}>
+                        <i className="bi bi-file-earmark-text me-2"></i>
+                        Attendance Record
+                        </Link>
+                      </div>
+                    )}
 
           {/* Overtime Dropdown */}
-          <div
+          {/* <div
             className="nav-link text-white"
             onClick={() => toggleMenu("overtime")}
             style={{ cursor: "pointer" }}
@@ -135,14 +127,28 @@ function ManagerDashboard() {
               }`}
               style={{ color: "white" }}
             />
-          </div>
+          </div> */}
+
+          <div className="nav-link text-white d-flex justify-content-between align-items-center" onClick={() => toggleMenu("overtime")} 
+          style={{ 
+                 cursor: "pointer", 
+                 transition: "background 0.3s ease", 
+                 padding: "10px", 
+                 borderRadius: "5px" 
+                }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+          <span><i className="bi bi-hourglass-split me-2"></i> Overtime</span>
+          <i className={`bi ${menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"}`} 
+          style={{ color: "white", transition: "transform 0.3s ease" }}/>
+        </div>
           {menuState.overtime && (
             <div className="ms-3">
               <Link to="/manager-dashboard/manager-ot-approval" className="nav-link text-white">
-              <i className="bi bi-eye"></i>View Overtime Requests
+              <i className="bi bi-eye me-2"></i>View Requests
               </Link>
               <Link to="/manager-dashboard/manager-ot-self" className="nav-link text-white">
-              <i className="bi bi-clock"></i> Request Overtime
+              <i className="bi bi-clock me-2"></i> Apply for OT
               </Link>
               {/* <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-white">
                 Confirmed Requests
@@ -151,16 +157,16 @@ function ManagerDashboard() {
           )}
 
           <Link to="/manager-dashboard/manager-leave" className="nav-link text-white">
-          <i className="bi bi-envelope"></i>Leave
+          <i className="bi bi-envelope me-2"></i>Leave
           </Link>
           <Link to="/manager-dashboard/profile" className="nav-link text-white">
-          <i className="bi bi-person-circle"></i> Profile
+          <i className="bi bi-person-circle me-2"></i> Profile
           </Link>
           <Link to="/manager-dashboard/payroll" className="nav-link text-white">
-          <i className="bi bi-briefcase"></i> Payroll
+          <i className="bi bi-briefcase me-2"></i> Payroll
           </Link>
           <Link to="/manager-dashboard/salary-hist" className="nav-link text-white">
-          <i className="bi bi-currency-dollar"></i> Salary History
+          <i className="bi bi-currency-dollar me-2"></i> Salary History
           </Link>
           
         </nav>
