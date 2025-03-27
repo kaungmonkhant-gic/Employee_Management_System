@@ -151,9 +151,9 @@ const Attendance = () => {
       cellClassName: "text-center",
       renderCell: ({ value }) => formatMinutesToHours(value || 0),
     },
-    {  headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    {  field:"hasOT",headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "status", headerName: "Leave Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    // {  field: "isOT",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    {  headerName: "Attendance Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (

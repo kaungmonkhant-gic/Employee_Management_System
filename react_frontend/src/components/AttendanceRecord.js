@@ -46,7 +46,7 @@ const AttendanceRecord = () => {
     },
     // {  headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "status", headerName: "Leave Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "is_ot",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "hasOT",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (
