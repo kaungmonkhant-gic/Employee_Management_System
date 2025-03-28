@@ -20,7 +20,9 @@ function Salary() {
 
 
   return (
-    <div className="container mt-5 vh-100">
+    <div className="container">
+  <div className="row">
+    <div className="col-12 col-md-10 col-lg-12">
 
       <h2 className="text-center mb-4">Salary Allowlance</h2>
      
@@ -37,6 +39,8 @@ function Salary() {
         />
 
     </div>
+    </div>
+</div>
   );
 }
 

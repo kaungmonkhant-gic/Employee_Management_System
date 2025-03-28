@@ -111,7 +111,7 @@ const handleSubmit = async (e) => {
 
   return (
     
-        <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="d-flex justify-content-center align-items-center container mt-4 vh-100">
           <div className="card shadow-lg p-4 rounded-3" style={{ maxWidth: '900px', width: '100%' }}>
             
             {/* Header */}

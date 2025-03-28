@@ -104,59 +104,70 @@ const PendingRequests = () => {
   ];
 
   return (
-    <div className="container mt-4">
-      <h1>{headerText}</h1>
-      <button className="btn btn-secondary mb-3" onClick={() => navigate("/admin-dashboard/admin-leave")}> Return</button>
-      <div className="row mb-4">
-              <div className="col-md-4">
-                <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
-                  <BellFill size={32} color="orange" />
-                  <div className="ms-3">
-                    <p className="text-muted mb-1">Pending Requests</p>
-                    <p className="fw-bold mb-0">{pending}</p>
-                  </div>
-                </div>
-              </div>
-      
-              <div className="col-md-4">
-                <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
-                  <CheckCircleFill size={32} color="green" />
-                  <div className="ms-3">
-                    <p className="text-muted mb-1">Approved Requests</p>
-                    <p className="fw-bold mb-0">{approved}</p>
-                  </div>
-                </div>
-              </div>
-      
-              <div className="col-md-4">
-                <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#danger" }}>
-                  <CheckCircleFill size={32} color="red" />
-                  <div className="ms-3">
-                    <p className="text-muted mb-1">Rejected Requests</p>
-                    <p className="fw-bold mb-0">{rejected}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-      
-      {/* DataTable */}
-      <DataTable
-        fetchData={() =>
-          leavecontroller.fetchLeaveRequests().then((data) =>
-            Array.isArray(data) ? data.filter((request) => request.status === "PENDING") : []
-          )
-        }
-        columns={columns}
-        keyField="id"
-        responsive
-        fixedHeader
-        fixedHeaderScrollHeight="400px"
-        noDataComponent="No pending Leave requests"
-        progressPending={isLoading}
-        highlightOnHover
-        pagination
-      />
+    <div className="container-fluid mt-4">
+  <h1 className="text-center">{headerText}</h1>
+  
+  <button 
+    className="btn btn-secondary mb-3" 
+    onClick={() => navigate("/admin-dashboard/admin-leave")}
+  > 
+    Return
+  </button>
+
+  {/* Request Status Cards */}
+  <div className="row row-cols-1 row-cols-md-3 g-3 mb-4">
+    <div className="col">
+      <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-white">
+        <BellFill size={32} color="orange" />
+        <div className="ms-3">
+          <p className="text-muted mb-1">Pending Requests</p>
+          <p className="fw-bold mb-0">{pending}</p>
+        </div>
+      </div>
     </div>
+
+    <div className="col">
+      <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-white">
+        <CheckCircleFill size={32} color="green" />
+        <div className="ms-3">
+          <p className="text-muted mb-1">Approved Requests</p>
+          <p className="fw-bold mb-0">{approved}</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="col">
+      <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-white">
+        <CheckCircleFill size={32} color="red" />
+        <div className="ms-3">
+          <p className="text-muted mb-1">Rejected Requests</p>
+          <p className="fw-bold mb-0">{rejected}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* DataTable Wrapper */}
+  <div className="table-responsive">
+    <DataTable
+      fetchData={() =>
+        leavecontroller.fetchLeaveRequests().then((data) =>
+          Array.isArray(data) ? data.filter((request) => request.status === "PENDING") : []
+        )
+      }
+      columns={columns}
+      keyField="id"
+      responsive
+      fixedHeader
+      fixedHeaderScrollHeight="400px"
+      noDataComponent="No pending Leave requests"
+      progressPending={isLoading}
+      highlightOnHover
+      pagination
+    />
+  </div>
+</div>
+
   );
 };
 

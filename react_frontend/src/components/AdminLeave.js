@@ -82,81 +82,89 @@ const LeaveRequests = () => {
   ];
   
   return (
-    <div className="container mt-3 vh-100" >
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
-            <BellFill size={32} color="orange" />
-            <div className="ms-3">
-              <p className="text-muted mb-1">Pending Requests</p>
-              <p className="fw-bold mb-0">{pending}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
-            <CheckCircleFill size={32} color="green" />
-            <div className="ms-3">
-              <p className="text-muted mb-1">Approved Requests</p>
-              <p className="fw-bold mb-0">{approved}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#danger" }}>
-            <CheckCircleFill size={32} color="red" />
-            <div className="ms-3">
-              <p className="text-muted mb-1">Rejected Requests</p>
-              <p className="fw-bold mb-0">{rejected}</p>
-            </div>
-          </div>
+    
+    <div className="container-fluid mt-4 vh-100">
+  {/* Statistics Cards */}
+  <div className="row g-3 justify-content-center">
+    {/* Pending Requests */}
+    <div className="col-12 col-sm-6 col-md-4 col-lg-4">
+      <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-white">
+        <BellFill size={32} color="orange" />
+        <div className="ms-3">
+          <p className="text-muted mb-1">Pending Requests</p>
+          <p className="fw-bold mb-0">{pending}</p>
         </div>
       </div>
-
-      <div className="p-3 border rounded shadow-sm bg-white">
-        <h5 className="mb-3">Leave Requests</h5>
-        {/* <p>Available Leave Balance: {availableLeaveDays} days</p> */}
-        <Button variant="secondary" onClick={() => setShowModal(true)}>
-          Apply for leave
-        </Button>
-        {/* <button className="btn btn-primary mb-3">
-        View Confirmed Requests
-      </button> */}
-        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}
-        >
-          Incoming Leave Requests
-        </Button>
-        <Button variant="secondary" className="ms-3" onClick={() => navigate("/admin-dashboard/leave-confirmed")}>
-          Confirmed Requests
-        </Button>
-
-      </div>
-
-      {/* Leave Form Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Leave Request Form</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <LeaveForm/>
-           {/* called the leave form in common file */}
-        </Modal.Body>
-      </Modal>
-
-      <DataTable
-          fetchData={leaveController.fetchLeaveRecords}
-          columns={columns}
-          keyField="employeeId"
-          responsive
-          fixedHeader
-          fixedHeaderScrollHeight="400px"
-          noDataComponent="No employees found"
-          highlightOnHover
-          pagination
-        />
     </div>
+
+    {/* Approved Requests */}
+    <div className="col-12 col-sm-6 col-md-4 col-lg-4">
+      <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-white">
+        <CheckCircleFill size={32} color="green" />
+        <div className="ms-3">
+          <p className="text-muted mb-1">Approved Requests</p>
+          <p className="fw-bold mb-0">{approved}</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Rejected Requests */}
+    <div className="col-12 col-sm-6 col-md-4 col-lg-4">
+      <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-white">
+        <CheckCircleFill size={32} color="red" />
+        <div className="ms-3">
+          <p className="text-muted mb-1">Rejected Requests</p>
+          <p className="fw-bold mb-0">{rejected}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Leave Requests Section */}
+  <div className="p-3 border rounded shadow-sm bg-white mt-4">
+    <h5 className="mb-3 text-center">Leave Requests</h5>
+    
+    <div className="d-flex flex-wrap gap-2 justify-content-center">
+      <Button variant="secondary" onClick={() => setShowModal(true)}>
+        Apply for Leave
+      </Button>
+      <Button variant="secondary" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}>
+        Incoming Leave Requests
+      </Button>
+      <Button variant="secondary" onClick={() => navigate("/admin-dashboard/leave-confirmed")}>
+        Confirmed Requests
+      </Button>
+    </div>
+  </div>
+
+  {/* Leave Request Form Modal */}
+  <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal.Header closeButton>
+      <Modal.Title>Leave Request Form</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <LeaveForm />
+    </Modal.Body>
+  </Modal>
+
+  {/* Leave Records Table */}
+  <div className="mt-4">
+    <div className="table-responsive">
+    <DataTable
+      fetchData={leaveController.fetchLeaveRecords}
+      columns={columns}
+      keyField="employeeId"
+      responsive
+      fixedHeader
+      fixedHeaderScrollHeight="400px"
+      noDataComponent="No employees found"
+      highlightOnHover
+      pagination
+    />
+    </div>
+  </div>
+</div>
+
   );
 };
 

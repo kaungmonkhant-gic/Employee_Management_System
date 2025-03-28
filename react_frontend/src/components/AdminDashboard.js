@@ -22,6 +22,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [employeeName, setEmployeeName] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
  
   const [menuState, setMenuState] = useState({
@@ -84,19 +85,19 @@ function AdminDashboard() {
   }, []);
 
   return (
-    <div className="d-flex">
+    
+      <div className="d-flex">
       {/* Sidebar */}
       <div
-        className="d-flex flex-column p-3"
+        className={`d-flex flex-column p-3 position-fixed top-0 start-0 h-100 shadow-sm ${
+          sidebarOpen ? "d-block" : "d-none d-md-block"
+        }`}
         style={{
           width: "250px",
           backgroundColor: "#2980B9",
           color: "#FFFFFF",
-          height: "100vh",
-          position: "fixed",
-          top: 0,
-          left: 0,
           overflowY: "auto",
+          transition: "transform 0.3s ease-in-out",
         }}
       >
         <h2 className="text-center mb-4">Admin Dashboard</h2>
@@ -136,7 +137,7 @@ function AdminDashboard() {
               <i className="bi bi-alarm me-2"></i>
               Daily Attendance
               </Link>
-              <Link to="/admin-dashboard/attendance/attendance-Record" className="nav-link" style={{ color: "#FFFFFF" }}>
+              <Link to="/admin-dashboard/attendance/attendance-record" className="nav-link" style={{ color: "#FFFFFF" }}>
               <i className="bi bi-file-earmark-text me-2"></i>
               Attendance Record
               </Link>
@@ -184,12 +185,12 @@ function AdminDashboard() {
           {menuState.salary && (
                 <div className="ms-3">
 
-                  <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
+                <Link to="/admin-dashboard/salary-history" className="nav-link" style={{ color: "#FFFFFF" }}>
                 <i className="bi bi-bar-chart-line me-2"></i>
               Salary History</Link>
 
                   <Link to="/admin-dashboard/calculate-salary" className="nav-link" style={{ color: "#FFFFFF" }}>
-                  <i className="bi bi-cash-stack" style={{ marginRight: '8px' }}></i>
+                  <i className="bi bi-cash-stack me-2" style={{ marginRight: '8px' }}></i>
                 Calculate Salary</Link>
 
                 </div>

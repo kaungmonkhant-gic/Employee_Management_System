@@ -72,7 +72,7 @@ const OvertimeRequests = () => {
     <div className="d-flex align-items-center p-2 border rounded shadow-sm" style={{ backgroundColor: "#f8d7da" }}>
       <CheckCircleFill size={28} color="red" />
       <div className="ms-3">
-        <p className="text-muted mb-1">Rejected Requests hhh</p>
+        <p className="text-muted mb-1">Rejected Requests</p>
         <p className="fw-bold mb-0">{rejected}</p>
       </div>
     </div>

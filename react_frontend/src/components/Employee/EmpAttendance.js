@@ -57,50 +57,52 @@ const Attendance = () => {
 
   // Handle check-in
   const handleCheckIn = async () => {
-    if (isCheckingIn || isOnLeave) return; // Prevent check-in if user is on leave or already checking in
-    setIsCheckingIn(true);
-  
-    const now = new Date();
-    const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
-  
-    // Define official check-in time (e.g., 9:00 AM)
-    const officialCheckInTime = new Date();
-    officialCheckInTime.setHours(9, 0, 0, 0); // 09:00 AM
-  
-    // Calculate late minutes
-    const lateMin = now > officialCheckInTime ? Math.floor((now - officialCheckInTime) / 60000) : 0;
-  
-    // Format late time for display
-    const lateTimeFormatted = formatMinutesToHours(lateMin);
-  
-    try {
-      console.log("Attempting Check-in:", { formattedTime, lateMin });
-  
-      // Send check-in time & late minutes to backend
-    const newAttendance = await EmpAttendanceService.checkIn(formattedTime, lateMin);
-    console.log("Check-in Successful:", newAttendance);
+  if (isCheckingIn || isOnLeave) return; // Prevent check-in if user is on leave or already checking in
+  setIsCheckingIn(true);
 
-    // Add the new attendance data to the state
-    setAttendanceData((prevData) => {
-      const updatedData = [...prevData, newAttendance];
-      console.log("Updated attendance data:", updatedData); // Log updated state
-      return updatedData;
-    });
-    
+  const now = new Date();
+  const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
+
+  let officialCheckInTime = new Date();
+  
+  // Check if the user is on "Morning Half Leave" and adjust check-in time
+  if (isOnLeave === "Morning Half Leave") {
+    officialCheckInTime.setHours(13, 30, 0, 0); // 1:30 PM check-in time
+  } else {
+    officialCheckInTime.setHours(9, 0, 0, 0); // 9:00 AM check-in time
+  }
+
+  // Calculate late minutes
+  const lateMin = now > officialCheckInTime ? Math.floor((now - officialCheckInTime) / 60000) : 0;
+
+  // Format late time for display
+  const lateTimeFormatted = formatMinutesToHours(lateMin);
+
+  try {
+    console.log("Attempting Check-in:", { formattedTime, lateMin });
+
+    // Send check-in time & late minutes to backend
+    await EmpAttendanceService.checkIn(formattedTime, lateMin);
+
+    // Refresh attendance data after check-in
+    const updatedData = await EmpAttendanceService.getAllAttendance();
+    setAttendanceData(updatedData);
+
     setIsCheckedIn(true);
     setCheckInTime(formattedTime);
-  
-      // Save late time and check-in status for local storage
-      setLateTimeDisplay(lateTimeFormatted);
-      localStorage.setItem("isCheckedIn", "true");
-      localStorage.setItem("checkInTime", formattedTime);
-      localStorage.setItem("lateTime", lateTimeFormatted);
-    } catch (error) {
-      console.error("Check-in failed:", error.response?.data || error.message);
-    } finally {
-      setIsCheckingIn(false);
-    }
-  };
+
+    // Save late time and check-in status for local storage
+    setLateTimeDisplay(lateTimeFormatted);
+    localStorage.setItem("isCheckedIn", "true");
+    localStorage.setItem("checkInTime", formattedTime);
+    localStorage.setItem("lateTime", lateTimeFormatted);
+  } catch (error) {
+    console.error("Check-in failed:", error.response?.data || error.message);
+  } finally {
+    setIsCheckingIn(false);
+  }
+};
+
   
 
   // Handle check-out
@@ -150,8 +152,8 @@ const Attendance = () => {
       renderCell: ({ value }) => formatMinutesToHours(value || 0),
     },
     {  headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "status", headerName: "Leave Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    {  headerName: "Attendance Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+   
   ];
 
   return (

@@ -60,32 +60,47 @@ const ConfirmedRequests = () => {
   ];
 
   return (
-    <div className="container mt-4 vh-100">
-      <h3 className="mb-3">Confirmed Leave Requests</h3>
-      <button className="btn btn-secondary mb-3 ms-3 mt-3" onClick={() => navigate("/admin-dashboard/admin-leave")}>
-        Return
-      </button>
-      <button className="btn btn-secondary mb-3 ms-3 mt-3" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}>
-        View Pending Requests
-      </button>
+    <div className="container-fluid mt-4">
+  <h3 className="mb-3 text-center">Confirmed Leave Requests</h3>
 
-      <DataTable
-        fetchData={() =>
-          leaveController.fetchLeaveRequests().then((data) =>
-            Array.isArray(data) ? data.filter((request) => request.status !== "PENDING") : []
-          )
-        }
-        columns={columns}
-        keyField="id"
-        responsive
-        fixedHeader
-        fixedHeaderScrollHeight="400px"
-        noDataComponent="No confirmed overtime requests"
-        progressPending={isLoading}
-        highlightOnHover
-        pagination
-      />
-    </div>
+  {/* Buttons Container */}
+  <div className="d-flex flex-wrap gap-2 mb-3">
+    <button 
+      className="btn btn-secondary" 
+      onClick={() => navigate("/admin-dashboard/admin-leave")}
+    >
+      Return
+    </button>
+    
+    <button 
+      className="btn btn-secondary" 
+      onClick={() => navigate("/admin-dashboard/admin-leave-approval")}
+    >
+      View Pending Requests
+    </button>
+  </div>
+
+  {/* DataTable Wrapper */}
+  <div className="table-responsive">
+    <DataTable
+      fetchData={() =>
+        leaveController.fetchLeaveRequests().then((data) =>
+          Array.isArray(data) ? data.filter((request) => request.status !== "PENDING") : []
+        )
+      }
+      columns={columns}
+      keyField="id"
+      responsive
+      fixedHeader
+      fixedHeaderScrollHeight="400px"
+      noDataComponent="No confirmed overtime requests"
+      progressPending={isLoading}
+      highlightOnHover
+      pagination
+    />
+  </div>
+</div>
+
   );
 };
 

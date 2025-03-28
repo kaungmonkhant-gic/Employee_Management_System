@@ -13,15 +13,14 @@ function AddLeave() {
   };
 
   return (
-    <div className="container mt-5 vh-100">
-
-      <h2 className="text-center mb-4">Add Leave</h2>
-      <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
-            Return
-          </button>
+    <div className="container mt-4 vh-100 d-flex flex-column align-items-center">
+    <h2 className="text-center mb-4">Add Leave</h2>
     
-
-    </div>
+    <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
+      Return
+    </button>
+  </div>
+  
   );
 }
 

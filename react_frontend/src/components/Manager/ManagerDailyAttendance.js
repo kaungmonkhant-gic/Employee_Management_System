@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-import DataTable from "./common/DataTable";
+import apiClient from "../api/apiclient.js";
+import DataTable from "../common/DataTable.js";
 import { useNavigate } from "react-router-dom";
-import AttendanceController from "./Employee/Controller/AttendanceController";
-import EmpAttendanceService from "./Employee/Service/EmpAttendanceService.js";
+import AttendanceController from "../Employee/Controller/AttendanceController.js";
+import EmpAttendanceService from "../Employee/Service/EmpAttendanceService.js";
 
 const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
@@ -150,15 +151,14 @@ const Attendance = () => {
       cellClassName: "text-center",
       renderCell: ({ value }) => formatMinutesToHours(value || 0),
     },
-    {  field:"hasOT",headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" ,
+    { field: "hasOT",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center",
       render: (row) => (
         <span className={row.hasOT ? "text-success fw-bold" : "text-danger fw-bold"}>
           {row.hasOT ? "Yes" : "No"}
         </span>
       ),
-      
-    },
-    { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+     },
+     { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (

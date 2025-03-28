@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import AttendanceRecordService from "../services/attendanceRecordService";
-import DataTable from "./common/DataTable";
+import AttendanceRecordService from "../../services/attendanceRecordService";
+import DataTable from "../common/DataTable";
 
 
-const AttendanceRecord = () => {
+const ManagerAttendance = () => {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const attendanceData = attendanceRecords.map((record) => ({
     id: record.id,
@@ -56,27 +56,11 @@ const AttendanceRecord = () => {
   ];
 
   return (
-    <div className="container-fluid mt-4">
-  <h2 className="text-center mb-3">Employee Attendance Records</h2>
-
-  {/* Responsive Table Wrapper */}
-  <div className="table-responsive">
-    <DataTable 
-      fetchData={AttendanceRecordService.fetchAllAttendance} 
-      data={attendanceData} 
-      columns={columns} 
-      keyField="id" 
-      responsive
-      fixedHeader
-      fixedHeaderScrollHeight="400px"
-      noDataComponent="No records found"
-      highlightOnHover
-      pagination
-    />
-  </div>
-</div>
-
+    <div className="container mt-4">
+      <h2>Employee Attendance Records</h2>
+      <DataTable fetchData={AttendanceRecordService.fetchAllAttendance} data={attendanceData} columns={columns} keyField="id" />
+    </div>
   );
 };
 
-export default AttendanceRecord;
+export default ManagerAttendance;

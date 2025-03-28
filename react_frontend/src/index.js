@@ -49,6 +49,9 @@ import SalaryHistory from "./components/Employee/SalaryHistory";
 import SalaryHistoryManager from "./components/Manager/SalaryHistoryManager";
 import SalaryHistoryAdmin from "./components/SalaryHistoryAdmin";
 import CalculateSalary from "./components/CalculateSalary";
+import ManagerAttendance from "./components/Manager/ManagerAttendanceRecord";
+import ManagerDailyAttendance from "./components/Manager/ManagerDailyAttendance";
+import ManagerAttendanceRecord from "./components/Manager/ManagerAttendanceRecord";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -115,6 +118,9 @@ root.render(
       <Route path="view-employeelist" element={<ViewEmployee />} />
       <Route path="view-leave-balance" element={<ViewLeaveBalance />} />
         <Route path="profile" element={<ManagerProfile />} />
+        <Route path="attendance" element={<ManagerAttendance />} />
+        <Route path="attendance/manager-daily-attendance" element={<ManagerDailyAttendance />} />
+        <Route path="attendance/manager-attendance-Record" element={<ManagerAttendanceRecord />} />
         <Route path="leave" element={<Leave />} />
         <Route path="manager-leave" element={<ManagerLeave />} />
         <Route path="manager-leave-Approval" element={<ManagerLeaveApproval />} />

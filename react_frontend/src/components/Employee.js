@@ -132,7 +132,7 @@ function Employee() {
   ];
 
   return (
-    <div className="container mt-5 vh-100">
+    <div className="container mt-4 ">
       {!isRegisterScreen ? (
         <>
           <button className="btn btn-primary mb-4" onClick={handleRegisterClick}>
@@ -141,7 +141,7 @@ function Employee() {
 
           {/* Buttons to toggle active and resigned employees */}
           <div>
-            <button className="btn btn-outline-primary mb-3" onClick={() => { setShowActive(true); setShowResigned(false); }}>
+            <button className="btn btn-outline-primary mb-3 me-2" onClick={() => { setShowActive(true); setShowResigned(false); }}>
               Show Active Employees
             </button>
             <button className="btn btn-outline-secondary mb-3" onClick={() => { setShowResigned(true); setShowActive(false); }}>

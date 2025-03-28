@@ -34,13 +34,13 @@ function Leave() {
   
 
   return (
-    <div className="container mt-5 vh-100">
-
+<div className="container">
+  <div className="row">
+    <div className="col-12 col-md-10 col-lg-12">
       <h2 className="text-center mb-4">Leave Balance</h2>
-      {/* <button className="btn btn-primary mb-4" onClick={handleButtonClick}>
-            Add Leave
-          </button> */}
-      <DataTable
+
+      <div className="table-responsive">
+        <DataTable
           fetchData={leaveController.fetchLeaveData}
           columns={columns}
           keyField="employeeId"
@@ -51,8 +51,11 @@ function Leave() {
           highlightOnHover
           pagination
         />
-
+      </div>
     </div>
+  </div>
+</div>
+
   );
 }
 
