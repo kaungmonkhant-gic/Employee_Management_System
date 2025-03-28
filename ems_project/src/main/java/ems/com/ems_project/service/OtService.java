@@ -3,6 +3,7 @@ import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.dto.EmployeeDTO;
 import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
+import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.model.*;
 import ems.com.ems_project.repository.DailyAttendanceRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
@@ -15,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,116 +101,77 @@ public class OtService {
     }
 
 
-//    public OtDTO submitOTRequest(OtDTO requestDTO) {
-//
-//        //  Get the logged-in username (email) from JWT token
-//        String loggedInUsername = getLoggedInUsername();
-//
-//        // Fetch employee from the database using the email (logged-in username)
-//
-//        Employee employee = employeeRepository.findByEmail(loggedInUsername)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
-//
-//        // Check if the employee has a leave on the given date using the custom query
-//        Optional<Leave> leave = leaveRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
-//        if (leave.isPresent()) {
-//            // If the leave exists, prevent OT submission
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request cannot be submitted while on leave.");
-//        }
-//
-//        // Check if the employee is marked as "Present" for the given date using EmpDailyAtts
-//        EmpDailyAtts attendance = attendanceRepository.findByEmployeeAndDate(employee, requestDTO.getDate());
-//        if (attendance == null || !AttendanceStatus.PRESENT.equals(attendance.getStatus())) {
-//            // If no attendance record or status is not "Present", prevent OT submission
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted if you are marked as Present.");
-//        }
-//
-//        // Check if the employee has a check-in time for the given date
-//        if (attendance.getCheckInTime() == null) {
-//            // If there is no check-in time, prevent OT submission
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OT request can only be submitted after check-in.");
-//        }
-//
-//        // Assign the employee's manager (if they have one). Manager will be null for managers.
-//        Employee manager = null;
-//        if (!"Manager".equals(employee.getRole().getRoleName())) {
-//            manager = employee.getManager();  // Get the manager if the employee is not a manager
-//        }
-//
-//        // Generate OT ID
-//        String otId = generateOtId();
-//
-//        //  Create and save OT request
-//        Ots ot = new Ots();
-//        ot.setId(otId); // Set the generated OT ID
-//        ot.setEmployee(employee);// Automatically set logged-in employee
-//        ot.setManager(manager);
-//        ot.setDate(requestDTO.getDate());
-//        ot.setStartTime(requestDTO.getStartTime());
-//        ot.setEndTime(requestDTO.getEndTime());
-//        ot.setOtTime(requestDTO.getOtTime());
-//        ot.setReason(requestDTO.getReason());
-//        ot.setStatus(requestDTO.getOtStatus());
-//
-//        if ("Manager".equals(employee.getRole().getRoleName())) {
-//            ot.setStatus(RequestStatus.APPROVED);
-//            // Save OT object to the repository
-//            Ots savedOt = otRepository.save(ot);
-//            // Update attendance with OT details
-//            attendanceService.updateOTForAttendance(ot.getEmployee(), ot.getDate(), savedOt);// Approve the leave if the employee is a manager
-//        } else {
-//            ot.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
-//        }
-//        // Save OT object to the repository
-//        Ots savedOt = otRepository.save(ot);
-//
-//        // Return an OtDTO response including employeeName and managerName
-//        return new OtDTO(savedOt, employee, manager);
-//    }
+    public ReqRes submitOTRequest(OtDTO requestDTO) {
+        ReqRes response = new ReqRes();
 
-    public OtDTO submitOTRequest(OtDTO requestDTO) {
+        try {
+            // Get the logged-in username (email) from JWT token
+            String loggedInUsername = getLoggedInUsername();
 
-        //  Get the logged-in username (email) from JWT token
-        String loggedInUsername = getLoggedInUsername();
+            // Fetch employee from the database using the email (logged-in username)
+            Employee employee = employeeRepository.findByEmail(loggedInUsername)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
-        // Fetch employee from the database using the email (logged-in username)
+            // Assign the employee's manager (if they have one). Manager will be null for managers.
+            Employee manager = null;
+            if (!"Manager".equals(employee.getRole().getRoleName())) {
+                manager = employee.getManager();  // Get the manager if the employee is not a manager
+            }
 
-        Employee employee = employeeRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found"));
+            // Get the date and times from the OT request DTO
+            LocalDate requestDate = requestDTO.getDate();
+            LocalTime newStartDateTime = requestDTO.getStartTime();
+            LocalTime newEndDateTime = requestDTO.getEndTime();
 
+            // Check for overlapping OT requests for the same employee on the same date
+            boolean isOverlap = otRepository.existsOTOverlap(employee, requestDate, newStartDateTime, newEndDateTime);
 
-        // Assign the employee's manager (if they have one). Manager will be null for managers.
-        Employee manager = null;
-        if (!"Manager".equals(employee.getRole().getRoleName())) {
-            manager = employee.getManager();  // Get the manager if the employee is not a manager
+            if (isOverlap) {
+                // If overlap exists, return a bad request status with the error message
+                response.setStatusCode(400);  // Bad request status
+                response.setError("You already have an OT request that overlaps with these times.");
+                return response;  // Return early with the error message
+            }
+
+            // Generate OT ID
+            String otId = generateOtId();
+
+            // Create and save OT request
+            Ots ot = new Ots();
+            ot.setId(otId); // Set the generated OT ID
+            ot.setEmployee(employee); // Automatically set logged-in employee
+            ot.setManager(manager);
+            ot.setDate(requestDate); // Set the OT request date
+            ot.setStartTime(newStartDateTime);
+            ot.setEndTime(newEndDateTime);
+            ot.setOtTime(requestDTO.getOtTime());
+            ot.setReason(requestDTO.getReason());
+
+            // Set OT request status based on the employee's role
+            if ("Manager".equals(employee.getRole().getRoleName())) {
+                ot.setStatus(RequestStatus.APPROVED);  // Approve the OT if the employee is a manager
+            } else {
+                ot.setStatus(RequestStatus.PENDING);  // Otherwise, the OT is pending
+            }
+
+            // Save OT object to the repository
+            Ots savedOt = otRepository.save(ot);
+
+            // Return successful response with OTDTO
+            response.setStatusCode(200);  // OK status
+            response.setMessage("OT request submitted successfully.");
+            response.setOtRequest(new OtDTO(savedOt, employee, manager));  // Set OTDTO for the successful response
+
+            return response;
+
+        } catch (Exception e) {
+            // Handle any errors and return failure response
+            response.setStatusCode(500);  // Internal server error
+            response.setError("Error during OT request submission: " + e.getMessage());
+            return response;
         }
-
-        // Generate OT ID
-        String otId = generateOtId();
-
-        //  Create and save OT request
-        Ots ot = new Ots();
-        ot.setId(otId); // Set the generated OT ID
-        ot.setEmployee(employee);// Automatically set logged-in employee
-        ot.setManager(manager);
-        ot.setDate(requestDTO.getDate());
-        ot.setStartTime(requestDTO.getStartTime());
-        ot.setEndTime(requestDTO.getEndTime());
-        ot.setOtTime(requestDTO.getOtTime());
-        ot.setReason(requestDTO.getReason());
-        ot.setStatus(requestDTO.getOtStatus());
-
-        if ("Manager".equals(employee.getRole().getRoleName())) {
-            ot.setStatus(RequestStatus.APPROVED);  // Approve the leave if the employee is a manager
-        } else {
-            ot.setStatus(RequestStatus.PENDING);  // Otherwise, the leave is pending
-        }
-        // Save OT object to the repository
-        Ots savedOt = otRepository.save(ot);
-
-        // Return an OtDTO response including employeeName and managerName
-        return new OtDTO(savedOt, employee, manager);
     }
+
     public List<OtDTO> getOTByEmployeeId(String employeeId) {
 
         if (!employeeRepository.existsById(employeeId)) {

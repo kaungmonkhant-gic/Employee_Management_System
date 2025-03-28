@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, Integer> {
+public interface DailyAttendanceRepository extends JpaRepository<EmpDailyAtts, String> {
     List<EmpDailyAtts> findAll();
     List<EmpDailyAtts> findByEmployeeId(String employeeId);
     EmpDailyAtts findByEmployeeAndDate(Employee employee, LocalDate date);

@@ -2,7 +2,6 @@ package ems.com.ems_project.service.impl;
 
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.model.Departments;
-import ems.com.ems_project.model.EmployeeLeave;
 import ems.com.ems_project.repository.DepartmentsRepository;
 import ems.com.ems_project.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;

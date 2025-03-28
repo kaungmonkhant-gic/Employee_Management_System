@@ -50,7 +50,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
     @Autowired
     private DateService dateService;
     @Autowired
-    private LeaveService leaveService;
+    private LeaveHandlerService leaveHandlerService;
     @Autowired
     private EmployeeLeaveService employeeLeaveService;
 
@@ -132,52 +132,6 @@ public class DailyAttendanceServiceImp implements AttendanceService {
                 .map(attendance -> new AttendanceDTO(attendance, attendance.getEmployee()))  // Convert OT entity to DTO
                 .collect(Collectors.toList());
     }
-
-//    @Override
-//    public ReqRes checkIn(String loggedInUsername) {
-//        ReqRes response = new ReqRes();
-//
-//        try {
-//            Employee employee = employeeRepository.findByEmail(loggedInUsername)
-//                    .orElseThrow(() -> new RuntimeException("Employee not found"));
-//
-//            LocalDate todayDate = LocalDate.now();
-//            LocalTime checkInTime = LocalTime.now();
-//
-//            // Check if attendance already exists for today
-//            EmpDailyAtts existingAttendance = attendanceRepository.findByEmployeeAndDate(employee, todayDate);
-//            if (existingAttendance != null) {
-//                response.setStatusCode(400);
-//                response.setError("Attendance already recorded for today.");
-//                return response;
-//            }
-//
-//            // Create new attendance record
-//            EmpDailyAtts attendance = new EmpDailyAtts();
-//            attendance.setId(generateAttendanceId());
-//            attendance.setEmployee(employee);
-//            attendance.setDate(todayDate);
-//            attendance.setCheckInTime(checkInTime);
-//            attendance.setStatus(AttendanceStatus.PRESENT);  // Mark as PRESENT
-//
-//            attendanceRepository.save(attendance);
-//
-//            //Map entity to DTO, including leave status
-//            AttendanceDTO attendanceDTO = new AttendanceDTO(attendance,employee);
-//
-//            // Return success response
-//            response.setStatusCode(200);
-//            response.setMessage("Check-in successful.");
-//            response.setAttendance(attendanceDTO);
-//            return response;
-//
-//        } catch (Exception e) {
-//            response.setStatusCode(500);
-//            response.setError("Error during check-in: " + e.getMessage());
-//            return response;
-//        }
-//    }
-//
 
     @Override
     public ReqRes checkIn(String loggedInUsername) {
@@ -289,23 +243,21 @@ public class DailyAttendanceServiceImp implements AttendanceService {
 
             boolean hasOT = attendance.getHasOT(); // Check if OT is recorded
 
-            // Handle Evening Half Leave creation if needed
+            // Handle Evening Half Leave creation if needed (Using LeaveHandlerService)
             if (!hasOT && checkOutTime.isAfter(LocalTime.of(18, 0))) {
-                // Handle the creation or update of Evening Half Leave
-                Leave leave = leaveService.handleEveningHalfLeave(employee, todayDate);
+                Leave leave = leaveHandlerService.handleEveningHalfLeave(employee, todayDate, hasOT);
 
-                // Set the Leave ID in attendance
-                attendance.setLeave(leave); // Link the attendance record with the leave record
-
-                // Set check-out time to midnight, as the employee is on evening half leave
-                attendance.setCheckOutTime(LocalTime.MIDNIGHT);
-                attendance.setStatus(AttendanceStatus.EVENING_HALF);
+                if (leave != null) {
+                    attendance.setLeave(leave); // Link attendance with leave record
+                    attendance.setCheckOutTime(LocalTime.MIDNIGHT);
+                    attendance.setStatus(AttendanceStatus.EVENING_HALF);
+                }
             } else {
-                // For normal check-out, update with actual check-out time
+                // Normal check-out
                 attendance.setCheckOutTime(checkOutTime);
             }
 
-            // Save the updated attendance
+            // Save updated attendance
             attendanceRepository.save(attendance);
 
             // Convert to DTO
@@ -325,56 +277,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
         }
     }
 
-
-//    @Override
-//    public ReqRes checkOut(String loggedInUsername) {
-//        ReqRes response = new ReqRes();
-//
-//        try {
-//            Employee employee = employeeRepository.findByEmail(loggedInUsername)
-//                    .orElseThrow(() -> new RuntimeException("Employee not found"));
-//
-//            LocalDate todayDate = LocalDate.now();
-//            LocalTime checkOutTime = LocalTime.now();
-//
-//            // Check if attendance exists for today
-//            EmpDailyAtts existingAttendance = attendanceRepository.findByEmployeeAndDate(employee, todayDate);
-//            if (existingAttendance == null) {
-//                response.setStatusCode(400);
-//                response.setError("No check-in found for today.");
-//                return response;
-//            }
-//
-//            // Check if already checked out
-//            if (existingAttendance.getCheckOutTime() != null) {
-//                response.setStatusCode(400);
-//                response.setError("Already checked out.");
-//                return response;
-//            }
-//
-//            // Update check-out time
-//            existingAttendance.setCheckOutTime(checkOutTime);
-//            attendanceRepository.save(existingAttendance);
-//
-//            // Convert to DTO
-//            AttendanceDTO attendanceDTO = modelMapper.map(existingAttendance, AttendanceDTO.class);
-//            attendanceDTO.setEmployeeName(employee.getName());
-//
-//            // Success response
-//            response.setStatusCode(200);
-//            response.setMessage("Check-out successful.");
-//            response.setAttendance(attendanceDTO);
-//            return response;
-//
-//        } catch (Exception e) {
-//            response.setStatusCode(500);
-//            response.setError(e.getMessage());
-//            return response;
-//        }
-//    }
-
-
-    public void updateAttendanceForLeave(Employee employee, LocalDate startDate, LocalDate endDate, Leave leave) {
+   public void updateAttendanceForLeave(Employee employee, LocalDate startDate, LocalDate endDate, Leave leave) {
         LocalDate currentDate = startDate;
 
         // Check if the leave status is APPROVED

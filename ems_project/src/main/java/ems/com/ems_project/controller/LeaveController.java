@@ -49,17 +49,7 @@ public class LeaveController {
     }
 
 
-//    @PostMapping("/submit")
-//    public ResponseEntity<LeaveDTO> submitLeaveRequest(@RequestBody LeaveDTO leaveDTO) {
-//        try {
-//            LeaveDTO createdLeaveDTO = leaveService.submitLeaveRequest(leaveDTO);
-//
-//            return new ResponseEntity<>(createdLeaveDTO, HttpStatus.CREATED);
-//        } catch (RuntimeException e) {
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
+
 //    // Endpoint to calculate total leave days based on start date, end date, and leave type
 //    @PostMapping("/totaldays")
 //    public ResponseEntity<Double> getTotalLeaveDays(@RequestBody LeaveDTO leaveDTO) {

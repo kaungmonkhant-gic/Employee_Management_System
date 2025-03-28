@@ -1,6 +1,8 @@
 package ems.com.ems_project.controller;
 
+import ems.com.ems_project.dto.LeaveDTO;
 import ems.com.ems_project.dto.OtDTO;
+import ems.com.ems_project.dto.ReqRes;
 import ems.com.ems_project.service.OtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,16 +47,20 @@ public class OtController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<OtDTO> submitOtRequest(@RequestBody OtDTO otDTO) {
-        try {
-            // Call the service to submit the OT request and get the saved OT
-            OtDTO createdOtDTO = otService.submitOTRequest(otDTO);  // Assuming service now returns OtDTO
+    public ResponseEntity<ReqRes> submitLeaveRequest(@RequestBody OtDTO otRequest) {
+        // Call the service to submit the leave request
+        ReqRes response = otService.submitOTRequest(otRequest);
 
-            // Return success response with created OT DTO
-            return new ResponseEntity<>(createdOtDTO, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            // Return error response if employee not found or any other error
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        // Check the status code in the response
+        if (response.getStatusCode() == 200) {
+            // Return successful response with status code 200
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else if (response.getStatusCode() == 400) {
+            // Return bad request response in case of validation errors
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            // Return internal server error response in case of unexpected errors
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

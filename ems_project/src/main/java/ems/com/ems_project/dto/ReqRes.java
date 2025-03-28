@@ -25,6 +25,7 @@ public class ReqRes {
     private Employee employee;
     private EmployeeLeave employeeLeave;
     private LeaveDTO leaveRequest;
+    private OtDTO otRequest;
 
     public int getStatusCode() {
         return statusCode;
@@ -114,5 +115,13 @@ public class ReqRes {
 
     public void setLeaveRequest(LeaveDTO leaveRequest) {
         this.leaveRequest = leaveRequest;
+    }
+
+    public OtDTO getOtRequest() {
+        return otRequest;
+    }
+
+    public void setOtRequest(OtDTO otRequest) {
+        this.otRequest = otRequest;
     }
 }

@@ -1,5 +1,6 @@
 package ems.com.ems_project.repository;
 
+import ems.com.ems_project.model.Employee;
 import ems.com.ems_project.model.Ots;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,11 +32,16 @@ public interface OtRepository extends JpaRepository<Ots, String> {
 
     List<Ots> findByManagerId(String id);
 
-
-//    @Query("SELECT COALESCE(SUM(e.otTime), 0) FROM Ots e WHERE e.employee.id = :employeeId")
-//    Integer findTotalOTTimeByEmployeeId(String employeeId);
     @Query("SELECT COALESCE(SUM(e.otTime), 0) FROM Ots e WHERE e.employee.id = :employeeId AND e.date BETWEEN :startDate AND :endDate")
     Integer findTotalOTTimeByEmployeeIdAndDateRange(String employeeId, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT EXISTS (FROM Ots o WHERE o.employee = :employee AND o.date = :requestDate AND " +
+            "(o.startTime <= :newEndDateTime AND o.endTime >= :newStartDateTime))")
+    boolean existsOTOverlap(@Param("employee") Employee employee,
+                            @Param("requestDate") LocalDate requestDate,
+                            @Param("newStartDateTime") LocalTime newStartDateTime,
+                            @Param("newEndDateTime") LocalTime newEndDateTime);
+
 
 }
 

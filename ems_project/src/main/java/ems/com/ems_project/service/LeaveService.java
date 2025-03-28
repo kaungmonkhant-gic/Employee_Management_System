@@ -7,7 +7,6 @@ import ems.com.ems_project.model.*;
 import ems.com.ems_project.repository.EmployeeLeaveRepository;
 import ems.com.ems_project.repository.EmployeeRepository;
 import ems.com.ems_project.repository.LeaveRepository;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -314,6 +313,7 @@ public ReqRes submitLeaveRequest(LeaveDTO requestDTO) {
                 leave.setLeaveType(LeaveType.UNPAID); // Set leave type to EVENING_HALF
                 leave.setLeaveDuration(LeaveDuration.EVENING_HALF); // Set duration to evening half leave
             }
+
 
             leaveRepository.save(leave); // Save or update leave record
         }
