@@ -32,7 +32,7 @@ function ResignedEmployees() {
   ]);
 
   return (
-    <div className="container mt-5 vh-100">
+    <div className="container mt-4 vh-100">
       <h2 className="text-center mb-4">Resigned Employees</h2>
       <DataTable
         fetchData={employeeController.fetchResignedUsers}

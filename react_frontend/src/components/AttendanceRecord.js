@@ -45,15 +45,37 @@ const AttendanceRecord = () => {
     //   renderCell: ({ value }) => formatMinutesToHours(value || 0),
     },
     // {  headerName: "Overtime", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "status", headerName: "Leave Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
-    { field: "hasOT",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
+    { field: "hasOT",headerName: "Over Time", minWidth: 50, flex: 0.5, cellClassName: "text-center",
+      render: (row) => (
+        <span className={row.hasOT ? "text-success fw-bold" : "text-danger fw-bold"}>
+          {row.hasOT ? "Yes" : "No"}
+        </span>
+      ),
+     },
+     { field: "status", headerName: "Status", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ];
 
   return (
-    <div className="container mt-4">
-      <h2>Employee Attendance Records</h2>
-      <DataTable fetchData={AttendanceRecordService.fetchAllAttendance} data={attendanceData} columns={columns} keyField="id" />
-    </div>
+    <div className="container-fluid mt-4">
+  <h2 className="text-center mb-3">Employee Attendance Records</h2>
+
+  {/* Responsive Table Wrapper */}
+  <div className="table-responsive">
+    <DataTable 
+      fetchData={AttendanceRecordService.fetchAllAttendance} 
+      data={attendanceData} 
+      columns={columns} 
+      keyField="id" 
+      responsive
+      fixedHeader
+      fixedHeaderScrollHeight="400px"
+      noDataComponent="No records found"
+      highlightOnHover
+      pagination
+    />
+  </div>
+</div>
+
   );
 };
 

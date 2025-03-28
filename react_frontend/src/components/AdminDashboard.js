@@ -22,6 +22,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [employeeName, setEmployeeName] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
  
   const [menuState, setMenuState] = useState({
@@ -84,19 +85,19 @@ function AdminDashboard() {
   }, []);
 
   return (
-    <div className="d-flex">
+    
+      <div className="d-flex">
       {/* Sidebar */}
       <div
-        className="d-flex flex-column p-3"
+        className={`d-flex flex-column p-3 position-fixed top-0 start-0 h-100 shadow-sm ${
+          sidebarOpen ? "d-block" : "d-none d-md-block"
+        }`}
         style={{
           width: "250px",
           backgroundColor: "#2980B9",
           color: "#FFFFFF",
-          height: "100vh",
-          position: "fixed",
-          top: 0,
-          left: 0,
           overflowY: "auto",
+          transition: "transform 0.3s ease-in-out",
         }}
       >
         <h2 className="text-center mb-4">Admin Dashboard</h2>

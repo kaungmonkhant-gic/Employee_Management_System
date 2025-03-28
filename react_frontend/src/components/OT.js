@@ -110,8 +110,9 @@ const OvertimeRequests = () => {
   ];
 
   return (
-    <div className="container mt-3 vh-100">
-      <div className="row mb-3">
+    <div className="container">
+  <div className="row">
+    <div className="col-12 col-md-10 col-lg-12">
         {/* <div className="col-md-3">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <BellFill size={32} color="orange" />
@@ -122,7 +123,7 @@ const OvertimeRequests = () => {
           </div>
         </div>  */}
 
-        <div className="col-md-4">
+        <div className="col-4">
           <div className="d-flex align-items-center p-3 border rounded shadow-sm" style={{ backgroundColor: "#fff" }}>
             <CheckCircleFill size={32} color="blue" />
             <div className="ms-3">
@@ -145,6 +146,7 @@ const OvertimeRequests = () => {
         highlightOnHover
         pagination
       />
+    </div>
     </div>
   );
 };
