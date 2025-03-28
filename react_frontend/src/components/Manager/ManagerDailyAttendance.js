@@ -162,28 +162,36 @@ const Attendance = () => {
   ];
 
   return (
-    <div className="container mt-4">
-      <h2>Daily Attendance</h2>
+    <div className="container mx-auto mt-4 px-4 sm:px-6 lg:px-8">
+  <h2 className="text-lg sm:text-xl font-bold text-center">Daily Attendance</h2>
 
-      {/* Disable check-in button if user is on leave */}
-      <Button
-        variant={isCheckedIn ? "danger" : "primary"}
-        onClick={isCheckedIn ? handleCheckOut : handleCheckIn}
-        disabled={isCheckingIn || isCheckingOut || isOnLeave} // Disable if checking in or out or on leave
-        className={`px-4 py-2 font-semibold rounded 
-          ${isCheckingIn || isCheckingOut ? "bg-gray-400 cursor-not-allowed" : isCheckedIn ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"}`}
-      >
-        {isCheckingIn ? "Checking in..." : isCheckingOut ? "Checking out..." : isCheckedIn ? "Check Out" : "Check In"}
-      </Button>
+  {/* Disable check-in button if user is on leave */}
+  <div className="flex justify-center mt-4">
+    <Button
+      variant={isCheckedIn ? "danger" : "primary"}
+      onClick={isCheckedIn ? handleCheckOut : handleCheckIn}
+      disabled={isCheckingIn || isCheckingOut || isOnLeave}
+      className={`w-full sm:w-auto px-4 py-2 font-semibold rounded text-white transition duration-300
+        ${isCheckingIn || isCheckingOut ? "bg-gray-400 cursor-not-allowed" : isCheckedIn ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"}`}
+    >
+      {isCheckingIn ? "Checking in..." : isCheckingOut ? "Checking out..." : isCheckedIn ? "Check Out" : "Check In"}
+    </Button>
+  </div>
 
-      {/* Show leave message if user is on leave */}
-      {isOnLeave && <p>You are on leave today. You cannot check in.</p>}
+  {/* Show leave message if user is on leave */}
+  {isOnLeave && <p className="text-center text-red-500 mt-2">You are on leave today. You cannot check in.</p>}
 
-      {/* Render the attendance data */}
-      <div className="mt-3">
-        <DataTable fetchData={EmpAttendanceService.getAllAttendance} data={attendanceData} columns={columns} keyField="id" />
-      </div>
-    </div>
+  {/* Render the attendance data */}
+  <div className="mt-4 overflow-x-auto">
+    <DataTable 
+      fetchData={EmpAttendanceService.getAllAttendance} 
+      data={attendanceData} 
+      columns={columns} 
+      keyField="id" 
+      className="min-w-full bg-white shadow-md rounded-lg overflow-hidden"
+    />
+  </div>
+</div>
   );
 };
 

@@ -56,10 +56,19 @@ const ManagerAttendance = () => {
   ];
 
   return (
-    <div className="container mt-4">
-      <h2>Employee Attendance Records</h2>
-      <DataTable fetchData={AttendanceRecordService.fetchAllAttendance} data={attendanceData} columns={columns} keyField="id" />
-    </div>
+    <div className="container mx-auto mt-4 px-4 sm:px-6 lg:px-8">
+  <h2 className="text-lg sm:text-xl font-bold text-center">Employee Attendance Records</h2>
+  <div className="mt-4 overflow-x-auto">
+    <DataTable 
+      fetchData={AttendanceRecordService.fetchAllAttendance} 
+      data={attendanceData} 
+      columns={columns} 
+      keyField="id" 
+      className="min-w-full bg-white shadow-md rounded-lg overflow-hidden"
+    />
+  </div>
+</div>
+
   );
 };
 
