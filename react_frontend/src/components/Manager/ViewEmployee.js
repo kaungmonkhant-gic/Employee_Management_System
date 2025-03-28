@@ -2,43 +2,46 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import employeeController from "../../Controller/employeeController";
 import DataTable from "../common/DataTable";
+import EmployeeForm from "../EmployeeForm";
+import { FaEdit } from "react-icons/fa";
 
 function Employee() {
   const [activeEmployees, setActiveEmployees] = useState([]);
-  const [resignedEmployees, setResignedEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [headerText, setHeaderText] = useState("");
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        setLoading(true); // Start loading
+        setLoading(true);
         const activeData = await employeeController.fetchActiveUsers();
-        const resignedData = await employeeController.fetchResignedUsers();
 
         if (Array.isArray(activeData)) {
-          const activeEmployeesWithNumbers = activeData.map((employee, index) => ({
+          const employeesWithNumbers = activeData.map((employee, index) => ({
             ...employee,
             number: index + 1,
           }));
-          setActiveEmployees(activeEmployeesWithNumbers);
-        }
-
-        if (Array.isArray(resignedData)) {
-          const resignedEmployeesWithNumbers = resignedData.map((employee, index) => ({
-            ...employee,
-            number: index + 1,
-          }));
-          setResignedEmployees(resignedEmployeesWithNumbers);
+          setActiveEmployees(employeesWithNumbers);
         }
       } catch (error) {
         console.error("Error fetching employees:", error);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
     fetchEmployees();
   }, []);
+
+  const handleEdit = (employee) => {
+    setHeaderText("Edit Employee");
+    setEditingEmployee(employee);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEmployee(null);
+  };
 
   const columns = [
     { field: "number", headerName: "No.", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
@@ -64,46 +67,51 @@ function Employee() {
       flex: 1,
       cellClassName: "text-center",
       render: (row) => (row.resignDate ? row.resignDate : <span className="text-muted">Not Set</span>),
+    },{
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 120,
+      flex: 0.8,
+      cellClassName: "text-center",
+      render: (row) => (
+        <button onClick={() => handleEdit(row)} className="btn btn-outline-primary btn-sm">
+          <FaEdit />
+        </button>
+      ),
     },
   ];
 
   return (
     <div className="container mt-5 vh-100">
-      {/* Displaying Active Employees Table */}
-      {loading ? (
-        <p className="text-center">Loading active employees...</p>
-      ) : (
-        <DataTable
-          fetchData={() => activeEmployees} // Pass active employees
-          columns={columns}
-          keyField="number"
-          responsive
-          fixedHeader
-          fixedHeaderScrollHeight="400px"
-          noDataComponent="No active employees found"
-          highlightOnHover
-          pagination
+      {editingEmployee ? (
+        <EmployeeForm
+          onSubmit={(employeeData) => {
+            console.log("Updating Employee Data:", employeeData);
+            setEditingEmployee(null);
+          }}
+          onCancel={handleCancelEdit}
+          editingEmployee={editingEmployee}
+          headerText={headerText}
         />
-      )}
-
-      {/* Optionally, you can display Resigned Employees Table below */}
-      {/* 
-      {loading ? (
-        <p className="text-center">Loading resigned employees...</p>
       ) : (
-        <DataTable
-          fetchData={() => resignedEmployees} // Pass resigned employees
-          columns={columns}
-          keyField="number"
-          responsive
-          fixedHeader
-          fixedHeaderScrollHeight="400px"
-          noDataComponent="No resigned employees found"
-          highlightOnHover
-          pagination
-        />
+        <>
+          {loading ? (
+            <p className="text-center">Loading active employees...</p>
+          ) : (
+            <DataTable
+              fetchData={() => activeEmployees}
+              columns={columns}
+              keyField="number"
+              responsive
+              fixedHeader
+              fixedHeaderScrollHeight="400px"
+              noDataComponent="No active employees found"
+              highlightOnHover
+              pagination
+            />
+          )}
+        </>
       )}
-      */}
     </div>
   );
 }

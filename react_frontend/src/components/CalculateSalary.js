@@ -19,6 +19,7 @@ const EmployeeSalaryCalculation = () => {
   const token = localStorage.getItem("token"); 
 
   useEffect(() => {
+
     const fetchSalaryData = async () => {
       if (!selectedDate) return;
     
@@ -166,29 +167,46 @@ const EmployeeSalaryCalculation = () => {
       )
     );
   };
-  
-  // Confirm salary and save to the backend
-const confirmSalary = async () => {
-  try {
-    const salaryMonth = selectedDate.format("YYYY-MM");  // Format salary month as "YYYY-MM"
-    
-    // Prepare the employee data to be sent to the backend
-    const salaryData = employees.map((emp) => {
-      const totalOtFee = (emp.basicSalary * (emp.otTime / 60)) / (workingDays * 8); // OT Fee calculation
-      const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / workingDays; // Leave Over Fee calculation
-      const lateDeductionFee = calculateLateDeductionFee(emp); // Late Deduction Fee calculation
 
-      // Calculate final salary
-      const finalSalary = (
-        emp.basicSalary +
-        emp.houseAllowance +
-        emp.transportation +
-        Number(emp.bonus) +
-        Number(emp.manualAdjustment) +
-        totalOtFee -
-        totalLeaveOverFee -
-        lateDeductionFee
-      ).toFixed(2);
+
+  //Confirm salary and save
+  const confirmSalary = async () => {
+    try {
+      const salaryMonth = selectedDate.format("YYYY-MM"); // Format salary month as "YYYY-MM"
+  
+      if (!workingDays || workingDays <= 0) {
+        alert("Please enter a valid number of working days.");
+        return;
+      }
+  
+      const salaryData = employees.map((emp) => {
+        const weeklySalary = (emp.basicSalary * 12) / 52;
+        const hourlyRate = weeklySalary / 40; // Assuming 40 hours of work per week
+  
+        // Convert OT time from minutes to hours and calculate OT Fee
+        const otHours = emp.otTime / 60; // Convert OT time (in minutes) to hours
+        const totalOtFee = hourlyRate * 2 * otHours; // OT Fee calculation
+  
+        // Ensure working days are valid to prevent division by zero
+        const validWorkingDays = workingDays > 0 ? workingDays : 1;
+  
+        // Leave Over Fee calculation based on user input for working days
+        const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / validWorkingDays;
+  
+        // Late Deduction Fee calculation
+        const lateDeductionFee = calculateLateDeductionFee(emp);
+  
+        // Calculate final salary
+        const finalSalary = (
+          emp.basicSalary +
+          emp.houseAllowance +
+          emp.transportation +
+          Number(emp.bonus) +
+          Number(emp.manualAdjustment) +
+          totalOtFee -
+          totalLeaveOverFee -
+          lateDeductionFee
+        ).toFixed(2);
 
       return {
         employeeId: emp.employeeId,
@@ -196,6 +214,9 @@ const confirmSalary = async () => {
         basicSalary: emp.basicSalary,
         houseAllowance: emp.houseAllowance,
         transportation: emp.transportation,
+        otTime: emp.otTime,
+        lateMinutes: emp.lateMinutes,
+        unpaidLeave: emp.unpaidLeave,
         otFee: totalOtFee.toFixed(2), // OT Fee
         leaveOverFee: totalLeaveOverFee.toFixed(2), // Leave Over Fee
         lateOverFee: lateDeductionFee.toFixed(2), // Late Deduction Fee
@@ -228,48 +249,50 @@ const calculateLateDeductionFee = (emp) => {
   const lateMinutes = Number(emp.lateMinutes) || 0;
   const validWorkingDays = workingDays > 0 ? workingDays : 1;
 
-  let lateHours = 0;
-  if (lateMinutes > 0 && lateMinutes <= 30) {
-    lateHours = 0.5;
-  } else if (lateMinutes > 30 && lateMinutes <= 60) {
-    lateHours = 1;
-  } else if (lateMinutes > 60) {
-    lateHours = 2;
-  }
+  // Calculate hourly rate
+  const hourlyRate = basicSalary / (validWorkingDays * 8);
 
-  // Ensure it returns a valid number
-  const lateFee = (basicSalary / (validWorkingDays * 8)) * lateHours;
-  return isNaN(lateFee) ? 0 : lateFee;  // ✅ Fixed
+  // Calculate late hours (as a fraction of the hour based on late minutes)
+  const lateHours = lateMinutes / 60;  // Convert minutes to fraction of hours
+  
+  // Late fee
+  const lateFee = hourlyRate * lateHours;
+  
+  return isNaN(lateFee) ? 0 : lateFee;  // If invalid, return 0
 };
 
 
    // Function to download the confirmed salary details as an Excel file
    const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      employees.map((emp) => ({
-        "Employee ID": emp.employeeId,
-        "Employee Name": emp.employeeName,
-        "Basic Salary": emp.basicSalary,
-        "House Allowance": emp.houseAllowance,
-        "Transportation": emp.transportation,
-        "OT Fee": emp.otFee,
-        "Late Over Fee": emp.lateOverFee,
-        "Unpaid Leaves": emp.leaveOverFee,
-        "Bonus": emp.bonus,
-        "Manual Adjustment": emp.manualAdjustment,
-        "Final Salary": calculateTotalSalary(emp),
-      }))
+      employees.map((emp) => {
+        const finalSalary = calculateTotalSalary(emp); // Calculate the final salary
+  
+        return {
+          "Employee ID": emp.employeeId,
+          "Employee Name": emp.employeeName,
+          "Basic Salary": emp.basicSalary,
+          "House Allowance": emp.houseAllowance,
+          "Transportation": emp.transportation,
+          "OT Fee": Number(emp.otFee).toFixed(2),
+          "Late Over Fee": Number(emp.lateOverFee).toFixed(2),
+          "Unpaid Leaves": Number(emp.leaveOverFee).toFixed(2),
+          "Bonus": emp.bonus,
+          "Manual Adjustment": emp.manualAdjustment,
+          "Final Salary": finalSalary, // Set the calculated final salary
+        };
+      })
     );
-
+  
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Salary Details");
-
+  
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
+  
     saveAs(data, `Employee_Salary_${selectedDate.format("MMMM_YYYY")}.xlsx`);
   };
-
+  
 
   const columns = [
     { field: "salaryMonth", headerName: "Salary Month", flex: 1 },
@@ -280,10 +303,19 @@ const calculateLateDeductionFee = (emp) => {
     { field: "transportation", headerName: "Transportation", flex: 1 },
     // Show OT Fee
   // Ensure values are never null
+  { 
+    field: "otTime", 
+    headerName: "OT Hour", 
+    flex: 1,
+    valueGetter: (params) => (params.value ? (params.value / 60).toFixed(2) : "0.00") 
+  },
+  { field: "lateMinutes", headerName: "Late Minutes", flex: 1},
+  { field: "unpaidLeave", headerName: "Leave days", flex: 1 },
+  
   { field: "otFee", headerName: "OT Fee", flex: 1, render: (row) => <span>{row.otFee ?? "0.00"}</span> },
   { field: "lateOverFee", headerName: "Late Over Fee", flex: 1, render: (row) => <span>{row.lateOverFee ?? "0.00"}</span> },
   { field: "leaveOverFee", headerName: "Leave Over Fee", flex: 1, render: (row) => <span>{row.leaveOverFee ?? "0.00"}</span> },
-  {
+{
     field: "bonus",
     headerName: "Bonus",
     flex: 1,
@@ -328,11 +360,10 @@ const calculateLateDeductionFee = (emp) => {
       headerName: "Total Salary",
       flex: 1,
       render: (row) => (
-        <span>
-          {confirmed ? row.finalSalary : calculateTotalSalary(row)}
-        </span>
+        <span>{row.finalSalary || calculateTotalSalary(row)}</span>
       ),
-    },
+    }
+    
     
   ];
 
@@ -392,7 +423,7 @@ const calculateLateDeductionFee = (emp) => {
 
         {/* Show "Download Excel" button only if confirmed */}
         {confirmed && (
-          <Col span={12} className="text-center">
+          <Col span={12} className="text-start">
             <Button className="btn btn-success" onClick={downloadExcel}>
               Download Excel
             </Button>
@@ -420,14 +451,7 @@ const calculateLateDeductionFee = (emp) => {
 <Row gutter={24}>
 
         <Col span={12} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-    {/* <Button 
-      type="primary" 
-      size="large"
-      onClick={confirmSalary}
-      style={{ width: "100%", maxWidth: "250px", fontSize: "16px", fontWeight: "bold", padding: "10px" }}
-    >
-      Confirm Salary
-    </Button> */}
+   
   </Col>
   </Row>
   </Form>

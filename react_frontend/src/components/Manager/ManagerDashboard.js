@@ -50,20 +50,6 @@ function ManagerDashboard() {
             <i className="bi bi-house-door"></i> Dashboard
           </Link>
 
-          {/* Employee Dropdown */}
-          {/* <div
-            className="nav-link text-white"
-            onClick={() => toggleMenu("employee")}
-            style={{ cursor: "pointer" }}
-          >
-           <i className="bi bi-person-fill"></i> Employee
-            <i
-              className={`bi ms-2 ${
-                menuState.employee ? "bi-caret-up-fill" : "bi-caret-down-fill"
-              }`}
-              style={{ color: "white" }}
-            />
-          </div> */}
         <div className="nav-link text-white d-flex justify-content-between align-items-center" onClick={() => toggleMenu("employee")} 
           style={{ 
                  cursor: "pointer", 
@@ -86,9 +72,7 @@ function ManagerDashboard() {
               <Link to="/manager-dashboard/view-leave-balance" className="nav-link text-white">
               <i className="bi bi-calendar-check me-2"></i>Leave Balance
               </Link>
-              {/* <Link to="/manager-dashboard/employee-leave-record" className="nav-link text-white">
-                Employee Leave
-              </Link> */}
+             
             </div>
           )}
 
@@ -114,21 +98,6 @@ function ManagerDashboard() {
                       </div>
                     )}
 
-          {/* Overtime Dropdown */}
-          {/* <div
-            className="nav-link text-white"
-            onClick={() => toggleMenu("overtime")}
-            style={{ cursor: "pointer" }}
-          >
-            <i className="bi bi-clock"></i> Overtime
-            <i
-              className={`bi ms-2 ${
-                menuState.overtime ? "bi-caret-up-fill" : "bi-caret-down-fill"
-              }`}
-              style={{ color: "white" }}
-            />
-          </div> */}
-
           <div className="nav-link text-white d-flex justify-content-between align-items-center" onClick={() => toggleMenu("overtime")} 
           style={{ 
                  cursor: "pointer", 
@@ -150,9 +119,7 @@ function ManagerDashboard() {
               <Link to="/manager-dashboard/manager-ot-self" className="nav-link text-white">
               <i className="bi bi-clock me-2"></i> Apply for OT
               </Link>
-              {/* <Link to="/manager-dashboard/confirm-ot-request" className="nav-link text-white">
-                Confirmed Requests
-              </Link> */}
+              
             </div>
           )}
 
