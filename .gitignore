@@ -38,8 +38,7 @@ build/
 # Maven Wrapper
 !.mvn/wrapper/maven-wrapper.jar
 
-# Spring Boot
-backend/main/resources/application.properties
+
 
 # IntelliJ IDEA
 *.iml
@@ -63,5 +62,4 @@ backend/main/resources/application.properties
 .springBeans
 .sts4-cache
 
-#application properties
-bin/src/main/resources/application.properties
+

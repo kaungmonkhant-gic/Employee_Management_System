@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+    frontend:
+        build: ./react_frontend
+        ports:
+            - "4000:3000"
+        environment:
+            CHOKIDAR_USEPOLLING: "true"
+        volumes:
+            - ./react_frontend:/app
+            - /app/node_modules
+        stdin_open: true
+        tty: true
+
+    mysql:
+        image: mysql:8.0
+        container_name: mysql
+        environment:
+            MYSQL_DATABASE: ems_db
+            MYSQL_ROOT_PASSWORD: password
+        ports:
+            - "3306:3306"
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            retries: 5
+
+    ems:
+        build:
+            context: ./ems_project
+            dockerfile: Dockerfile
+        container_name: ems
+        ports:
+            - "8081:8080"
+        environment:
+            MAVEN_OPTS: "-DskipTests"
+            SESSION_TIMEOUT: "3600"
+            DB_HOST: "mysql"
+            DB_PORT: "3306"
+            DATABASE_NAME: "ems_db"
+            DB_USERNAME: "root"
+            DB_PASSWORD: "password"
+        depends_on:
+            mysql:
+                condition: service_healthy
