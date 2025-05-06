@@ -3,6 +3,9 @@ import EmployeeModel from "../models/EmployeeModel.js";
 import nrcData from "../Data/nrc.json";
 import employeeController from "../Controller/employeeController";
 import { Card, Form, Row, Col, Button} from 'react-bootstrap';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
 
   // State to store the list of departments fetched from the API
@@ -14,47 +17,55 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
   const [selectedPositionId, setSelectedPositionId] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState("");
   const [employeeData, setEmployeeData] = useState(EmployeeModel);
+  const [errors, setErrors] = useState({});
 
-  const FormControlField = ({ label, name, type = "text", value, onChange, options, placeholder, required = false }, style) => (
-    <Form.Group className="mb-3">
-      <Form.Label className="fw-semibold">{label}</Form.Label>
-      {type === "select" ? (
-        <Form.Control as="select" name={name} value={value} onChange={onChange} className="form-select-lg" required={required} style={style}>
-          <option value=""> {label}</option>
-          {options && options.map((option, index) => (
-            <option key={index} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Form.Control>
-      ) : (
-        <Form.Control
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className="form-control-lg"
-          required={required}
-        />
-      )}
-    </Form.Group>
-  );
+
+  // const FormControlField = ({ label, name, type = "text", value, onChange, options, placeholder, required = false }, style) => (
+  //   <Form.Group className="mb-3">
+  //     <Form.Label className="fw-semibold">{label}</Form.Label>
+  //     {type === "select" ? (
+  //       <Form.Control as="select" name={name} value={value} onChange={onChange} className="form-select-lg" required={required} style={style}>
+  //         <option value=""> {label}</option>
+  //         {options && options.map((option, index) => (
+  //           <option key={index} value={option.value}>
+  //             {option.label}
+  //           </option>
+  //         ))}
+  //       </Form.Control>
+  //     ) : (
+  //       <Form.Control
+  //         type={type}
+  //         name={name}
+  //         value={value}
+  //         onChange={onChange}
+  //         placeholder={placeholder}
+  //         className="form-control-lg"
+  //         required={required}
+  //       />
+  //     )}
+  //   </Form.Group>
+  // );
   
   useEffect(() => {
     if (editingEmployee) {
-      setEmployeeData(prevState => ({
-        ...prevState, // Preserve default state structure
-        ...editingEmployee // Override with editingEmployee values
-      }));
+      // Parse NRC
+      const { nrc } = editingEmployee;
+      const nrcParts = nrc ? nrc.match(/^(\d+)\(([^)]+)\)\s([^\(]+)\(([^)]+)\)(\d+)$/) : null;
+  
+      // Set all employee data, parsed joinDate/dob and NRC details
+      setEmployeeData({
+        ...EmployeeModel, // ensure defaults are preserved
+        ...editingEmployee,
+        joinDate: editingEmployee.joinDate ? new Date(editingEmployee.joinDate).toISOString().split("T")[0] : "",
+        dob: editingEmployee.dob ? new Date(editingEmployee.dob).toISOString().split("T")[0] : "",
+        nrcRegion: nrcParts?.[1] || "",
+        nrcTownship: "", // intentionally left empty
+        nrcType: nrcParts?.[3] || "",
+        nrcDetails: nrcParts?.[4] || "",
+      });
     }
   }, [editingEmployee]);
-
-  useEffect(() => {
-    if (editingEmployee) {
-      setEmployeeData(editingEmployee);
-    }
-  }, [editingEmployee]);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,7 +140,11 @@ useEffect(() => console.log("Updated Selected Role ID:", selectedRoleId), [selec
   }, [editingEmployee]);
   
   
-  
+  // const get18YearsAgoDate = () => {
+  //   const today = new Date();
+  //   today.setFullYear(today.getFullYear() - 18);
+  //   return today.toISOString().split("T")[0]; // format as 'YYYY-MM-DD'
+  // };
   
   
 // Generic handle change function
@@ -148,17 +163,39 @@ const handleChange = (e) => {
     console.log("Selected Role ID:", value);
   }
 
+  // Validation logic
+  if (name === "joinDate") {
+    const today = new Date();
+    const selectedDate = new Date(value);
+    const dob = new Date(employeeData.dateOfBirth); // assuming dateOfBirth exists
+    let joinDateError = "";
+
+    if (selectedDate > today) {
+      joinDateError = "Join date cannot be in the future.";
+    } else {
+      const minJoinDate = new Date(dob);
+      minJoinDate.setFullYear(minJoinDate.getFullYear() + 18);
+
+      if (selectedDate < minJoinDate) {
+        joinDateError = `Employee must be at least 18 on join date (after ${minJoinDate.toISOString().split("T")[0]}).`;
+      }
+    }
+
+    setErrors(prev => ({ ...prev, joinDate: joinDateError }));
+  }
+
   setEmployeeData(prevState => {
     const updatedData = { ...prevState, [name]: value };
 
     // Update NRC dynamically when any NRC field changes
     if (["nrcRegion", "nrcTownship", "nrcType", "nrcDetails"].includes(name)) {
-      updatedData.nrc = `${updatedData.nrcRegion || ""}${updatedData.nrcTownship || ""}(${updatedData.nrcType || ""})${updatedData.nrcDetails || ""}`;
-    }
+      updatedData.nrc = `${updatedData.nrcRegion || ""}/${updatedData.nrcTownship || ""}${updatedData.nrcType || ""}${updatedData.nrcDetails || ""}`;
+ }
 
     return updatedData;
   });
 };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
@@ -206,7 +243,7 @@ const handleChange = (e) => {
               <h5 className="fw-bold text-secondary">Personal Information</h5>
               <hr />
               
-              {/* <Form.Group className="mb-3">
+              <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Full Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -215,41 +252,51 @@ const handleChange = (e) => {
                   onChange={handleChange}
                   required
                   className="form-control-lg"
+                  placeholder="Enter full name"
                 />
-              </Form.Group> */}
+              </Form.Group>
 
-              <FormControlField
-                label="Full Name"
-                name="name"
-                value={employeeData.name}
+              <Form.Group className="mb-3">
+              <Form.Label className="fw-semibold">Email Address</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={employeeData.email}
                 onChange={handleChange}
                 required
+                className="form-control-lg"
+                placeholder="Enter email address"
+                title="Please enter a valid email address"
               />
-  
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Email Address</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  value={employeeData.email}
-                  onChange={handleChange}
-                  required
-                  className="form-control-lg"
-                />
-              </Form.Group>
-  
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Date of Birth</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="dob"
-                  value={employeeData.dob}
-                  onChange={handleChange}
-                  required
-                  className="form-control-lg"
-                />
-              </Form.Group>
-  
+            </Form.Group>
+
+              <Form.Group className="mb-3 w-100">
+  <Form.Label className="fw-semibold">Date of Birth</Form.Label>
+  <div style={{ width: '100%' }}>
+    <DatePicker
+      selected={employeeData.dob ? new Date(employeeData.dob) : null}
+      onChange={(date) => {
+        handleChange({
+          target: {
+            name: "dob",
+            value: date.toISOString().split("T")[0],
+          },
+        });
+      }}
+      minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 30))} // Max age: 30 years
+      maxDate={new Date(new Date().setFullYear(new Date().getFullYear() - 18))} // Min age: 18 years
+      placeholderText="Select date of birth"
+      dateFormat="yyyy-MM-dd"
+      showYearDropdown
+      scrollableYearDropdown
+      name="dob"
+      className="form-control form-control-lg"
+    />
+  </div>
+</Form.Group>
+
+
+
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Gender</Form.Label>
                 <Form.Control
@@ -269,83 +316,85 @@ const handleChange = (e) => {
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Phone</Form.Label>
                 <Form.Control
-                  type="text"
-                  name="phone"
-                  value={employeeData.phone}
-                  onChange={handleChange}
-                  className="form-control-lg"
-                />
+                type="text"
+                name="phone"
+                value={employeeData.phone}
+                onChange={handleChange}
+                className="form-control-lg"
+                placeholder="Enter phone number"
+                pattern="^0[1-9]\d{6,9}$"
+                title="Enter a valid Myanmar phone number (starts with 0, 8–11 digits total)"
+              />
+
               </Form.Group>
   
               <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">NRC</Form.Label>
-                <div className="d-flex gap-2">
-                  {/* <Form.Control
-                    as="select"
-                    name="nrcRegion"
-                    value={employeeData.nrcRegion}
-                    onChange={handleChange}
-                    className="form-select-lg"
-                    style={{ flex: 1 }}
-                    required
-                  >
-                    <option value="">Region</option>
-                    {[...new Set(nrcData.data.map(item => item.nrc_code))].map((code, index) => (
-                      <option key={index} value={code}>{code}</option>
-                    ))}
-                  </Form.Control> */}
+            <Form.Label className="fw-semibold">NRC</Form.Label>
+            <div className="d-flex gap-2">
+              {/* Region */}
+              <Form.Control
+                as="select"
+                name="nrcRegion"
+                value={employeeData.nrcRegion}
+                onChange={handleChange}
+                className="form-control-lg"
+                style={{ flex: 1 }}
+                required
+              >
+                <option value="">Region</option>
+                {[...new Set(nrcData.data.map(item => item.nrc_code))].map((code, index) => (
+                  <option key={index} value={code}>{code}</option>
+                ))}
+              </Form.Control>
 
-                  <FormControlField
-                    style={{ flex: 1 }}
-                    label="Region"
-                    name="nrcRegion"
-                    type="select"
-                    value={employeeData.nrcRegion}
-                    onChange={handleChange}
-                    options={[...new Set(nrcData.data.map(item => item.nrc_code))].map(code => ({ value: code, label: code }))}
-                  />
+              {/* Township */}
+              <Form.Control
+                as="select"
+                name="nrcTownship"
+                value={employeeData.nrcTownship}
+                onChange={handleChange}
+                className="form-control-lg"
+                style={{ flex: 2 }}
+                required
+              >
+                <option value="">Township</option>
+                {[...new Set(nrcData.data.filter(item => item.nrc_code === employeeData.nrcRegion))].map((item, index) => (
+                  <option key={index} value={item.name_mm}>
+                    {item.name_en} ({item.name_mm})
+                  </option>
+                ))}
+              </Form.Control>
 
-                  <FormControlField
-                    style={{ flex: 2 }}
-                    label="Township"
-                    name="nrcTownship"
-                    type="select"
-                    value={employeeData.nrcRegion}
-                    onChange={handleChange}
-                    options={[...new Set(nrcData.data.filter(item => item.nrc_code === employeeData.nrcRegion))].map((item, index) => (
-                      { value: item.name_mm, label: `${item.name_en} (${item.name_mm})` }
-                    ))}
-                  />
-                  <FormControlField
-                  style={{ flex: 1 }}
-                  label="Type"
-                  name="nrcType"
-                  type="select"
-                  value={employeeData.nrcType}
-                  onChange={handleChange}
-                  placeholder="Type"
-                  options={[
-                    { value: "", label: "(N/T/S)" },
-                    { value: "(N)", label: "(N)" },
-                    { value: "(T)", label: "(T)" },
-                    { value: "(S)", label: "(S)" }
-                  ]}
-                />
+              {/* Type */}
+              <Form.Control
+                as="select"
+                name="nrcType"
+                value={employeeData.nrcType}
+                onChange={handleChange}
+                className="form-control-lg"
+                style={{ flex: 1 }}
+                required
+              >
+                <option value="">(N/T/S)</option>
+                <option value="(N)">(N)</option>
+                <option value="(T)">(T)</option>
+                <option value="(S)">(S)</option>
+              </Form.Control>
 
-                  <FormControlField
-                  style={{ flex: 2 }}
-                  label="Details"
-                  name="nrcDetails"
-                  type="text"
-                  value={employeeData.nrcDetails}
-                  onChange={handleChange}
-                  placeholder="Details"
-                  className="form-control-lg"
-                  required
-                />
+              {/* Details */}
+              <Form.Control
+                type="text"
+                name="nrcDetails"
+                value={employeeData.nrcDetails}
+                onChange={handleChange}
+                className="form-control-lg"
+                placeholder="Details"
+                style={{ flex: 2 }}
+                required
+              />
+            </div>
+          </Form.Group>
 
-                </div>
-              </Form.Group>
   
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Marital Status</Form.Label>
@@ -372,6 +421,7 @@ const handleChange = (e) => {
                   onChange={handleChange}
                   className="form-control-lg"
                   style={{ height: '150px' }}
+                  placeholder="Enter full address"
                 />
               </Form.Group>
   
@@ -383,6 +433,7 @@ const handleChange = (e) => {
                   value={employeeData.education}
                   onChange={handleChange}
                   className="form-control-lg"
+                  placeholder="Enter Education level"
                 />
               </Form.Group>
   
@@ -469,16 +520,44 @@ const handleChange = (e) => {
               </Form.Group>
   
               <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Join Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="joinDate"
-                  value={employeeData.joinDate}
-                  onChange={handleChange}
-                  required
-                  className="form-control-lg"
-                />
-              </Form.Group>
+  <Form.Label className="fw-semibold">Join Date</Form.Label>
+  <div style={{ width: '100%' }}>
+  <DatePicker
+    selected={employeeData.joinDate ? new Date(employeeData.joinDate) : null}
+    onChange={(date) => {
+      handleChange({
+        target: {
+          name: "joinDate",
+          value: date.toISOString().split("T")[0]
+        }
+      });
+    }}
+    minDate={
+      employeeData.dateOfBirth
+        ? new Date(
+            new Date(employeeData.dateOfBirth).setFullYear(
+              new Date(employeeData.dateOfBirth).getFullYear() + 18
+            )
+          )
+        : null
+    }
+    maxDate={new Date()}
+    placeholderText="Select join date"
+    dateFormat="yyyy-MM-dd"
+    showYearDropdown
+    scrollableYearDropdown
+    className={`form-control form-control-lg ${
+      errors.joinDate ? "is-invalid" : ""
+    }`}
+  />
+  {errors.joinDate && (
+    <div className="invalid-feedback">{errors.joinDate}</div>
+  )}
+  </div>
+</Form.Group>
+
+
+
   
               {/* <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Resign Date</Form.Label>
