@@ -100,7 +100,6 @@ public class OtService {
                 .collect(Collectors.toList());
     }
 
-
     public ReqRes submitOTRequest(OtDTO requestDTO) {
         ReqRes response = new ReqRes();
 
@@ -130,7 +129,7 @@ public class OtService {
                 // If overlap exists, return a bad request status with the error message
                 response.setStatusCode(400);  // Bad request status
                 response.setError("You already have an OT request that overlaps with these times.");
-                return response;  // Return early with the error message
+                return response;
             }
 
             // Generate OT ID
@@ -157,6 +156,11 @@ public class OtService {
             // Save OT object to the repository
             Ots savedOt = otRepository.save(ot);
 
+            // If manager, auto-approved OT should also update attendance
+            if (savedOt.getStatus() == RequestStatus.APPROVED) {
+                attendanceService.updateOTForAttendance(employee, requestDate, savedOt);
+            }
+
             // Return successful response with OTDTO
             response.setStatusCode(200);  // OK status
             response.setMessage("OT request submitted successfully.");
@@ -171,6 +175,7 @@ public class OtService {
             return response;
         }
     }
+
 
     public List<OtDTO> getOTByEmployeeId(String employeeId) {
 
