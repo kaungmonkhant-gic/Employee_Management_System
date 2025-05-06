@@ -7,6 +7,7 @@ import DataTable from "./common/DataTable";
 import overtimeController from "../Controller/overtimeController";
 
 const OvertimeRequests = () => {
+    const [overtimeRecords, setOvertimeRecords] = useState([]);
     const [pending, setPending] = useState([]);
     const [approved, setApproved] = useState([]);
     const [paid, setPaid] = useState([]);
@@ -14,6 +15,20 @@ const OvertimeRequests = () => {
     const [showModal, setShowModal] = useState(false); // Modal state for adding OT request
     // const [newOTRequest, setNewOTRequest] = useState({}); // State for new OT request form
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchOvertimeRecords = async () => {
+            try {
+                const data = await overtimeController.fetchOvertimeRecords();
+                setOvertimeRecords(data || []);
+            } catch (error) {
+                console.error("Error fetching overtime records:", error);
+                setOvertimeRecords([]);
+            }
+        };
+
+        fetchOvertimeRecords();
+    }, []);
 
     useEffect(() => {
         const fetchOvertimeRequests = async () => {
@@ -45,25 +60,24 @@ const OvertimeRequests = () => {
             headerName: "No.",
             minWidth: 50,
             flex: 0.5,
-            cellClassName: "text-center", // Ensures text alignment in Bootstrap
-            headerClassName: "text-center", // Centers the header text as well
+            cellClassName: "text-center",
+            headerClassName: "text-center",
         },
-
         {
             field: "employeeName",
             headerName: "Employee Name",
             minWidth: 150,
             flex: 1,
             cellClassName: "text-center",
+            headerClassName: "text-center",
         },
-        // { field: "managerName", headerName: "Manager Name", minWidth: 150, flex: 1, cellClassName: "text-center" },
-
         {
             field: "date",
             headerName: "Date",
             minWidth: 150,
             flex: 1,
             cellClassName: "text-center",
+            headerClassName: "text-center",
         },
         {
             field: "startTime",
@@ -71,6 +85,7 @@ const OvertimeRequests = () => {
             minWidth: 120,
             flex: 1,
             cellClassName: "text-center",
+            headerClassName: "text-center",
         },
         {
             field: "endTime",
@@ -78,13 +93,20 @@ const OvertimeRequests = () => {
             minWidth: 120,
             flex: 1,
             cellClassName: "text-center",
+            headerClassName: "text-center",
         },
         {
             field: "otTime",
-            headerName: "Duration",
+            headerName: "Duration (in minutes)",
             minWidth: 120,
             flex: 1,
             cellClassName: "text-center",
+            headerClassName: "text-center",
+            render: (row) => (
+                <div style={{ textAlign: "center", width: "100%" }}>
+                    {row.otTime}
+                </div>
+            ),
         },
         {
             field: "reason",
@@ -92,6 +114,7 @@ const OvertimeRequests = () => {
             minWidth: 200,
             flex: 2,
             cellClassName: "text-center",
+            headerClassName: "text-center",
         },
         {
             field: "otStatus",
@@ -99,26 +122,22 @@ const OvertimeRequests = () => {
             minWidth: 120,
             flex: 1,
             cellClassName: "text-center",
-            renderCell: (params) => {
-                let statusColor = "";
-                switch (params.value) {
-                    case "APPROVED":
-                        statusColor = "text-success fw-bold"; // Green color
-                        break;
-                    case "PENDING":
-                        statusColor = "text-warning fw-bold"; // Yellow color
-                        break;
-                    case "REJECTED":
-                        statusColor = "text-danger fw-bold"; // Red color
-                        break;
-                    case "PAID":
-                        statusColor = "text-primary fw-bold"; // Blue color
-                        break;
-                    default:
-                        statusColor = "text-secondary fw-bold"; // Gray for unknown status
-                }
-                return <span className={statusColor}>{params.value}</span>;
-            },
+            headerClassName: "text-center",
+            render: (row) => (
+                <div className="text-center w-100">
+                    <span className={`badge ${
+                        row.otStatus === "APPROVED"
+                            ? "bg-success"
+                            : row.otStatus === "PENDING"
+                            ? "bg-warning text-dark"
+                            : row.otStatus === "PAID"
+                            ? "bg-primary"
+                            : "bg-danger"
+                    }`}>
+                        {row.otStatus}
+                    </span>
+                </div>
+            ),
         },
     ];
 

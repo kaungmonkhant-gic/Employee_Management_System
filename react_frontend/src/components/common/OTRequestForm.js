@@ -13,8 +13,8 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
-
-  const today = new Date().toISOString().split("T")[0]; // Get today's date
+  const [previousDuration, setPreviousDuration] = useState("120"); // Example previous OT
+  const today = new Date().toISOString().split("T")[0];
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -33,7 +33,7 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
 
       if (start < end) {
         const diffMinutes = Math.floor((end - start) / (1000 * 60));
-        setFormData((prevState) => ({ ...prevState, otTime: diffMinutes }));
+        setFormData((prevState) => ({ ...prevState, otTime: diffMinutes.toString() }));
       } else {
         setFormData((prevState) => ({ ...prevState, otTime: "" }));
       }
@@ -42,16 +42,14 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
     }
   }, [formData.startTime, formData.endTime]);
 
-  // Validate overtime constraints
   const validateOvertime = () => {
-    const { date, startTime, endTime } = formData;
+    const { date, startTime, endTime, otTime } = formData;
     const selectedDate = new Date(date);
-    const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 6 = Saturday
-
+    const dayOfWeek = selectedDate.getDay();
     const start = new Date(`1970-01-01T${startTime}:00`);
     const end = new Date(`1970-01-01T${endTime}:00`);
 
-    if (!date || !startTime || !endTime) {
+    if (!date || !startTime || !endTime || !formData.reason) {
       setErrorMessage("All fields are required.");
       return false;
     }
@@ -66,7 +64,6 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
       return false;
     }
 
-    // Restrict overtime during office hours on weekdays (Monday to Friday)
     if (dayOfWeek >= 1 && dayOfWeek <= 5) {
       const officeStart = new Date("1970-01-01T08:00:00");
       const officeEnd = new Date("1970-01-01T17:00:00");
@@ -77,26 +74,40 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
       }
     }
 
-    // Check for overlapping time with existing requests
     if (existingRequests) {
       for (const request of existingRequests) {
         if (request.date === date) {
           const existingStart = new Date(`1970-01-01T${request.startTime}:00`);
           const existingEnd = new Date(`1970-01-01T${request.endTime}:00`);
-
-          if ((start >= existingStart && start < existingEnd) || (end > existingStart && end <= existingEnd)) {
+    
+          const newStart = start.getTime();
+          const newEnd = end.getTime();
+          const existStart = existingStart.getTime();
+          const existEnd = existingEnd.getTime();
+    
+          const isOverlap =
+            (newStart >= existStart && newStart < existEnd) || // starts inside
+            (newEnd > existStart && newEnd <= existEnd) ||     // ends inside
+            (newStart <= existStart && newEnd >= existEnd);    // surrounds existing
+    
+          if (isOverlap) {
             setErrorMessage("Overlapping overtime request detected.");
             return false;
           }
         }
       }
     }
+    
+    // Check for duplicate OT duration
+    if (otTime === previousDuration) {
+      setErrorMessage("Please enter a different OT duration than the previous one.");
+      return false;
+    }
 
     setErrorMessage("");
     return true;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateOvertime()) return;
@@ -133,7 +144,7 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                min={today} // Prevent selecting past dates
+                min={today}
                 required
               />
             </Col>
@@ -194,13 +205,32 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
             </Col>
           </Form.Group>
 
-          {errorMessage && <p className="text-danger">{errorMessage}</p>}
+          {errorMessage && (
+            <div className="alert alert-danger" role="alert">
+              {errorMessage}
+            </div>
+          )}
 
           <div className="d-flex justify-content-end mt-4">
-            <Button type="submit" className="me-2" style={{ backgroundColor: "#001F3F" }}>
+            <Button
+              type="submit"
+              className="me-2"
+              style={{ backgroundColor: "#001F3F", borderColor: "#001F3F" }}
+            >
               Submit
             </Button>
-            <Button variant="outline-secondary" onClick={() => setFormData({ date: "", startTime: "", endTime: "", otTime: "", reason: "" })}>
+            <Button
+              variant="outline-secondary"
+              onClick={() =>
+                setFormData({
+                  date: "",
+                  startTime: "",
+                  endTime: "",
+                  otTime: "",
+                  reason: "",
+                })
+              }
+            >
               Cancel
             </Button>
           </div>
