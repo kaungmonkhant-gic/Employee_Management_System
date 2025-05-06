@@ -22,7 +22,9 @@ public class SalaryHistoryDTO {
     private Double bonus;
     private Double finalSalary;
     @JsonFormat(pattern = "yyyy-MM")
-    private String salaryMonth; // From Employee Leave/// Optional to display manager name in DTO
+    private String salaryMonth;
+    private Integer workingDays;
+    private String reason;
 
 
     // Constructor to map SalaryHistory entity to SalaryHistoryDTO
@@ -39,6 +41,8 @@ public class SalaryHistoryDTO {
             this.bonus = salaryHistory.getBonus();
             this.salaryMonth = salaryHistory.getSalaryMonth();
             this.finalSalary = salaryHistory.getFinalSalary();
+            this.workingDays = salaryHistory.getWorkingDays();
+            this.reason = salaryHistory.getReason();
         }
             // Optional,Employee  has getName method
             this.employeeName = (employee != null) ? employee.getName() : null;
@@ -121,6 +125,14 @@ public class SalaryHistoryDTO {
         return manualAdjustment;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     public void setManualAdjustment(Double manualAdjustment) {
         this.manualAdjustment = manualAdjustment;
     }
@@ -147,6 +159,14 @@ public class SalaryHistoryDTO {
 
     public void setSalaryMonth(String salaryMonth) {
         this.salaryMonth = salaryMonth;
+    }
+
+    public Integer getWorkingDays() {
+        return workingDays;
+    }
+
+    public void setWorkingDays(Integer workingDays) {
+        this.workingDays = workingDays;
     }
 }
 

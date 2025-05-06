@@ -107,6 +107,8 @@ public class SalaryHistoryService {
             salaryHistory.setManualAdjustment(dto.getManualAdjustment());
             salaryHistory.setOtFee(dto.getOtFee());
             salaryHistory.setTransportation(dto.getTransportation());
+            salaryHistory.setWorkingDays(dto.getWorkingDays());
+            salaryHistory.setReason(dto.getReason());
 
             salaryRecords.add(salaryHistory);
         }

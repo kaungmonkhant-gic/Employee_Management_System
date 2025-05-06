@@ -52,6 +52,11 @@ public class SalaryHistory {
     @Column(name = "salary_month", length = 7)
     private String salaryMonth;
 
+    @Column(name = "working_days")
+    private Integer workingDays;
+    @Column(name = "reason")
+    private String reason;
+
 
     public String getId() {
         return id;
@@ -150,4 +155,19 @@ public class SalaryHistory {
         this.salaryMonth = salaryMonth;
     }
 
+    public Integer getWorkingDays() {
+        return workingDays;
+    }
+
+    public void setWorkingDays(Integer workingDays) {
+        this.workingDays = workingDays;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }
