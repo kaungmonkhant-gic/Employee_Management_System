@@ -48,9 +48,6 @@ public class Ots {
     @Column(name = "status")
     private RequestStatus status = RequestStatus.PENDING; // Default to false
 
-    @Column(name = "is_paid")
-    private Boolean paid = false;
-
     @ManyToOne
     @JoinColumn(name = "manager_id")
     @JsonIgnore
@@ -112,14 +109,6 @@ public class Ots {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
-    }
-
-    public Boolean getPaid() {
-        return paid;
-    }
-
-    public void setPaid(Boolean paid) {
-        this.paid = paid;
     }
 
     public Employee getManager() {

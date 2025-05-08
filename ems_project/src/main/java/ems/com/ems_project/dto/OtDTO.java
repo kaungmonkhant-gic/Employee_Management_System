@@ -40,7 +40,6 @@ public class OtDTO {
             this.otTime = ot.getOtTime();
             this.reason = ot.getReason();
             this.otStatus = ot.getStatus();
-            this.isPaid = ot.getPaid();
             this.rejectionReason = ot.getRejectionReason();
         }
         // Extract employee name and manager name if available
@@ -104,14 +103,6 @@ public class OtDTO {
 
     public void setOtStatus(RequestStatus otStatus) {
         this.otStatus = otStatus;
-    }
-
-    public Boolean getIsPaid() {
-        return isPaid;
-    }
-
-    public void setIsPaid(Boolean isPaid) {
-        this.isPaid = isPaid;
     }
 
     public String getEmployeeName() {

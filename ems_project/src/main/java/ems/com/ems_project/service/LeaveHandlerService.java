@@ -2,6 +2,7 @@ package ems.com.ems_project.service;
 
 import ems.com.ems_project.common.GenerateId;
 import ems.com.ems_project.model.*;
+import ems.com.ems_project.repository.EmployeeLeaveRepository;
 import ems.com.ems_project.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import java.util.Optional;
 public class LeaveHandlerService {
     @Autowired
     private LeaveRepository leaveRepository;
+    @Autowired
+    private EmployeeLeaveRepository employeeLeaveRepository;
 
     @Autowired
     private GenerateId generateId;
@@ -35,13 +38,24 @@ public class LeaveHandlerService {
                 leave.setLeaveType(LeaveType.UNPAID);
                 leave.setLeaveDuration(LeaveDuration.EVENING_HALF);
             }
+
             // Automatically approve the leave
             leave.setStatus(RequestStatus.APPROVED);
+
+            // ✅ Add 0.5 to unpaid leave in EmployeeLeave
+            Optional<EmployeeLeave> employeeLeaveOptional = employeeLeaveRepository.findByEmployeeId(employee.getId());
+            if (employeeLeaveOptional.isPresent()) {
+                EmployeeLeave employeeLeave = employeeLeaveOptional.get();
+                double currentUnpaid = employeeLeave.getUnpaidLeave();
+                employeeLeave.setUnpaidLeave(currentUnpaid + 0.5);
+                employeeLeaveRepository.save(employeeLeave);
+            }
 
             return leaveRepository.save(leave);
         }
         return null;
     }
+
 
     public String generateLeaveId() {
         // Get the last Attendance ID from the database

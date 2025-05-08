@@ -19,6 +19,7 @@ public class LeaveDTO {
     private String reason;
     private RequestStatus status = RequestStatus.PENDING;
     private String employeeName;
+    private String employeeId;
     private String managerName;
     private String rejectionReason;
 
@@ -36,6 +37,8 @@ public class LeaveDTO {
         }
         // Get employee name
         this.employeeName = employee != null ? employee.getName() : null;
+        //get employee Id
+        this.employeeId = employee != null ? employee.getId() : null;
 
         // Get manager name from employee (self-referencing)
         this.managerName = (manager != null) ? manager.getName() : null;
@@ -128,5 +131,13 @@ public class LeaveDTO {
 
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 }

@@ -17,6 +17,7 @@ public class AttendanceDTO {
     private String id;
     private LocalDate date;
     private String employeeName;
+    private String employeeId;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime checkInTime;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
@@ -42,7 +43,7 @@ public class AttendanceDTO {
 
         // Employee and Manager names
         this.employeeName = (employee != null) ? employee.getName() : null;
-//        this.managerName = (manager != null) ? manager.getName() : null;
+        this.employeeId = (employee != null) ? employee.getId() : null;
 
         // Handle leave ID (could be null if there's no leave associated)
         this.leaveId = (attendance.getLeave() != null) ? attendance.getLeave().getId() : null;
@@ -125,4 +126,11 @@ public class AttendanceDTO {
         this.hasOT = hasOT;
     }
 
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
 }

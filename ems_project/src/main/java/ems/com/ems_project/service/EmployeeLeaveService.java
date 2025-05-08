@@ -49,36 +49,79 @@ public class EmployeeLeaveService {
         return new EmployeeLeaveDTO(employeeLeave, employeeName);
     }
 
+//    public void updateLeaveBalance(EmployeeLeave employeeLeave, LeaveType leaveType, Double leaveDays) {
+//        switch (leaveType) {
+//            case ANNUAL:
+//                if (employeeLeave.getAnnualLeave() < leaveDays) {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient annual leave balance.");
+//                }
+//                employeeLeave.setAnnualLeave(employeeLeave.getAnnualLeave() - leaveDays);
+//                break;
+//            case CASUAL:
+//                if (employeeLeave.getCasualLeave() < leaveDays) {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient casual leave balance.");
+//                }
+//                employeeLeave.setCasualLeave(employeeLeave.getCasualLeave() - leaveDays);
+//                break;
+//            case MEDICAL:
+//                if (employeeLeave.getMedicalLeave() < leaveDays) {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient medical leave balance.");
+//                }
+//                employeeLeave.setMedicalLeave(employeeLeave.getMedicalLeave() - leaveDays);
+//                break;
+//            default:
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid leave type.");
+//        }
+//
+//        // Update the total leave balance
+//        employeeLeave.setTotal(employeeLeave.getAnnualLeave() + employeeLeave.getCasualLeave() + employeeLeave.getMedicalLeave());
+//
+//        // Save updated leave balance
+//        employeeLeaveRepository.save(employeeLeave);
+//    }
+//
+
     public void updateLeaveBalance(EmployeeLeave employeeLeave, LeaveType leaveType, Double leaveDays) {
+        boolean leaveDeducted = false;
+
         switch (leaveType) {
             case ANNUAL:
-                if (employeeLeave.getAnnualLeave() < leaveDays) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient annual leave balance.");
+                if (employeeLeave.getAnnualLeave() >= leaveDays) {
+                    employeeLeave.setAnnualLeave(employeeLeave.getAnnualLeave() - leaveDays);
+                    leaveDeducted = true;
                 }
-                employeeLeave.setAnnualLeave(employeeLeave.getAnnualLeave() - leaveDays);
                 break;
             case CASUAL:
-                if (employeeLeave.getCasualLeave() < leaveDays) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient casual leave balance.");
+                if (employeeLeave.getCasualLeave() >= leaveDays) {
+                    employeeLeave.setCasualLeave(employeeLeave.getCasualLeave() - leaveDays);
+                    leaveDeducted = true;
                 }
-                employeeLeave.setCasualLeave(employeeLeave.getCasualLeave() - leaveDays);
                 break;
             case MEDICAL:
-                if (employeeLeave.getMedicalLeave() < leaveDays) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient medical leave balance.");
+                if (employeeLeave.getMedicalLeave() >= leaveDays) {
+                    employeeLeave.setMedicalLeave(employeeLeave.getMedicalLeave() - leaveDays);
+                    leaveDeducted = true;
                 }
-                employeeLeave.setMedicalLeave(employeeLeave.getMedicalLeave() - leaveDays);
                 break;
             default:
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid leave type.");
         }
 
+        // Fallback to unpaid leave if insufficient balance
+        if (!leaveDeducted) {
+            employeeLeave.setUnpaidLeave(employeeLeave.getUnpaidLeave() + leaveDays);
+        }
+
         // Update the total leave balance
-        employeeLeave.setTotal(employeeLeave.getAnnualLeave() + employeeLeave.getCasualLeave() + employeeLeave.getMedicalLeave());
+        employeeLeave.setTotal(employeeLeave.getAnnualLeave()
+                + employeeLeave.getCasualLeave()
+                + employeeLeave.getMedicalLeave()
+                + employeeLeave.getUnpaidLeave());
 
         // Save updated leave balance
         employeeLeaveRepository.save(employeeLeave);
     }
+
 
     public void updateUnpaidLeaveBalance(Employee employee, LocalDate leaveDate) {
         // Fetch the EmployeeLeave record

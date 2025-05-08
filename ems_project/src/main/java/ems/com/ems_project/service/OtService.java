@@ -229,22 +229,8 @@ public class OtService {
                 ot.setRejectionReason(rejectionReason);
             }
         }
-        // Check if Admin is marking OT as paid
-        else if ("paid".equalsIgnoreCase(action)) {
-            // Ensure only Admin can mark as paid
-            if (!"Admin".equalsIgnoreCase(employee.getRoleName())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admin can mark OT as paid.");
-            }
-
-            // Ensure OT is already approved before marking as paid
-            if (!RequestStatus.APPROVED.equals(ot.getStatus())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only approved OT requests can be marked as paid.");
-            }
-
-            ot.setPaid(true); // Mark OT as paid
-        }
         else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve', 'reject', or 'paid'.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action. Use 'approve', 'reject'.");
         }
 
         // Save the updated OT request to the database

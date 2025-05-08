@@ -28,4 +28,5 @@ public interface EmployeeLeaveRepository extends JpaRepository<EmployeeLeave, St
     @Query("SELECT COALESCE(SUM(e.unpaidLeave), 0.0) FROM EmployeeLeave e WHERE e.employee.id = :employeeId")
     Double findTotalUnpaidLeaveByEmployeeId(String employeeId);
 
+
 }
