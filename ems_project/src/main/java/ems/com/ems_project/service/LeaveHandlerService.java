@@ -33,12 +33,15 @@ public class LeaveHandlerService {
                 leave = new Leave();
                 leave.setId(generateLeaveId());
                 leave.setEmployee(employee);
+                leave.setManager(employee.getManager());
                 leave.setStartDate(todayDate);
                 leave.setEndDate(todayDate);
                 leave.setLeaveType(LeaveType.UNPAID);
                 leave.setLeaveDuration(LeaveDuration.EVENING_HALF);
             }
-
+            // Set reason and totalDays
+            leave.setReason("Forgot to check-out");
+            leave.setTotalDays(0.5);
             // Automatically approve the leave
             leave.setStatus(RequestStatus.APPROVED);
 
@@ -55,6 +58,41 @@ public class LeaveHandlerService {
         }
         return null;
     }
+
+    public void updateUnpaidLeaveBalance(Employee employee, LocalDate date) {
+        // Check if leave already exists to avoid duplicates
+        Optional<Leave> existingLeave = leaveRepository.findByEmployeeAndDate(employee, date);
+        if (existingLeave.isPresent()) {
+            return; // Leave already recorded, skip
+        }
+
+        // 1. Create Leave record
+        Leave leave = new Leave();
+        leave.setId(generateLeaveId());
+        leave.setEmployee(employee);
+        leave.setManager(employee.getManager());
+        leave.setStartDate(date);
+        leave.setEndDate(date);
+        leave.setLeaveType(LeaveType.UNPAID);
+        leave.setLeaveDuration(LeaveDuration.FULL_LEAVE);
+        leave.setStatus(RequestStatus.APPROVED);
+        leave.setReason("late check-in (after 2 PM)");
+        leave.setTotalDays(1.0);
+        // Optional: add flag if you want to track system-generated
+        // leave.setSystemGenerated(true);
+
+        leaveRepository.save(leave);
+
+        // 2. Update unpaid leave balance
+        Optional<EmployeeLeave> employeeLeaveOpt = employeeLeaveRepository.findByEmployeeId(employee.getId());
+        if (employeeLeaveOpt.isPresent()) {
+            EmployeeLeave employeeLeave = employeeLeaveOpt.get();
+            double currentUnpaid = employeeLeave.getUnpaidLeave();
+            employeeLeave.setUnpaidLeave(currentUnpaid + 1.0); // Full day
+            employeeLeaveRepository.save(employeeLeave);
+        }
+    }
+
 
 
     public String generateLeaveId() {

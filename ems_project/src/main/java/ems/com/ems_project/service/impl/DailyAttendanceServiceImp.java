@@ -166,7 +166,7 @@ public class DailyAttendanceServiceImp implements AttendanceService {
                     attendanceStatus = AttendanceStatus.FULL_LEAVE;
                 } else {
                     attendanceStatus = AttendanceStatus.ABSENT;
-                    employeeLeaveService.updateUnpaidLeaveBalance(employee, todayDate);
+                    leaveHandlerService.updateUnpaidLeaveBalance(employee, todayDate);
                 }
             }
             // If employee has Morning Half Leave, check-in time is after 1 PM
