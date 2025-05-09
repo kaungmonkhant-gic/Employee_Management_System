@@ -2,12 +2,36 @@ import SalaryController from "./Controller/SalaryController";
 import DataTable from "../common/DataTable";
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 
 function SalaryHistory() {
-  const navigate = useNavigate(); // Initialize the navigate function
-
+ const [salaryData, setSalaryData] = useState([]);
+  const fetchSalaryData = async () => {
+    const data = await SalaryController.fetchSalaryHistory();
+    setSalaryData(data);  // Save for Excel download
+    return data;
+  };
+  
+  const downloadExcel = () => {
+    if (!salaryData || salaryData.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+  
+    const worksheet = XLSX.utils.json_to_sheet(salaryData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Salary History");
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  
+    saveAs(blob, "Salary_History.xlsx");
+  };
+  
   const [columns] = useState([
       { 
         field: "salaryMonth", 
@@ -33,9 +57,18 @@ function SalaryHistory() {
 
   return (
     <div className="container mt-5 vh-100">
+      <div className="mb-3 text-start">
+      <button
+        className="btn btn-success"
+        style={{ width: "180px", borderRadius: "30px", fontWeight: "600" }}
+        onClick={downloadExcel}
+      >
+        📥 Download Excel
+      </button>
+    </div>
       <h2 className="text-center mb-4">Salary History</h2>
       <DataTable
-          fetchData={SalaryController.fetchSalaryHistory}
+          fetchData={fetchSalaryData}
           columns={columns}
           keyField="id"
           responsive

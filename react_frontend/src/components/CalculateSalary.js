@@ -1,60 +1,79 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Form, Row, Col } from "antd";
-import DataTable from "./common/DataTable";
-import { DatePicker } from "antd";
+import { Button, Form, Row, Col, DatePicker } from "antd";
 import dayjs from "dayjs";
 import axios from "axios";
-import * as XLSX from "xlsx"; // Import for Excel generation
-import { saveAs } from "file-saver"; // For file download
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import DataTable from "./common/DataTable";
+import { Card } from "antd";
+
 
 const API_BASE_URL = "http://localhost:8081";
 
 const EmployeeSalaryCalculation = () => {
   const [workingDays, setWorkingDays] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(dayjs()); 
+  const [selectedDate, setSelectedDate] = useState(dayjs());
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [confirmed, setConfirmed] = useState(false); // New state to track confirmation
-  const token = localStorage.getItem("token"); 
+  const [confirmed, setConfirmed] = useState(false);
+  const [reason, setReason] = useState('');  // Add this state for reason
+   // This function handles the changes in the Reason input field for a specific employee
+   const handleReasonChange = (employeeId, e) => {
+    const updatedEmployees = employees.map((emp) => {
+      if (emp.employeeId === employeeId) {
+        return { ...emp, reason: e.target.value };  // Update reason only for the specific employee
+      }
+      return emp;
+    });
+    setEmployees(updatedEmployees);  // Update the employees array with the new reason
+  };
+  
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-
     const fetchSalaryData = async () => {
       if (!selectedDate) return;
-    
+
       setLoading(true);
-      const selectedMonth = selectedDate.month() + 1; // Month is zero-based, so add 1
+      const selectedMonth = selectedDate.month() + 1;
       const selectedYear = selectedDate.year();
       const selectedSalaryMonth = `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`;
-    
-      console.log(`Fetching salary for: ${selectedSalaryMonth}`);
-    
+
       try {
         const historyResponse = await axios.get(`${API_BASE_URL}/salary-history`, {
           params: { year: selectedYear, month: selectedMonth },
           headers: { Authorization: `Bearer ${token}` },
         });
-    
+
         const confirmedSalaries = historyResponse.data.filter(
           (emp) => emp.salaryMonth === selectedSalaryMonth
         );
-    
+
         if (confirmedSalaries.length > 0) {
-          console.log("Confirmed salary data found:", confirmedSalaries);
-    
           setEmployees(
             confirmedSalaries.map((emp) => ({
               ...emp,
-              finalSalary: emp.finalSalary ?? "0.00", // Ensure finalSalary is set
+              basicSalary: Number(emp.basicSalary) || 0,
+              houseAllowance: Number(emp.houseAllowance) || 0,
+              transportation: Number(emp.transportation) || 0,
+              otTime: Number(emp.otTime) || 0,
+              lateMinutes: Number(emp.lateMinutes) || 0,
+              unpaidLeave: Number(emp.unpaidLeave) || 0,
+              otFee: Number(emp.otFee) || 0,
+              leaveOverFee: Number(emp.leaveOverFee) || 0,
+              lateOverFee: Number(emp.lateOverFee) || 0,
+              bonus: Number(emp.bonus) || 0,
+              manualAdjustment: Number(emp.manualAdjustment) || 0,
+              finalSalary: Number(emp.finalSalary).toFixed(2) || "0.00",
+              salaryMonth: emp.salaryMonth || selectedSalaryMonth,
             }))
           );
-    
-          console.log("Final Salary in State:", confirmedSalaries.map(emp => emp.finalSalary));
-          
+          setWorkingDays(workingDays || 0);
+
           setConfirmed(true);
         } else {
-          console.log("No confirmed salary data, fetching unconfirmed data.");
           setConfirmed(false);
           await fetchUnconfirmedSalaryData(selectedYear, selectedMonth);
         }
@@ -64,12 +83,9 @@ const EmployeeSalaryCalculation = () => {
         setLoading(false);
       }
     };
-    
-      
-    console.log("Fetching salary data for:", selectedDate?.format("YYYY-MM"));
+
     fetchSalaryData();
-  }, [selectedDate, token]); // Make sure `selectedDate` is in the dependency array
-  
+  }, [selectedDate, token, workingDays]);
 
   const fetchUnconfirmedSalaryData = async (year, month) => {
     try {
@@ -77,13 +93,11 @@ const EmployeeSalaryCalculation = () => {
         params: { year, month },
         headers: { Authorization: `Bearer ${token}` },
       });
-  
-      console.log("Unconfirmed salary data:", response.data);
-      const selectedSalaryMonth = `${year}-${month.toString().padStart(2, "0")}`; // Format as YYYY-MM
+
+      const selectedSalaryMonth = `${year}-${month.toString().padStart(2, "0")}`;
 
       setEmployees(
         response.data.map((emp) => {
-          // Ensure values are numbers (or 0 if missing)
           const basicSalary = Number(emp.basicSalary) || 0;
           const otTime = Number(emp.otTime) || 0;
           const unpaidLeave = Number(emp.unpaidLeave) || 0;
@@ -91,27 +105,33 @@ const EmployeeSalaryCalculation = () => {
           const bonus = Number(emp.bonus) || 0;
           const manualAdjustment = Number(emp.manualAdjustment) || 0;
           const salaryMonth = selectedSalaryMonth;
-  
-          // Avoid division by zero
           const validWorkingDays = workingDays > 0 ? workingDays : 1;
-  
-          // Calculate OT Fee
-          const totalOtFee = (basicSalary * (otTime / 60)) / (validWorkingDays * 8);
-  
-          // Calculate Leave Over Fee
+          const otHours = otTime / 60;
+          const totalOtFee = (basicSalary * 12 * 2 * otHours) / (52 * 44);
           const totalLeaveOverFee = (basicSalary * unpaidLeave) / validWorkingDays;
-  
-          // Calculate Late Deduction Fee (Ensure it's a number)
-          const lateDeductionFee = Number(calculateLateDeductionFee({ ...emp, basicSalary })) || 0;
-  
+          const lateDeductionFee = calculateLateDeductionFee({ ...emp, basicSalary });
+
           return {
             ...emp,
+            basicSalary,
+            otTime,
+            unpaidLeave,
+            lateMinutes,
             bonus,
             manualAdjustment,
             salaryMonth,
             otFee: totalOtFee.toFixed(2),
             leaveOverFee: totalLeaveOverFee.toFixed(2),
-            lateOverFee: lateDeductionFee.toFixed(2),  // ✅ Fixed
+            lateOverFee: lateDeductionFee.toFixed(2),
+            finalSalary: calculateTotalSalary({
+              ...emp,
+              basicSalary,
+              otTime,
+              unpaidLeave,
+              lateMinutes,
+              bonus,
+              manualAdjustment,
+            }),
           };
         })
       );
@@ -120,154 +140,120 @@ const EmployeeSalaryCalculation = () => {
     }
   };
 
-  // Function to calculate total salary dynamically
-  const calculateTotalSalary = (emp) => {
-    if (workingDays === 0) return  "0.00"; // Prevent division by zero
-    
-    // Convert OT time from minutes to hours
-    const otTimeInHours = emp.otTime / 60;
-    
-    // Calculate OT Fee (based on monthly salary and monthly working hours)
-    const totalOtFee = (emp.basicSalary * 12 * 2 * otTimeInHours) / (52 * 44);
-
-    // Calculate Leave Deduction (based on unpaid leave days)
-    const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / workingDays;
-    
-    // Determine late deduction based on late minutes
+  const calculateLateDeductionFee = (emp) => {
+    const basicSalary = Number(emp.basicSalary) || 0;
+    const lateMinutes = Number(emp.lateMinutes) || 0;
+    const validWorkingDays = workingDays > 0 ? workingDays : 1;
+    const hourlyRate = basicSalary / (validWorkingDays * 8);
+  
     let lateHours = 0;
-    if (emp.lateMinutes > 0 && emp.lateMinutes <= 30) {
-      lateHours = 0.5; // Deduct 30 minutes salary
-    } else if (emp.lateMinutes > 30 && emp.lateMinutes <= 60) {
-      lateHours = 1; // Deduct 1 hour salary
-    } else if (emp.lateMinutes > 60) {
-      lateHours = 2; // Deduct 2 hours salary
+    if (lateMinutes > 0 && lateMinutes <= 30) {
+      lateHours = 0.5;
+    } else if (lateMinutes > 30 && lateMinutes <= 60) {
+      lateHours = 1;
+    } else if (lateMinutes > 60) {
+      lateHours = 2;
     }
   
-    // Calculate Late Deduction Fee
-    const lateDeductionFee = (emp.basicSalary / (workingDays * 8)) * lateHours; // assuming 8 hours a day
-    
-    // Final Salary Calculation
-    return (
+    const lateFee = hourlyRate * lateHours;
+    return isNaN(lateFee) ? 0 : lateFee;
+  };
+  
+  const calculateTotalSalary = (emp) => {
+    const validWorkingDays = workingDays > 0 ? workingDays : 1;
+    const otTimeInHours = emp.otTime / 60;
+    const totalOtFee = (emp.basicSalary * 12 * 2 * otTimeInHours) / (52 * 44);
+    const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / validWorkingDays;
+
+    const lateDeductionFee = calculateLateDeductionFee(emp);
+    const totalSalary =
       emp.basicSalary +
       emp.houseAllowance +
       emp.transportation +
-      Number(emp.bonus) +
-      Number(emp.manualAdjustment) +
+      Number(emp.bonus || 0) +
+      Number(emp.manualAdjustment || 0) +
       totalOtFee -
       totalLeaveOverFee -
-      lateDeductionFee
-    ).toFixed(2);
+      lateDeductionFee;
+
+    return totalSalary.toFixed(2);
   };
-  
-  // Handle bonus and manual adjustment updates
+
   const handleInputChange = (employeeId, field, value) => {
-    setEmployees((prevEmployees) =>
-      prevEmployees.map((emp) =>
-        emp.employeeId === employeeId ? { ...emp, [field]: value || 0 } : emp
+    setEmployees((prev) =>
+      prev.map((emp) =>
+        emp.employeeId === employeeId
+          ? {
+              ...emp,
+              [field]: value || 0,
+              finalSalary: calculateTotalSalary({ ...emp, [field]: value || 0 }),
+            }
+          : emp
       )
     );
   };
 
-
-  //Confirm salary and save
   const confirmSalary = async () => {
     try {
-      const salaryMonth = selectedDate.format("YYYY-MM"); // Format salary month as "YYYY-MM"
-  
-      if (!workingDays || workingDays <= 0) {
-        alert("Please enter a valid number of working days.");
-        return;
-      }
-  
-      const salaryData = employees.map((emp) => {
-        const weeklySalary = (emp.basicSalary * 12) / 52;
-        const hourlyRate = weeklySalary / 40; // Assuming 40 hours of work per week
-  
-        // Convert OT time from minutes to hours and calculate OT Fee
-        const otHours = emp.otTime / 60; // Convert OT time (in minutes) to hours
-        const totalOtFee = hourlyRate * 2 * otHours; // OT Fee calculation
-  
-        // Ensure working days are valid to prevent division by zero
-        const validWorkingDays = workingDays > 0 ? workingDays : 1;
-  
-        // Leave Over Fee calculation based on user input for working days
-        const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / validWorkingDays;
-  
-        // Late Deduction Fee calculation
-        const lateDeductionFee = calculateLateDeductionFee(emp);
-  
-        // Calculate final salary
-        const finalSalary = (
-          emp.basicSalary +
-          emp.houseAllowance +
-          emp.transportation +
-          Number(emp.bonus) +
-          Number(emp.manualAdjustment) +
-          totalOtFee -
-          totalLeaveOverFee -
-          lateDeductionFee
-        ).toFixed(2);
+       const salaryMonth = selectedDate.format("YYYY-MM");
+ 
+       if (!workingDays || workingDays <= 0) {
+         alert("Please enter a valid number of working days.");
+         return;
+       }
+ 
+       const salaryData = employees.map((emp) => {
+         const weeklySalary = (emp.basicSalary * 12) / 52;
+        //  const hourlyRate = weeklySalary / 40;
+         const otHours = emp.otTime / 60;
+         const totalOtFee = (emp.basicSalary * 12 * 2 * otHours) / (52 * 44);
+         const validWorkingDays = workingDays > 0 ? workingDays : 1;
+         const totalLeaveOverFee = (emp.basicSalary * emp.unpaidLeave) / validWorkingDays;
+         const lateDeductionFee = calculateLateDeductionFee(emp);
+ 
+         const finalSalary = (
+           emp.basicSalary +
+           emp.houseAllowance +
+           emp.transportation +
+           Number(emp.bonus || 0) +
+           Number(emp.manualAdjustment || 0) +
+           totalOtFee -
+           totalLeaveOverFee -
+           lateDeductionFee
+         ).toFixed(2);
+ 
+         return {
+           ...emp,
+           otFee: totalOtFee.toFixed(2),
+           leaveOverFee: totalLeaveOverFee.toFixed(2),
+           lateOverFee: lateDeductionFee.toFixed(2),
+           finalSalary,
+           salaryMonth,
+           workingDays,
+           reason: emp.reason || "", // Ensure reason is included for each employee
+         };
+       });
+ 
+       // POST the salary data
+       const response = await axios.post(`${API_BASE_URL}/salary-history/save`, salaryData, {
+         headers: { Authorization: `Bearer ${token}` },
+       });
+       console.log("API response:", response);  // Add this for debugging
 
-      return {
-        employeeId: emp.employeeId,
-        employeeName: emp.employeeName,
-        basicSalary: emp.basicSalary,
-        houseAllowance: emp.houseAllowance,
-        transportation: emp.transportation,
-        otTime: emp.otTime,
-        lateMinutes: emp.lateMinutes,
-        unpaidLeave: emp.unpaidLeave,
-        otFee: totalOtFee.toFixed(2), // OT Fee
-        leaveOverFee: totalLeaveOverFee.toFixed(2), // Leave Over Fee
-        lateOverFee: lateDeductionFee.toFixed(2), // Late Deduction Fee
-        bonus: emp.bonus,
-        manualAdjustment: emp.manualAdjustment,
-        finalSalary, // Final Salary
-        salaryMonth, // Salary month in "YYYY-MM" format
-      };
-    });
+       alert("Salary confirmed successfully!");
+       setConfirmed(true);  // Correctly update the state
+ 
+    } catch (error) {
+       console.error("Error confirming salaries:", error);
+       alert("Failed to confirm salaries. Please try again.");
+    }
+ };
+ 
 
-    // Send the data to the backend
-    await axios.post(
-      `${API_BASE_URL}/salary-history/save`,
-      salaryData,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    alert("Salary confirmed successfully!");
-    setEmployees([]); // Clear the employee data after confirmation
-    setConfirmed(true); // Set the confirmation state
-  } catch (error) {
-    console.error("Error confirming salaries:", error);
-    alert("Failed to confirm salaries. Please try again.");
-  }
-};
-
-// Function to calculate the late deduction fee
-const calculateLateDeductionFee = (emp) => {
-  const basicSalary = Number(emp.basicSalary) || 0;
-  const lateMinutes = Number(emp.lateMinutes) || 0;
-  const validWorkingDays = workingDays > 0 ? workingDays : 1;
-
-  // Calculate hourly rate
-  const hourlyRate = basicSalary / (validWorkingDays * 8);
-
-  // Calculate late hours (as a fraction of the hour based on late minutes)
-  const lateHours = lateMinutes / 60;  // Convert minutes to fraction of hours
-  
-  // Late fee
-  const lateFee = hourlyRate * lateHours;
-  
-  return isNaN(lateFee) ? 0 : lateFee;  // If invalid, return 0
-};
-
-
-   // Function to download the confirmed salary details as an Excel file
-   const downloadExcel = () => {
+  const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       employees.map((emp) => {
-        const finalSalary = calculateTotalSalary(emp); // Calculate the final salary
-  
+        const finalSalary = calculateTotalSalary(emp);
         return {
           "Employee ID": emp.employeeId,
           "Employee Name": emp.employeeName,
@@ -276,23 +262,25 @@ const calculateLateDeductionFee = (emp) => {
           "Transportation": emp.transportation,
           "OT Fee": Number(emp.otFee).toFixed(2),
           "Late Over Fee": Number(emp.lateOverFee).toFixed(2),
-          "Unpaid Leaves": Number(emp.leaveOverFee).toFixed(2),
+          "Leave Over Fee": Number(emp.leaveOverFee).toFixed(2),
           "Bonus": emp.bonus,
           "Manual Adjustment": emp.manualAdjustment,
-          "Final Salary": finalSalary, // Set the calculated final salary
-        };
+          "Manual Adjustment Reason": emp.reason || "", // Ensure reason is included for each employee       
+          "Final Salary": finalSalary,
+         };
       })
     );
-  
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Salary Details");
-  
+
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-  
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
     saveAs(data, `Employee_Salary_${selectedDate.format("MMMM_YYYY")}.xlsx`);
   };
-  
 
   const columns = [
     { field: "salaryMonth", headerName: "Salary Month", flex: 1 },
@@ -301,59 +289,84 @@ const calculateLateDeductionFee = (emp) => {
     { field: "basicSalary", headerName: "Basic Salary", flex: 1 },
     { field: "houseAllowance", headerName: "House Allowance", flex: 1 },
     { field: "transportation", headerName: "Transportation", flex: 1 },
-    // Show OT Fee
-  // Ensure values are never null
-  { 
-    field: "otTime", 
-    headerName: "OT Hour", 
-    flex: 1,
-    valueGetter: (params) => (params.value ? (params.value / 60).toFixed(2) : "0.00") 
-  },
-  { field: "lateMinutes", headerName: "Late Minutes", flex: 1},
-  { field: "unpaidLeave", headerName: "Leave days", flex: 1 },
-  
-  { field: "otFee", headerName: "OT Fee", flex: 1, render: (row) => <span>{row.otFee ?? "0.00"}</span> },
-  { field: "lateOverFee", headerName: "Late Over Fee", flex: 1, render: (row) => <span>{row.lateOverFee ?? "0.00"}</span> },
-  { field: "leaveOverFee", headerName: "Leave Over Fee", flex: 1, render: (row) => <span>{row.leaveOverFee ?? "0.00"}</span> },
-{
-    field: "bonus",
-    headerName: "Bonus",
-    flex: 1,
-    render: (row) => (
-      <input
-        type="number"
-        value={row.bonus ?? ""}
-        min="0" // 🔹 Prevents negative values in UI
-        onChange={(e) => {
-          let value = Number(e.target.value);
-          if (value < 0) {
-            alert("Bonus cannot be negative!"); // 🔹 Show alert for invalid input
-            return;
-          }
-          !confirmed && handleInputChange(row.employeeId, "bonus", value);
-        }}
-        className="form-control text-center"
-        disabled={confirmed} // Disable if data is confirmed
-      />
-    ),
-  },
-  
     {
-      field: "manualAdjustment",
-      headerName: "Manual Adjustment",
+      field: "otTime",
+      headerName: "OT Duration(minutes)",
       flex: 1,
+      valueGetter: (params) => (params.value ? (params.value / 60).toFixed(2) : "0.00"),
+    },
+    { field: "lateMinutes", headerName: "Late Minutes", flex: 1 },
+    { field: "unpaidLeave", headerName: "Leave Days", flex: 1 },
+    {
+      field: "otFee",
+      headerName: "OT Fee",
+      flex: 1,
+      render: (row) => <span>{Number(row.otFee).toFixed(2) || "0.00"}</span>,
+    },
+    {
+      field: "lateOverFee",
+      headerName: "Late Over Fee",
+      flex: 1,
+      render: (row) => <span>{Number(row.lateOverFee).toFixed(2) || "0.00"}</span>,
+    },
+    {
+      field: "leaveOverFee",
+      headerName: "Leave Over Fee",
+      flex: 1,
+      render: (row) => <span>{Number(row.leaveOverFee).toFixed(2) || "0.00"}</span>,
+    },
+    {
+      field: "bonus",
+      headerName: "Bonus",
+      flex: 1.2,
       render: (row) => (
         <input
           type="number"
-          value={row.manualAdjustment ?? ""}
-          onChange={(e) =>
-            !confirmed && handleInputChange(row.employeeId, "manualAdjustment", Number(e.target.value))
-          }
+          value={row.bonus ?? ""}
+          min="0"
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            if (value < 0) {
+              alert("Bonus cannot be negative!");
+              return;
+            }
+            !confirmed && handleInputChange(row.employeeId, "bonus", value);
+          }}
           className="form-control text-center"
-          disabled={confirmed} // Disable if data is confirmed
+          style={{ minWidth: "120px" }} // You can adjust the width as needed
+          disabled={confirmed}
         />
       ),
     },
+    {
+      field: "manualAdjustment",
+      headerName: "Manual Adjustment",
+      flex: 2,
+      render: (row) => (
+        <div>
+          <input
+            type="number"
+            value={row.manualAdjustment ?? ""}
+            onChange={(e) =>
+              !confirmed &&
+              handleInputChange(row.employeeId, "manualAdjustment", Number(e.target.value))
+            }
+            className="form-control text-center"
+            disabled={confirmed}
+          />
+          {!confirmed && (
+            <textarea
+              value={row.reason || ""}  // Bind the reason field to each employee's individual reason
+              onChange={(e) => handleReasonChange(row.employeeId, e)}  // Update reason for the specific employee
+              placeholder="Enter reason for adjustment"
+              className="form-control mt-2"
+              rows="2"
+            />
+          )}
+        </div>
+      ),
+    },
+    
     
     {
       field: "finalSalary",
@@ -362,80 +375,121 @@ const calculateLateDeductionFee = (emp) => {
       render: (row) => (
         <span>{row.finalSalary || calculateTotalSalary(row)}</span>
       ),
-    }
-    
-    
+    },
   ];
 
   return (
-    <div className="container mt-5 vh-100">
-      <h2 className="text-center mb-4">Employee Salary Calculation</h2>
-
+    <div className="salary-container" style={{ maxWidth: "1200px", margin: "auto", padding: "30px 20px" }}>
+    <Card
+      title={<h3 style={{ marginBottom: 0 }}>💡 Salary Calculation Details</h3>}
+      style={{ marginBottom: "30px", backgroundColor: "#fafafa", borderRadius: "12px" }}
+    >
+      <ul style={{ paddingLeft: "20px", lineHeight: 1.8 }}>
+        <li><strong>Basic Salary:</strong> Fixed monthly salary of the employee.</li>
+        <li><strong>OT Fee=</strong> (Basic Salary × 12 × 2 × OT Hours) / (52 × 44)</li>
+        <li><strong>Leave Deduction Fee=</strong> (Basic Salary × Unpaid Leave Days) ÷ Working Days</li>
+        <li>
+          <strong>Late Deduction:</strong>
+          <ul style={{ marginTop: 5 }}>
+            <li>0 to 30 minutes → 0.5-hour deduction</li>
+            <li>31 to 60 minutes → 1-hour deduction</li>
+            <li>more than 60 minutes → 2-hour deduction</li>
+             
+          </ul>
+        </li>
+        <li>
+    <strong>Late Deduction Fee =</strong> (Basic Salary ÷ Working Days ÷ 8) × Deducted Hours
+  </li>
+        <li><strong>Final Salary=</strong> Basic Salary + House Allowance + Transport + Bonus + Manual Adjustments + OT Fee - Leave - Late</li>
+      </ul>
+    </Card>
+  
+    <h2 className="text-center mb-4" style={{ fontWeight: "600", color: "#1890ff" }}>
+      🧾 Employee Salary Calculation
+    </h2>
+  
+    <Card bordered={false} style={{ marginBottom: "30px", background: "#fff" }}>
       <Form layout="vertical">
         <Row gutter={24}>
-          <Col span={8}>
-          <Form.Item label="Working Days">
-          <input
-            type="number"
-            value={workingDays}
-            onChange={(e) => {
-              let value = Number(e.target.value);
-              if (value < 15) value = 15; // Set to 18 if below
-              if (value > 23) value = 23; // Set to 23 if above
-              setWorkingDays(value);
-            }}
-            className="form-control"
-            min="18"
-            max="23"
-          />
-        </Form.Item>
-
-          </Col>
-
-          <Col span={8}>
-            <Form.Item label="Select Month & Year">
-            <DatePicker
-  picker="month"
-  value={selectedDate}
-  onChange={(date) => {
-    if (date) {
-      setSelectedDate(dayjs(date));
-    }
-  }}
-  
-  className="form-control"
-  format="MMMM YYYY"
-/>
-
+          <Col xs={24} md={8}>
+            <Form.Item label={<strong>Working Days</strong>}>
+              <input
+                type="number"
+                value={workingDays}
+                onChange={(e) => {
+                  let value = Number(e.target.value);
+                  if (value < 15) value = 15;
+                  if (value > 23) value = 23;
+                  setWorkingDays(value);
+                }}
+                className="form-control"
+                min="15"
+                max="23"
+                disabled={confirmed}
+                style={{ height: "40px", textAlign: "center" }}
+              />
             </Form.Item>
           </Col>
-        </Row>
-
-        <Row>
-        {/* Show "Confirm Salary" button only if not confirmed */}
-        {!confirmed && (
-          <Col span={12} className="text-center">
-            <Button type="primary" onClick={confirmSalary}>
-              Confirm Salary
-            </Button>
+  
+          <Col xs={24} md={8}>
+            <Form.Item label={<strong>Select Month & Year</strong>}>
+              <DatePicker
+                picker="month"
+                value={selectedDate}
+                onChange={(date) => date && setSelectedDate(dayjs(date))}
+                className="form-control"
+                format="MMMM YYYY"
+                style={{ width: "100%", height: "40px" }}
+              />
+            </Form.Item>
           </Col>
-        )}
-
-        {/* Show "Download Excel" button only if confirmed */}
-        {confirmed && (
-          <Col span={12} className="text-start">
-            <Button className="btn btn-success" onClick={downloadExcel}>
-              Download Excel
-            </Button>
-          </Col>
-        )}
       </Row>
-
       </Form>
-
-      {loading ? (
-        <p className="text-center">Loading data...</p>
-      ) : (
+    </Card>
+    
+    <Col xs={24} sm={12} md={6}>
+  {!confirmed ? (
+    <Button
+      type="primary"
+      onClick={confirmSalary}
+      block
+      size="large"
+      style={{
+        fontWeight: 600,
+        borderRadius: "50px", // Rounded edges for a more modern look
+        transition: "all 0.3s ease-in-out", // Smooth transition on hover
+        background: "linear-gradient(145deg, #6a11cb, #2575fc)", // Gradient background
+        color: "white", // White text for contrast
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
+        border: "none", // Remove border for a cleaner look
+      }}
+    >
+      Confirm Salary
+    </Button>
+  ) : (
+    <Button
+      type="primary"
+      onClick={downloadExcel}
+      block
+      size="large"
+      style={{
+        background: "linear-gradient(145deg, #28a745, #3cb371)", // Green gradient background
+        borderRadius: "50px", // Rounded edges
+        fontWeight: 600, // Bold text
+        transition: "all 0.3s ease-in-out", // Smooth transition
+        color: "white", // White text
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
+        border: "none", // Clean borderless look
+      }}
+    >
+      Download Excel
+    </Button>
+  )}
+</Col>
+  {loading ? (
+      <p className="text-center">🔄 Loading salary data...</p>
+    ) : (
+      <Card style={{ borderRadius: "12px", padding: "10px" }}>
         <DataTable
           fetchData={() => employees}
           columns={columns}
@@ -446,16 +500,9 @@ const calculateLateDeductionFee = (emp) => {
           highlightOnHover
           pagination
         />
-      )}
-<Form layout="vertical">
-<Row gutter={24}>
-
-        <Col span={12} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-   
-  </Col>
-  </Row>
-  </Form>
-    </div>
+      </Card>
+    )}
+  </div>
   );
 };
 
