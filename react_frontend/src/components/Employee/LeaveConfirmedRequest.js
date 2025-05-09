@@ -135,7 +135,7 @@ const ConfirmedRequests = () => {
 
       <div className="d-flex flex-wrap gap-2 justify-content-center mb-3">
         <Button variant="secondary" onClick={() => navigate("/admin-dashboard/admin-leave")}>Return</Button>
-        {/* <Button variant="secondary" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}>View Pending Requests</Button> */}
+        <Button variant="secondary" onClick={() => navigate("/admin-dashboard/admin-leave-approval")}>View Pending Requests</Button>
       </div>
 
       <div className="bg-white p-3 border rounded shadow-sm">

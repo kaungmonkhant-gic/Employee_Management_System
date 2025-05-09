@@ -1,19 +1,21 @@
 import apiClient from "../../api/apiclient";
 
-const LeaveService = {
+// import apiClient from "../components/api/apiclient";
+
+const ManagerLeaveService = {
   
-  // fetchLeaveRecord: async () => {
-  //   try {
-  //     const response = await apiClient.get("/leave/self");
-  //     if (!response.data) {
-  //       throw new Error("Failed to fetch leave");
-  //     }
-  //     return await response.data;
-  //   } catch (error) {
-  //     console.error("Error fetching leave :", error);
-  //     return null;
-  //   }
-  // },
+  fetchLeaveRecord: async () => {
+    try {
+      const response = await apiClient.get("/leave/self");
+      if (!response.data) {
+        throw new Error("Failed to fetch leave");
+      }
+      return await response.data;
+    } catch (error) {
+      console.error("Error fetching leave :", error);
+      return null;
+    }
+  },
   fetchLeaveSelf: async () => {
     try {
       const response = await apiClient.get("/leave/self"); // Base URL is already set in apiClient
@@ -82,5 +84,4 @@ const LeaveService = {
 };
 
 
-export default LeaveService;
-
+export default ManagerLeaveService;
