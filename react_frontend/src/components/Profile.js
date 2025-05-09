@@ -270,10 +270,20 @@ const EmpProfile = () => {
       }
   
       if (response.statusCode === 200) {
-        setMessage("Password reset successfully.");
-        setMessageType('success');
-        setShowResetPasswordModal(false); // Close modal on success
-      } else {
+  setMessage("Password reset successfully.");
+  setMessageType("success");
+
+  // Optional: short delay to show message
+  setTimeout(() => {
+    // Clear auth tokens or session
+    localStorage.removeItem("authToken"); // or sessionStorage.removeItem("authToken")
+    // Redirect to login page
+    window.location.href = "/login"; // Update this route to match your login page route
+  }, 1500);
+  
+  setShowResetPasswordModal(false);
+}
+ else {
         setMessage(response.message || "Failed to reset password.");
         setMessageType('error');
       }
