@@ -54,12 +54,15 @@ const DataTable = ({ fetchData, columns, keyField }) => {
     return (
         <Table id="datatable" striped bordered hover responsive>
             <thead className="table-primary text-nowrap">
-                <tr>
-                    {columns.map((col) => (
-                        <th key={col.field}>{col.headerName}</th>
-                    ))}
-                </tr>
-            </thead>
+    <tr>
+        {columns.map((col) => (
+            <th key={col.field} className="text-center">
+                {col.headerName}
+            </th>
+        ))}
+    </tr>
+</thead>
+
             <tbody>
                 {data.map((row) => (
                     <tr key={row[keyField]}>

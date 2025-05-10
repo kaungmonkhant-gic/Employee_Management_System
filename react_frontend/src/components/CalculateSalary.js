@@ -17,7 +17,7 @@ const EmployeeSalaryCalculation = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
-  const [reason, setReason] = useState('');  // Add this state for reason
+ 
    // This function handles the changes in the Reason input field for a specific employee
    const handleReasonChange = (employeeId, e) => {
     const updatedEmployees = employees.map((emp) => {
@@ -456,36 +456,41 @@ const EmployeeSalaryCalculation = () => {
       size="large"
       style={{
         fontWeight: 600,
-        borderRadius: "50px", // Rounded edges for a more modern look
-        transition: "all 0.3s ease-in-out", // Smooth transition on hover
-        background: "linear-gradient(145deg, #6a11cb, #2575fc)", // Gradient background
-        color: "white", // White text for contrast
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
-        border: "none", // Remove border for a cleaner look
+        borderRadius: "50px",
+        transition: "all 0.3s ease-in-out",
+        background: "linear-gradient(145deg, #6a11cb, #2575fc)",
+        color: "white",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        border: "none",
       }}
     >
       Confirm Salary
     </Button>
   ) : (
-    <Button
-      type="primary"
-      onClick={downloadExcel}
-      block
-      size="large"
-      style={{
-        background: "linear-gradient(145deg, #28a745, #3cb371)", // Green gradient background
-        borderRadius: "50px", // Rounded edges
-        fontWeight: 600, // Bold text
-        transition: "all 0.3s ease-in-out", // Smooth transition
-        color: "white", // White text
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
-        border: "none", // Clean borderless look
-      }}
-    >
-      Download Excel
-    </Button>
+    <>
+      <Button
+        type="primary"
+        onClick={downloadExcel}
+        block
+        size="large"
+        style={{
+          background: "linear-gradient(145deg, #28a745, #3cb371)",
+          borderRadius: "50px",
+          fontWeight: 600,
+          transition: "all 0.3s ease-in-out",
+          color: "white",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          border: "none",
+        }}
+      >
+        Download Excel
+      </Button>
+
+      
+    </>
   )}
 </Col>
+
   {loading ? (
       <p className="text-center">🔄 Loading salary data...</p>
     ) : (
