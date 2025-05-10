@@ -139,15 +139,29 @@ function Employee() {
             Register New Employee
           </button>
 
-          {/* Buttons to toggle active and resigned employees */}
-          <div>
-            <button className="btn btn-outline-primary mb-3 me-2" onClick={() => { setShowActive(true); setShowResigned(false); }}>
-              Show Active Employees
-            </button>
-            <button className="btn btn-outline-secondary mb-3" onClick={() => { setShowResigned(true); setShowActive(false); }}>
-              Show Resigned Employees
-            </button>
-          </div>
+          {/* Toggle buttons */}
+<div className="mb-3">
+  <button
+    className={`btn me-2 ${showActive ? "btn-success" : "btn-outline-success"}`}
+    onClick={() => {
+      setShowActive(true);
+      setShowResigned(false);
+    }}
+  >
+    Show Active Employees
+  </button>
+  <button
+    className={`btn ${showResigned ? "btn-success" : "btn-outline-success"}`}
+    onClick={() => {
+      setShowResigned(true);
+      setShowActive(false);
+    }}
+  >
+    Show Resigned Employees
+  </button>
+</div>
+
+
 
           {/* Conditionally render active or resigned employees based on button clicks */}
           {showActive && !loading ? (
