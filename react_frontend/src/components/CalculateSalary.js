@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, Row, Col, DatePicker } from "antd";
 import dayjs from "dayjs";
@@ -17,7 +17,7 @@ const EmployeeSalaryCalculation = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
-  const [reason, setReason] = useState('');  // Add this state for reason
+ 
    // This function handles the changes in the Reason input field for a specific employee
    const handleReasonChange = (employeeId, e) => {
     const updatedEmployees = employees.map((emp) => {
@@ -203,8 +203,7 @@ const EmployeeSalaryCalculation = () => {
        }
  
        const salaryData = employees.map((emp) => {
-         const weeklySalary = (emp.basicSalary * 12) / 52;
-        //  const hourlyRate = weeklySalary / 40;
+        
          const otHours = emp.otTime / 60;
          const totalOtFee = (emp.basicSalary * 12 * 2 * otHours) / (52 * 44);
          const validWorkingDays = workingDays > 0 ? workingDays : 1;
@@ -380,30 +379,6 @@ const EmployeeSalaryCalculation = () => {
 
   return (
     <div className="salary-container" style={{ maxWidth: "1200px", margin: "auto", padding: "30px 20px" }}>
-    <Card
-      title={<h3 style={{ marginBottom: 0 }}>💡 Salary Calculation Details</h3>}
-      style={{ marginBottom: "30px", backgroundColor: "#fafafa", borderRadius: "12px" }}
-    >
-      <ul style={{ paddingLeft: "20px", lineHeight: 1.8 }}>
-        <li><strong>Basic Salary:</strong> Fixed monthly salary of the employee.</li>
-        <li><strong>OT Fee=</strong> (Basic Salary × 12 × 2 × OT Hours) / (52 × 44)</li>
-        <li><strong>Leave Deduction Fee=</strong> (Basic Salary × Unpaid Leave Days) ÷ Working Days</li>
-        <li>
-          <strong>Late Deduction:</strong>
-          <ul style={{ marginTop: 5 }}>
-            <li>0 to 30 minutes → 0.5-hour deduction</li>
-            <li>31 to 60 minutes → 1-hour deduction</li>
-            <li>more than 60 minutes → 2-hour deduction</li>
-             
-          </ul>
-        </li>
-        <li>
-    <strong>Late Deduction Fee =</strong> (Basic Salary ÷ Working Days ÷ 8) × Deducted Hours
-  </li>
-        <li><strong>Final Salary=</strong> Basic Salary + House Allowance + Transport + Bonus + Manual Adjustments + OT Fee - Leave - Late</li>
-      </ul>
-    </Card>
-  
     <h2 className="text-center mb-4" style={{ fontWeight: "600", color: "#1890ff" }}>
       🧾 Employee Salary Calculation
     </h2>
@@ -456,36 +431,41 @@ const EmployeeSalaryCalculation = () => {
       size="large"
       style={{
         fontWeight: 600,
-        borderRadius: "50px", // Rounded edges for a more modern look
-        transition: "all 0.3s ease-in-out", // Smooth transition on hover
-        background: "linear-gradient(145deg, #6a11cb, #2575fc)", // Gradient background
-        color: "white", // White text for contrast
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
-        border: "none", // Remove border for a cleaner look
+        borderRadius: "50px",
+        transition: "all 0.3s ease-in-out",
+        background: "linear-gradient(145deg, #6a11cb, #2575fc)",
+        color: "white",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        border: "none",
       }}
     >
       Confirm Salary
     </Button>
   ) : (
-    <Button
-      type="primary"
-      onClick={downloadExcel}
-      block
-      size="large"
-      style={{
-        background: "linear-gradient(145deg, #28a745, #3cb371)", // Green gradient background
-        borderRadius: "50px", // Rounded edges
-        fontWeight: 600, // Bold text
-        transition: "all 0.3s ease-in-out", // Smooth transition
-        color: "white", // White text
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
-        border: "none", // Clean borderless look
-      }}
-    >
-      Download Excel
-    </Button>
+    <>
+      <Button
+        type="primary"
+        onClick={downloadExcel}
+        block
+        size="large"
+        style={{
+          background: "linear-gradient(145deg, #28a745, #3cb371)",
+          borderRadius: "50px",
+          fontWeight: 600,
+          transition: "all 0.3s ease-in-out",
+          color: "white",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          border: "none",
+        }}
+      >
+        Download Excel
+      </Button>
+
+      
+    </>
   )}
 </Col>
+
   {loading ? (
       <p className="text-center">🔄 Loading salary data...</p>
     ) : (

@@ -27,14 +27,7 @@ const overtimeService = {
   //   }
   // },
  
-  markAsPaid : async (id) => {
-  try {
-    const response = await apiClient.put(`/ot/paid/${id}`);
-    return { success: true, message: 'OT request marked as paid.' };
-  } catch (error) {
-    return { success: false, message: error.response?.data?.message || 'An error occurred.' };
-  }
-},
+ 
 
 };
 

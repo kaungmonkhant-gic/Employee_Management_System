@@ -13,7 +13,7 @@ const OvertimeRequestForm = ({ checkInTime, existingRequests }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [previousDuration, setPreviousDuration] = useState("120"); // Example previous OT
+  const [previousDuration] = useState("120"); // Example previous OT
   const today = new Date().toISOString().split("T")[0];
 
   // Handle input changes

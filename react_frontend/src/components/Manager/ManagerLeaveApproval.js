@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
 import leavecontroller from "../Manager/Controller/LeaveApprovalController";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiclient";
@@ -10,10 +9,10 @@ import apiClient from "../api/apiclient";
 const PendingRequests = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [headerText, setHeaderText] = useState("Pending Requests");
-  const [pending, setPending] = useState(0);
-  const [approved, setApproved] = useState(0);
-  const [rejected, setRejected] = useState(0);
+ 
+  const [, setPending] = useState(0);
+  const [, setApproved] = useState(0);
+  const [, setRejected] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {

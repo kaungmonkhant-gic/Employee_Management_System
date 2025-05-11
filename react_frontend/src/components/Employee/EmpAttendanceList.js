@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import EmpAttendanceService from '../Employee/Service/EmpAttendanceService';
 import DataTable from '../common/DataTable';
 import { FaEdit, FaTrash } from 'react-icons/fa';
@@ -6,7 +6,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const AttendanceRecord = () => {
   const [attendanceData, setAttendanceData] = useState([]);
-  const [editingAttendance, setEditingAttendance] = useState(null);
+  const [, setEditingAttendance] = useState(null);
   const [headerText, setHeaderText] = useState("Attendance Record");
 
   // Fetch attendance data from the backend on mount

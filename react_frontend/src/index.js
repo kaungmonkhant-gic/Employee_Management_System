@@ -1,6 +1,6 @@
-import React from "react";
+
 import ReactDOM from "react-dom/client";
-import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 import App from "./App";
 import AdminDashboard from "./components/AdminDashboard";
 import Employee from "./components/Employee"; // Employee component
@@ -10,11 +10,8 @@ import Profile from "./components/Profile"; // Profile component
 import AdminLeave from "./components/AdminLeave";
 import LeaveConfirmedRequest from "./components/LeaveConfirmedRequest";
 import AdminLeaveApproval from "./components/AdminLeaveApproval";
-// import LeavveConfirmedRequest from "./components/Manager/LeaveConfirmedRequest";
-import PayRoll from "./components/PayRoll"; // PayRoll component
 import LoginForm from "./components/LoginForm"; // Login component
 import EmployeeDashboard from "./components/Employee/EmployeeDashboard";
-import Tasks from "./components/Employee/Tasks";
 import Salary from "./components/Salary";
 import EmpProfile from "./components/Employee/EmpProfile";
 import EmpAttendance from "./components/Employee/EmpAttendance";
@@ -26,7 +23,6 @@ import EmpAttendanceList from "./components/Employee/EmpAttendanceList";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AttendanceRecord from "./components/AttendanceRecord";
 import ForgotPassword from "./components/common/ForgotPassword";
-// import ViewSalary from "./components/Employee/ViewSalary";
 import AddLeave from "./components/AddLeave";
 import DailyAttendance from "./components/DailyAttendance";
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
@@ -55,10 +51,10 @@ import ManagerAttendanceRecord from "./components/Manager/ManagerAttendanceRecor
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-function PrivateRoute({ children }) {
-  const isAuthenticated = localStorage.getItem("token"); // Example: Replace with your auth logic
-  return isAuthenticated ? children : <Navigate to="/login" />;
-}
+// function PrivateRoute({ children }) {
+//   const isAuthenticated = localStorage.getItem("token"); // Example: Replace with your auth logic
+//   return isAuthenticated ? children : <Navigate to="/login" />;
+// }
 
 root.render(
   <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -95,7 +91,7 @@ root.render(
         <Route path="ot" element={<OT />} />
         <Route path="submit-ot" element={<SubmitOT />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="payroll" element={<PayRoll />} />
+       
         <Route path="salary-history" element={<SalaryHistoryAdmin />} />
         <Route path="calculate-salary" element={<CalculateSalary />} />
       </Route>
@@ -111,7 +107,6 @@ root.render(
         <Route path="overtime/otrequest" element={<EmpOtRequest />} />
         <Route path="overtime/otrecord" element={<EmpOtRecord />} />
         {/* <Route path="salary" element={<ViewSalary />} /> */}
-        <Route path="tasks" element={<Tasks />} />
       </Route>
 
       <Route path="/manager-dashboard/*" element={<ManagerDashboard />}>

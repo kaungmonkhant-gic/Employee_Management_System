@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import salaryController from "../Controller/salaryController";
-import { useNavigate } from "react-router-dom";
 
 import DataTable from "./common/DataTable";
 
 function Salary() {
-  const navigate = useNavigate(); // Initialize the navigate function
-
+  
   const [columns] = useState([
     
     { field: "employeeId", headerName: "Emp ID", minWidth: 50, flex: 0.5, cellClassName: "text-center" },

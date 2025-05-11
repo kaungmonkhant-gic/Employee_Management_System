@@ -5,8 +5,8 @@ import DataTable from "../common/DataTable";
 const EmployeeDashboard = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [showPending, setShowPending] = useState(true);
+  const [, setError] = useState("");
+  const [showPending] = useState(true);
 
   useEffect(() => {
     fetchLeaveRecords();

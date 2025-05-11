@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
 import { Modal, Button } from "react-bootstrap";
 import LeaveForm from "../common/LeaveForm";
 import apiClient from "../api/apiclient";
 // import DataTable from "../common/DataTable";
-import { useNavigate } from "react-router-dom";
 import leaveController from "../Employee/Controller/LeaveRequestController";
 import DataTable from "react-data-table-component";
 
@@ -16,9 +15,8 @@ const LeaveRequests = () => {
   const [showModal, setShowModal] = useState(false);
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-
+ 
+ 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import otcontroller from "../Manager/Controller/otcontroller";
@@ -7,9 +7,9 @@ import { useNavigate } from "react-router-dom";
 import RejectModal from "../common/RejectModal";
 
 const PendingRequests = () => {
-  const [pendingRequests, setPendingRequests] = useState([]);
+  const [, setPendingRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [headerText, setHeaderText] = useState("Manage Pending Requests");
+  const [headerText] = useState("Manage Pending Requests");
   const [showModal, setShowModal] = useState(false);
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const navigate = useNavigate();
