@@ -283,13 +283,14 @@ const handleChange = (e) => {
           },
         });
       }}
-      minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 30))} // Max age: 30 years
+      minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 40))} // Max age: 30 years
       maxDate={new Date(new Date().setFullYear(new Date().getFullYear() - 18))} // Min age: 18 years
       placeholderText="Select date of birth"
       dateFormat="yyyy-MM-dd"
       showYearDropdown
       scrollableYearDropdown
       name="dob"
+      required
       className="form-control form-control-lg"
     />
   </div>
@@ -304,6 +305,7 @@ const handleChange = (e) => {
                   name="gender"
                   value={employeeData.gender}
                   onChange={handleChange}
+                  required
                   className="form-control-lg"
                 >
                   <option value="">Select Gender</option>
@@ -320,10 +322,11 @@ const handleChange = (e) => {
                 name="phone"
                 value={employeeData.phone}
                 onChange={handleChange}
+                required
                 className="form-control-lg"
                 placeholder="Enter phone number"
-                pattern="^0[1-9]\d{6,9}$"
-                title="Enter a valid Myanmar phone number (starts with 0, 8–11 digits total)"
+                pattern="^0[1-9]\d{7,9}$"
+                title="Enter a valid Myanmar phone number (starts with 0, 9–11 digits total)"
               />
 
               </Form.Group>
@@ -359,8 +362,8 @@ const handleChange = (e) => {
               >
                 <option value="">Township</option>
                 {[...new Set(nrcData.data.filter(item => item.nrc_code === employeeData.nrcRegion))].map((item, index) => (
-                  <option key={index} value={item.name_mm}>
-                    {item.name_en} ({item.name_mm})
+                  <option key={index} value={item.name_en}>
+                    {item.name_en}
                   </option>
                 ))}
               </Form.Control>
@@ -390,8 +393,11 @@ const handleChange = (e) => {
                 className="form-control-lg"
                 placeholder="Details"
                 style={{ flex: 2 }}
+                maxLength="6"
+                pattern="\d{6}"
                 required
               />
+
             </div>
           </Form.Group>
 
@@ -403,6 +409,7 @@ const handleChange = (e) => {
                   name="maritalStatus"
                   value={employeeData.maritalStatus}
                   onChange={handleChange}
+                  required
                   className="form-control-lg"
                 >
                   <option value="">Select Marital Status</option>
@@ -420,6 +427,7 @@ const handleChange = (e) => {
                   value={employeeData.address}
                   onChange={handleChange}
                   className="form-control-lg"
+                  required
                   style={{ height: '150px' }}
                   placeholder="Enter full address"
                 />
@@ -432,6 +440,7 @@ const handleChange = (e) => {
                   name="education"
                   value={employeeData.education}
                   onChange={handleChange}
+                  required
                   className="form-control-lg"
                   placeholder="Enter Education level"
                 />
@@ -444,12 +453,12 @@ const handleChange = (e) => {
               <h5 className="fw-bold text-secondary">Job Details</h5>
               <hr />
   
-              <Form.Group className="mb-3">
+             <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Position</Form.Label>
                 <Form.Control
                   as="select"
-                  name="positionId"
-                  value={selectedPositionId}
+                  name="positionName"
+                  value={employeeData.positionName}
                   onChange={handleChange}
                   className="form-select-lg"
                   required
@@ -457,35 +466,35 @@ const handleChange = (e) => {
                   <option value="">-- Select Position --</option>
                   {Array.isArray(positions) && positions.length > 0 ? (
                     positions.map((pos) => (
-                      <option key={pos.id} value={pos.id}>{pos.positionName}</option>
+                      <option key={pos.id} value={pos.positionName}>{pos.positionName}</option>
                     ))
                   ) : (
                     <option disabled>Loading...</option>
                   )}
                 </Form.Control>
               </Form.Group>
-  
+
               <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Department</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="departmentId"
-                  value={selectedDepartmentId}
-                  onChange={handleChange}
-                  className="form-select-lg"
-                  required
-                >
-                  <option value="">-- Select Department --</option>
-                  {departments.length > 0 ? (
-                    departments.map((dept) => (
-                      <option key={dept.id} value={dept.id}>{dept.departmentName}</option>
-                    ))
-                  ) : (
-                    <option disabled>Loading...</option>
-                  )}
-                </Form.Control>
-              </Form.Group>
-  
+                  <Form.Label className="fw-semibold">Department</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="departmentName"
+                    value={employeeData.departmentName}
+                    onChange={handleChange}
+                    className="form-select-lg"
+                    required
+                  >
+                    <option value="">-- Select Department --</option>
+                    {departments.length > 0 ? (
+                      departments.map((dept) => (
+                        <option key={dept.id} value={dept.departmentName}>{dept.departmentName}</option>
+                      ))
+                    ) : (
+                      <option disabled>Loading...</option>
+                    )}
+                  </Form.Control>
+                </Form.Group>
+
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Role</Form.Label>
                 <Form.Control

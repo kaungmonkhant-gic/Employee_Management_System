@@ -447,95 +447,37 @@ const EmpProfile = () => {
             {/* Position */}
             <div className="col-md-6 mb-4">
               <label className="form-label fw-bold">Position</label>
-              {!isEditing ? (
                 <input
                   type="text"
                   value={details.position}
                   className="form-control"
                   disabled
                 />
-              ) : (
-                <select
-                  value={selectedPositionId}
-                  onChange={handlePositionChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="">-- Select Position --</option>
-                  {positions.length > 0 ? (
-                    positions.map((pos) => (
-                      <option key={pos.id} value={pos.id}>
-                        {pos.positionName}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Loading...</option>
-                  )}
-                </select>
-              )}
             </div>
 
 
             {/* Department */}
             <div className="col-md-6 mb-4">
               <label className="form-label fw-bold">Department</label>
-              {!isEditing ? (
+                !isEditing ? 
                 <input
                   type="text"
                   value={details.department}
                   className="form-control"
                   disabled
                 />
-              ) : (
-                <select
-                  value={selectedDepartmentId}
-                  onChange={handleDepartmentChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="">-- Select Department --</option>
-                  {departments.length > 0 ? (
-                    departments.map((dept) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.departmentName}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Loading...</option>
-                  )}
-                </select>
-              )}
             </div>
 
             {/* Role */}
             <div className="col-md-6 mb-4">
               <label className="form-label fw-bold">Role</label>
-              {!isEditing ? (
                 <input
                   type="text"
                   value={details.role}
                   className="form-control"
                   disabled
                 />
-              ) : (
-                <select
-                  value={selectedRoleId}
-                  onChange={handleRoleChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="">-- Select Role --</option>
-                  {roles.length > 0 ? (
-                    roles.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.roleName}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Loading...</option>
-                  )}
-                </select>
-              )}
+              
             </div>
           </div>
 
