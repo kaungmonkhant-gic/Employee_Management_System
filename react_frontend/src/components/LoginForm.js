@@ -171,11 +171,7 @@ function LoginForm() {
               </Button>
             </Form>
 
-            <div style={{ textAlign: "center", marginTop: "1rem" }}>
-              <Link to="/forgot-password" style={{ textDecoration: "none", color: "#007bff" }}>
-                Forgot Password?
-              </Link>
-            </div>
+           
           </Card.Body>
         </Card>
       </Container>
