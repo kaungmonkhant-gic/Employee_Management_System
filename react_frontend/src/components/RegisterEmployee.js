@@ -6,8 +6,8 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, }) {
   const [employeeData, setEmployeeData] = useState({
     name: "",
     email: "",
-    positionId: "",
-    departmentId: "",
+    positionName: "",
+    departmentName: "",
     roleId: "",
     id: "",
     dob: "",
@@ -30,9 +30,9 @@ function RegisterEmployee({ onSubmit, onCancel, editingEmployee, }) {
     //password:"",
     totalLeave: "4",
   });
-  const positions = ["Senior Developer", "Junior Developer", "Fresher", "Intern","Accountant"];
-  const departments = ["IT", "Finance", "HR", "Maintenance", "Marketing"];
-  const roles = ["Admin", "Employee", "Manager"];
+  // const positions = ["Senior Developer", "Junior Developer", "Fresher", "Intern","Accountant"];
+  // const departments = ["IT", "Finance", "HR", "Maintenance", "Marketing"];
+  // const roles = ["Admin", "Employee", "Manager"];
   // const positions = ["POS001", "POS002", "POS003", "POS004","POS005"];
   // const departments = ["DEPT001", "DEPT002", "DEPT003", "DEPT004", "DEPT005"];
   // const roles = ["1", "2", "3"];
@@ -144,7 +144,7 @@ const handleSubmit = async (e) => {
 
               <div className="mb-2">
                 <label className="form-label fw-semibold">Gender</label>
-                <select name="gender" value={employeeData.gender} onChange={handleChange} className="form-select form-select-lg">
+                <select name="gender" value={employeeData.gender} onChange={handleChange} className="form-select form-select-lg" required>
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -154,7 +154,7 @@ const handleSubmit = async (e) => {
 
               <div className="mb-2">
                 <label className="form-label fw-semibold">Phone</label>
-                <input type="text" name="phone" value={employeeData.phone} onChange={handleChange} className="form-control form-control-lg" />
+                <input type="text" name="phone" value={employeeData.phone} onChange={handleChange} className="form-control form-control-lg" required/>
               </div>
 
           <div className="mb-2">
@@ -270,8 +270,8 @@ const handleSubmit = async (e) => {
       <div className="mb-2">
         <label className="form-label fw-semibold">Position</label>
         <select
-          name="positionId"
-          value={employeeData.positionId}
+          name="positionName"
+          value={employeeData.positionName}
           onChange={handleChange}
           className="form-select form-select-lg"
           required
@@ -288,7 +288,7 @@ const handleSubmit = async (e) => {
         <label className="form-label fw-semibold">Department</label>
         <select
           name="departmentId"
-          value={employeeData.departmentId}
+          value={employeeData.departmentName}
           onChange={handleChange}
           className="form-select form-select-lg"
           required
@@ -304,8 +304,8 @@ const handleSubmit = async (e) => {
       <div className="mb-2">
         <label className="form-label fw-semibold">Role</label>
         <select
-          name="roleId"
-          value={employeeData.roleId}
+          name="roleName"
+          value={employeeData.roleName}
           onChange={handleChange}
           className="form-select form-select-lg"
           required
@@ -348,7 +348,7 @@ const handleSubmit = async (e) => {
           </div>
           <div className="mb-2">
                 <label className="form-label fw-semibold">Password</label>
-                <input type="text" name="password" value={employeeData.password} onChange={handleChange} className="form-control form-control-lg" />
+                <input type="password" name="password" value={employeeData.password} onChange={handleChange} className="form-control form-control-lg" />
               </div>
 
                 </div>
