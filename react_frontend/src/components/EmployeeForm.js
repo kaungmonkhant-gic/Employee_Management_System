@@ -296,8 +296,6 @@ const handleChange = (e) => {
   </div>
 </Form.Group>
 
-
-
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Gender</Form.Label>
                 <Form.Control
@@ -583,7 +581,7 @@ const handleChange = (e) => {
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">Password</Form.Label>
                   <Form.Control
-                    type="text"
+                    type="password"
                     name="password"
                     value={employeeData.password}
                     onChange={handleChange}
