@@ -48,24 +48,24 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
   // );
   
   useEffect(() => {
-    if (editingEmployee) {
-      // Parse NRC
-      const { nrc } = editingEmployee;
-      const nrcParts = nrc ? nrc.match(/^(\d+)\(([^)]+)\)\s([^\(]+)\(([^)]+)\)(\d+)$/) : null;
-  
-      // Set all employee data, parsed joinDate/dob and NRC details
-      setEmployeeData({
-        ...EmployeeModel, // ensure defaults are preserved
-        ...editingEmployee,
-        joinDate: editingEmployee.joinDate ? new Date(editingEmployee.joinDate).toISOString().split("T")[0] : "",
-        dob: editingEmployee.dob ? new Date(editingEmployee.dob).toISOString().split("T")[0] : "",
-        nrcRegion: nrcParts?.[1] || "",
-        nrcTownship: "", // intentionally left empty
-        nrcType: nrcParts?.[3] || "",
-        nrcDetails: nrcParts?.[4] || "",
-      });
-    }
-  }, [editingEmployee]);
+  if (editingEmployee) {
+    const { nrc } = editingEmployee;
+
+    const nrcParts = nrc ? nrc.match(/^(\d+)\/(.+?)\(([A-Z])\)(\d{6})$/) : null;
+
+    setEmployeeData({
+      ...EmployeeModel,
+      ...editingEmployee,
+      joinDate: editingEmployee.joinDate ? new Date(editingEmployee.joinDate).toISOString().split("T")[0] : "",
+      dob: editingEmployee.dob ? new Date(editingEmployee.dob).toISOString().split("T")[0] : "",
+      nrcRegion: nrcParts?.[1] || "",
+      nrcTownship: nrcParts?.[2] || "",
+      nrcType: nrcParts?.[3] || "",
+      nrcNumber: nrcParts?.[4] || "",
+    });
+  }
+}, [editingEmployee]);
+
   
 
   useEffect(() => {
@@ -119,7 +119,7 @@ useEffect(() => console.log("Updated Selected Role ID:", selectedRoleId), [selec
       console.log("Original NRC from editingEmployee:", nrc);
   
       // Updated regex to match NRC, excluding the township part
-      const nrcParts = nrc ? nrc.match(/^(\d+)\(([^)]+)\)\s([^\(]+)\(([^)]+)\)(\d+)$/) : null;
+      const nrcParts = nrc ? nrc.match(/^(\d+)\/(.+?)\(([A-Z])\)(\d{6})$/) : null;
   
       if (nrcParts) {
         console.log("Parsed NRC Parts:", nrcParts);
@@ -133,8 +133,8 @@ useEffect(() => console.log("Updated Selected Role ID:", selectedRoleId), [selec
         joinDate: editingEmployee.joinDate ? new Date(editingEmployee.joinDate).toISOString().split("T")[0] : "",
         dob: editingEmployee.dob ? new Date(editingEmployee.dob).toISOString().split("T")[0] : "",
         nrcRegion: nrcParts?.[1] || "",
-        nrcTownship: "", // Leave it empty to exclude the township part
-        nrcType: nrcParts?.[3] || "", // Use the fourth part for nrcType
+        nrcTownship: nrcParts?.[2] || "", // Leave it empty to exclude the township part
+        nrcType: nrcParts?.[3] ? `(${nrcParts[3]})` : "", // Use the fourth part for nrcType
         nrcDetails: nrcParts?.[4] || "", // Use the fifth part for nrcDetails
       }));
     }
@@ -379,7 +379,9 @@ const handleChange = (e) => {
                 style={{ flex: 1 }}
                 required
               >
-                <option value="">(N/T/S)</option>
+            {!["(N)", "(T)", "(S)"].includes(employeeData.nrcType) && (
+                 <option value="">{employeeData.nrcType || "(N/T/S)"}</option>
+               )}
                 <option value="(N)">(N)</option>
                 <option value="(T)">(T)</option>
                 <option value="(S)">(S)</option>
@@ -530,41 +532,41 @@ const handleChange = (e) => {
               </Form.Group>
   
               <Form.Group className="mb-3">
-  <Form.Label className="fw-semibold">Join Date</Form.Label>
-  <div style={{ width: '100%' }}>
-  <DatePicker
-    selected={employeeData.joinDate ? new Date(employeeData.joinDate) : null}
-    onChange={(date) => {
-      handleChange({
-        target: {
-          name: "joinDate",
-          value: date.toISOString().split("T")[0]
-        }
-      });
-    }}
-    minDate={
-      employeeData.dateOfBirth
-        ? new Date(
-            new Date(employeeData.dateOfBirth).setFullYear(
-              new Date(employeeData.dateOfBirth).getFullYear() + 18
-            )
-          )
-        : null
-    }
-    maxDate={new Date()}
-    placeholderText="Select join date"
-    dateFormat="yyyy-MM-dd"
-    showYearDropdown
-    scrollableYearDropdown
-    className={`form-control form-control-lg ${
-      errors.joinDate ? "is-invalid" : ""
-    }`}
-  />
-  {errors.joinDate && (
-    <div className="invalid-feedback">{errors.joinDate}</div>
-  )}
-  </div>
-</Form.Group>
+                <Form.Label className="fw-semibold">Join Date</Form.Label>
+                <div style={{ width: '100%' }}>
+                <DatePicker
+                  selected={employeeData.joinDate ? new Date(employeeData.joinDate) : null}
+                  onChange={(date) => {
+                    handleChange({
+                      target: {
+                        name: "joinDate",
+                        value: date.toISOString().split("T")[0]
+                      }
+                    });
+                  }}
+                  minDate={
+                    employeeData.dateOfBirth
+                      ? new Date(
+                          new Date(employeeData.dateOfBirth).setFullYear(
+                            new Date(employeeData.dateOfBirth).getFullYear() + 18
+                          )
+                        )
+                      : null
+                  }
+                  maxDate={new Date()}
+                  placeholderText="Select join date"
+                  dateFormat="yyyy-MM-dd"
+                  showYearDropdown
+                  scrollableYearDropdown
+                  className={`form-control form-control-lg ${
+                    errors.joinDate ? "is-invalid" : ""
+                  }`}
+                />
+                {errors.joinDate && (
+                  <div className="invalid-feedback">{errors.joinDate}</div>
+                )}
+                </div>
+              </Form.Group>
 
 
 
@@ -580,28 +582,28 @@ const handleChange = (e) => {
                 />
               </Form.Group> */}
   
-              {!editingEmployee && (
-                <Form.Group className="mb-3">
-  <Form.Label className="fw-semibold">Password</Form.Label>
-  <div className="input-group">
-    <Form.Control
-      type={passwordVisible ? "text" : "password"}
-      name="password"
-      value={employeeData.password}
-      onChange={handleChange}
-      required
-      className="form-control-lg"
-      placeholder="Enter password"
-    />
-    <span 
-      className="input-group-text" 
-      onClick={() => setPasswordVisible(!passwordVisible)} 
-      style={{ cursor: 'pointer' }}
-    >
-      {passwordVisible ? "Hide" : "Show"}
-    </span>
-  </div>
-</Form.Group>
+            {!editingEmployee && (
+            <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Password</Form.Label>
+            <div className="input-group">
+              <Form.Control
+                type={passwordVisible ? "text" : "password"}
+                name="password"
+                value={employeeData.password}
+                onChange={handleChange}
+                required
+                className="form-control-lg"
+                placeholder="Enter password"
+              />
+              <span 
+                className="input-group-text" 
+                onClick={() => setPasswordVisible(!passwordVisible)} 
+                style={{ cursor: 'pointer' }}
+              >
+                {passwordVisible ? "Hide" : "Show"}
+              </span>
+            </div>
+          </Form.Group>
 
               )}
   
