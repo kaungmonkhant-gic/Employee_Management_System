@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import axios from "axios";
 
 function EmployeeSalary() {
   const [salaries, setSalaries] = useState([]);
-  const [userRole, setUserRole] = useState("employee"); 
+  const [userRole] = useState("employee"); 
 
   
   useEffect(() => {

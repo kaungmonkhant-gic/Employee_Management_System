@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import leaveController from "../Manager/Controller/EmpLeaveRecordController";
-import { useNavigate } from "react-router-dom";
 import DataTable from "../common/DataTable";
 
 function EmpLeaveRecords() {
-  const navigate = useNavigate(); // Initialize the navigate function
-
+ 
   const columns = [
     { field: "id", headerName: "Employee ID", minWidth: 150, flex: 1, cellClassName: "text-center" },
     { field: "leaveType", headerName: "Leave Type", minWidth: 150, flex: 1, cellClassName: "text-center" },

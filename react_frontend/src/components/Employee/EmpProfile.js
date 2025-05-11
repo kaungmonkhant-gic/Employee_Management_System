@@ -47,8 +47,7 @@ const EmpProfile = () => {
   const [selectedPositionId, setSelectedPositionId] = useState(details.positionID);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(details.departmentId);
   const [selectedRoleId, setSelectedRoleId] = useState(details.roleId);
-
-  const [selectedGender, setSelectedGender] = useState("");
+  const [, setSelectedGender] = useState("");
 
   useEffect(() => {
     setSelectedPositionId(details.positionID);

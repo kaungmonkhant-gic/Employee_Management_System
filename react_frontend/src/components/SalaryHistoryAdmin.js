@@ -1,11 +1,9 @@
 import salaryController from "./Employee/Controller/SalaryController";
 import DataTable from "./common/DataTable";
-import React, { useState } from "react";
+import  { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
 
 function SalaryHistoryAdmin() {
-  const navigate = useNavigate(); // Initialize the navigate function
 
   const [columns] = useState([
     { 

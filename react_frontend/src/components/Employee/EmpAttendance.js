@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
-import apiClient from "../api/apiclient";
+import { useState, useEffect } from "react";
+import { Button } from "react-bootstrap";
 import DataTable from "../common/DataTable";
-import { useNavigate } from "react-router-dom";
-import AttendanceController from "../Employee/Controller/AttendanceController";
 import EmpAttendanceService from "../Employee/Service/EmpAttendanceService.js";
 
 const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
-  const [checkInTime, setCheckInTime] = useState(null);
+  const [, setCheckInTime] = useState(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [lateTimeDisplay, setLateTimeDisplay] = useState(null);
+  const [, setLateTimeDisplay] = useState(null);
   const [isOnLeave, setIsOnLeave] = useState(false); // Track leave status
 
   // Loa=d Check-in State from Local Storage on Component Mount

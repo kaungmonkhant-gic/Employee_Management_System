@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import leaveController from "../Controller/leaveController";
-import { useNavigate } from "react-router-dom";
+
 
 import DataTable from "./common/DataTable";
 
 function Leave() {
-  const navigate = useNavigate(); // Initialize the navigate function
-
-  const [columns] = useState([
+   const [columns] = useState([
     { 
       field: "number", 
       headerName: "No.", 
@@ -25,13 +23,6 @@ function Leave() {
     { field: "medicalLeave", headerName: "Medical Leave", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
     { field: "total", headerName: "Total", minWidth: 50, flex: 0.5, cellClassName: "text-center" },
   ]);
-
-
-  // Function to handle button click
-  const handleButtonClick = () => {
-    navigate("/admin-dashboard/addleave"); // Navigate to the "/details" route
-  };
-  
 
   return (
 <div className="container">

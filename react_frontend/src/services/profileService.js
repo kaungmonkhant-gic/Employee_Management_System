@@ -1,5 +1,4 @@
 import apiClient from "../components/api/apiclient";
-import axios from "axios";
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token"); // Retrieve the token from localStorage

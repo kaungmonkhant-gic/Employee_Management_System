@@ -5,7 +5,7 @@ import otcontroller from "../Manager/Controller/otcontroller";
 import DataTable from "../common/DataTable";
 
 const ConfirmedRequests = () => {
-  const [confirmedRequests, setConfirmedRequests] = useState([]);
+  const [, setConfirmedRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 

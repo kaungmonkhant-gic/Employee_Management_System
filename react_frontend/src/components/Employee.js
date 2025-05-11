@@ -7,9 +7,9 @@ import EmployeeForm from "./EmployeeForm.js";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 function Employee() {
-  const [employees, setEmployees] = useState([]);
-  const [activeEmployees, setActiveEmployees] = useState([]);
-  const [resignedEmployees, setResignedEmployees] = useState([]);
+  const [, setEmployees] = useState([]);
+  const [, setActiveEmployees] = useState([]);
+  const [, setResignedEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isRegisterScreen, setIsRegisterScreen] = useState(false);
   const [headerText, setHeaderText] = useState("Register New Employee");

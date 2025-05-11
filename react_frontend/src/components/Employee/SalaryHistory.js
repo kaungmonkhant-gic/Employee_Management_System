@@ -1,6 +1,6 @@
 import SalaryController from "./Controller/SalaryController";
 import DataTable from "../common/DataTable";
-import React, { useState } from "react";
+import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";

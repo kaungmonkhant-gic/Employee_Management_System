@@ -10,7 +10,6 @@ const OvertimeRequests = () => {
   const [approved, setApproved] = useState(0);
   const [rejected, setRejected] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [availableOvertimeHours, setAvailableOvertimeHours] = useState(0);
   const [overtimeRecords, setOvertimeRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showPending, setShowPending] = useState(true);

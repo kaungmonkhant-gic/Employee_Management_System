@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -37,9 +37,6 @@ function EmployeeDashboard() {
           <Link to="/employee-dashboard" className="nav-link text-white">
             <i className="bi bi-house-door"></i> Dashboard
           </Link>
-          <Link to="/employee-dashboard/overtime/otrequest" className="nav-link text-white">
-            <i className="bi bi-clock"></i> Overtime
-          </Link>
           <Link to="/employee-dashboard/profile" className="nav-link text-white">
             <i className="bi bi-person"></i> Profile
           </Link>
@@ -49,8 +46,8 @@ function EmployeeDashboard() {
           <Link to="/employee-dashboard/leave" className="nav-link text-white">
             <i className="bi bi-envelope"></i> Leave
           </Link>
-          <Link to="/employee-dashboard/payroll" className="nav-link text-white">
-            <i className="bi bi-briefcase"></i> Payroll
+         <Link to="/employee-dashboard/overtime/otrequest" className="nav-link text-white">
+            <i className="bi bi-clock"></i> Overtime
           </Link>
           <Link to="/employee-dashboard/salary-history" className="nav-link text-white">
             <i className="bi bi-currency-dollar"></i> Salary History
@@ -63,11 +60,6 @@ function EmployeeDashboard() {
           </Link>
           <Link to="/employee-dashboard/attendance" className="nav-link text-white">
             <i className="bi bi-journal-text"></i> Attendance
-          </Link>
-
-          {/* Help Section */}
-          <Link to="/employee-dashboard/help" className="nav-link text-white">
-            <i className="bi bi-question-circle"></i> Help
           </Link>
 
           <button onClick={handleLogout} className="btn btn-secondary mt-4">

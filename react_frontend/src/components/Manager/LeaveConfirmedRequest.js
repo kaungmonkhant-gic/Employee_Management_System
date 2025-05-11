@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BellFill, CheckCircleFill } from "react-bootstrap-icons";
 import leaveController from "../Manager/Controller/LeaveApprovalController";
 import DataTable from "react-data-table-component"; // Using react-data-table-component here
 import apiClient from "../api/apiclient";
@@ -9,9 +8,9 @@ import apiClient from "../api/apiclient";
 const ConfirmedRequests = () => {
   const [confirmedRequests, setConfirmedRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [approved, setApproved] = useState(0);
-  const [rejected, setRejected] = useState(0);
-  const [pending, setPending] = useState(0);
+  const [, setApproved] = useState(0);
+  const [, setRejected] = useState(0);
+  const [, setPending] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {

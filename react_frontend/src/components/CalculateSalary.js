@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, Row, Col, DatePicker } from "antd";
 import dayjs from "dayjs";
@@ -203,8 +203,7 @@ const EmployeeSalaryCalculation = () => {
        }
  
        const salaryData = employees.map((emp) => {
-         const weeklySalary = (emp.basicSalary * 12) / 52;
-        //  const hourlyRate = weeklySalary / 40;
+        
          const otHours = emp.otTime / 60;
          const totalOtFee = (emp.basicSalary * 12 * 2 * otHours) / (52 * 44);
          const validWorkingDays = workingDays > 0 ? workingDays : 1;
@@ -380,30 +379,6 @@ const EmployeeSalaryCalculation = () => {
 
   return (
     <div className="salary-container" style={{ maxWidth: "1200px", margin: "auto", padding: "30px 20px" }}>
-    <Card
-      title={<h3 style={{ marginBottom: 0 }}>💡 Salary Calculation Details</h3>}
-      style={{ marginBottom: "30px", backgroundColor: "#fafafa", borderRadius: "12px" }}
-    >
-      <ul style={{ paddingLeft: "20px", lineHeight: 1.8 }}>
-        <li><strong>Basic Salary:</strong> Fixed monthly salary of the employee.</li>
-        <li><strong>OT Fee=</strong> (Basic Salary × 12 × 2 × OT Hours) / (52 × 44)</li>
-        <li><strong>Leave Deduction Fee=</strong> (Basic Salary × Unpaid Leave Days) ÷ Working Days</li>
-        <li>
-          <strong>Late Deduction:</strong>
-          <ul style={{ marginTop: 5 }}>
-            <li>0 to 30 minutes → 0.5-hour deduction</li>
-            <li>31 to 60 minutes → 1-hour deduction</li>
-            <li>more than 60 minutes → 2-hour deduction</li>
-             
-          </ul>
-        </li>
-        <li>
-    <strong>Late Deduction Fee =</strong> (Basic Salary ÷ Working Days ÷ 8) × Deducted Hours
-  </li>
-        <li><strong>Final Salary=</strong> Basic Salary + House Allowance + Transport + Bonus + Manual Adjustments + OT Fee - Leave - Late</li>
-      </ul>
-    </Card>
-  
     <h2 className="text-center mb-4" style={{ fontWeight: "600", color: "#1890ff" }}>
       🧾 Employee Salary Calculation
     </h2>

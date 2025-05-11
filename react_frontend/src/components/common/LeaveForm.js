@@ -15,7 +15,7 @@ const LeaveForm = ({}) => {
     reason: "",
   });
 
-  const [leaveBalance, setLeaveBalance] = useState({
+  const [, setLeaveBalance] = useState({
     annualLeave: 0,
     casualLeave: 0,
     medicalLeave: 0,

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 // import { BellFill, CheckCircleFill, PlusCircleFill } from "react-bootstrap-icons";
 // import { Modal, Button, Card } from "react-bootstrap";
 import apiClient from "./api/apiclient";
-import { useNavigate } from "react-router-dom";
 import DataTable from "./common/DataTable";
 import overtimeController from "../Controller/overtimeController";
 import dayjs from "dayjs";
@@ -11,14 +10,10 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat); // Enable custom format parsing
 
 const OvertimeRequests = () => {
-    const [overtimeRecords, setOvertimeRecords] = useState([]);
-    const [pending, setPending] = useState([]);
-    const [approved, setApproved] = useState([]);
-    const [paid, setPaid] = useState([]);
-    const [rejected, setRejected] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const navigate = useNavigate();
-
+    const [ ,setOvertimeRecords] = useState([]);
+    const [, setPending] = useState([]);
+    const [, setApproved] = useState([]);
+    const [, setRejected] = useState([]);
     useEffect(() => {
         const fetchOvertimeRecords = async () => {
             try {
@@ -45,21 +40,19 @@ const OvertimeRequests = () => {
                 const data = response.data || {};
                 setPending(Array.isArray(data.PENDING) ? data.PENDING : []);
                 setApproved(Array.isArray(data.APPROVED) ? data.APPROVED : []);
-                setPaid(Array.isArray(data.PAID) ? data.PAID : []);
+                
                 setRejected(Array.isArray(data.REJECTED) ? data.REJECTED : []);
             } catch (error) {
                 console.error("Error fetching overtime requests:", error);
                 setPending([]);
                 setApproved([]);
-                setPaid([]);
+               
                 setRejected([]);
             }
         };
         fetchOvertimeRequests();
     }, []);
 
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
 
     const columns = [
         {
