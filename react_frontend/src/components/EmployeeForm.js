@@ -18,6 +18,7 @@ function EmployeeForm({ onSubmit, onCancel, editingEmployee, headerText }) {
   const [selectedRoleId, setSelectedRoleId] = useState("");
   const [employeeData, setEmployeeData] = useState(EmployeeModel);
   const [errors, setErrors] = useState({});
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
 
   // const FormControlField = ({ label, name, type = "text", value, onChange, options, placeholder, required = false }, style) => (
@@ -296,6 +297,8 @@ const handleChange = (e) => {
   </div>
 </Form.Group>
 
+
+
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Gender</Form.Label>
                 <Form.Control
@@ -497,8 +500,8 @@ const handleChange = (e) => {
                 <Form.Label className="fw-semibold">Role</Form.Label>
                 <Form.Control
                   as="select"
-                  name="roleId"
-                  value={selectedRoleId}
+                  name="roleName"
+                  value={employeeData.roleName}
                   onChange={handleChange}
                   className="form-select-lg"
                   required
@@ -506,7 +509,7 @@ const handleChange = (e) => {
                   <option value="">-- Select Role --</option>
                   {Array.isArray(roles) && roles.length > 0 ? (
                     roles.map((role) => (
-                      <option key={role.id} value={role.id}>{role.roleName}</option>
+                      <option key={role.id} value={role.roleName}>{role.roleName}</option>
                     ))
                   ) : (
                     <option disabled>Loading...</option>
@@ -579,16 +582,27 @@ const handleChange = (e) => {
   
               {!editingEmployee && (
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    value={employeeData.password}
-                    onChange={handleChange}
-                    placeholder="Password..."
-                    className="form-control-lg"
-                  />
-                </Form.Group>
+  <Form.Label className="fw-semibold">Password</Form.Label>
+  <div className="input-group">
+    <Form.Control
+      type={passwordVisible ? "text" : "password"}
+      name="password"
+      value={employeeData.password}
+      onChange={handleChange}
+      required
+      className="form-control-lg"
+      placeholder="Enter password"
+    />
+    <span 
+      className="input-group-text" 
+      onClick={() => setPasswordVisible(!passwordVisible)} 
+      style={{ cursor: 'pointer' }}
+    >
+      {passwordVisible ? "Hide" : "Show"}
+    </span>
+  </div>
+</Form.Group>
+
               )}
   
             </Col>

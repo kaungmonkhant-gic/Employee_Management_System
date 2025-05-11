@@ -64,9 +64,9 @@ public class RegisterDTO {
     private LocalDate resignDate;
 
     // Department, Position, Role
-    private String departmentId;
-    private String positionId;
-    private String roleId;
+    private String departmentName;
+    private String positionName;
+    private String roleName;
     private String managerId;
 
 
@@ -163,28 +163,28 @@ public class RegisterDTO {
         this.education = education;
     }
 
-    public String getDepartmentId() {
-        return departmentId;
+    public String getDepartmentName() {
+        return departmentName;
     }
 
-    public void setDepartmentId(String departmentId) {
-        this.departmentId = departmentId;
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 
-    public String getPositionId() {
-        return positionId;
+    public String getPositionName() {
+        return positionName;
     }
 
-    public void setPositionId(String positionId) {
-        this.positionId = positionId;
+    public void setPositionName(String positionName) {
+        this.positionName = positionName;
     }
 
-    public String getRoleId() {
-        return roleId;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setRoleId(String roleId) {
-        this.roleId = roleId;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public String getManagerId() {

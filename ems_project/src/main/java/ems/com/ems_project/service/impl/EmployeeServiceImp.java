@@ -298,14 +298,14 @@ public class EmployeeServiceImp implements EmployeeService {
             }
 
             // Fetch related entities
-            Roles role = roleRepository.findById(registerDTO.getRoleId())
-                    .orElseThrow(() -> new RuntimeException("Role not found for ID: " + registerDTO.getRoleId()));
+            Roles role = roleRepository.findByRoleName(registerDTO.getRoleName())
+                    .orElseThrow(() -> new RuntimeException("Role not found for: " + registerDTO.getRoleName()));
 
-            Departments department = departmentRepository.findById(registerDTO.getDepartmentId())
-                    .orElseThrow(() -> new RuntimeException("Department not found for ID: " + registerDTO.getDepartmentId()));
+            Departments department = departmentRepository.findByDepartmentName(registerDTO.getDepartmentName())
+                    .orElseThrow(() -> new RuntimeException("Department not found for ID: " + registerDTO.getDepartmentName()));
 
-            Positions position = positionRepository.findById(registerDTO.getPositionId())
-                    .orElseThrow(() -> new RuntimeException("Position not found for ID: " + registerDTO.getPositionId()));
+            Positions position = positionRepository.findByPositionName(registerDTO.getPositionName())
+                    .orElseThrow(() -> new RuntimeException("Position not found for ID: " + registerDTO.getPositionName()));
 
             // Fetch the PositionSalary based on employee's position
             PositionSalary positionSalary = positionSalaryRepository.findByPositionId(position.getId());

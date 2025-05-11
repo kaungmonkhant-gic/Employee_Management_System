@@ -459,7 +459,6 @@ const EmpProfile = () => {
             {/* Department */}
             <div className="col-md-6 mb-4">
               <label className="form-label fw-bold">Department</label>
-                !isEditing ? 
                 <input
                   type="text"
                   value={details.department}
